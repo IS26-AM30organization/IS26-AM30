@@ -8,7 +8,12 @@ public class Tile {
     private final Integer downArrows;
     private final Integer food;
 
-    public Tile(int playersMinimum, Integer upArrows, Integer downArrows, Integer food) {}
+    public Tile(Player currentPlayer, Integer upArrows, Integer downArrows, Integer food) {
+        this.currentPlayer = currentPlayer;
+        this.upArrows = upArrows;
+        this.downArrows = downArrows;
+        this.food = food;
+    }
 
     public Player getCurrentPlayer() {
         return currentPlayer;
@@ -18,10 +23,15 @@ public class Tile {
         this.currentPlayer = currentPlayer;
     }
 
-    public Optional<Integer> getUpArrows() {}
+    public Integer getUpArrows() {
+        return upArrows;
+    }
 
-    public Optional<Integer> getDownArrows() {}
+    public Integer getDownArrows() {
+        return downArrows;
+    }
 
-    public Optional<Integer> getFood() {}
-
+    public Integer getFood() {
+        return food;
+    }
 }

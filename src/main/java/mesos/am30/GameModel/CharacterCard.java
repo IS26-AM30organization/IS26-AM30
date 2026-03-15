@@ -1,16 +1,20 @@
 package mesos.am30.GameModel;
 
-import java.util.Optional;
-
 public class CharacterCard extends Card {
     private final int playersMinimum;
-    private Parameter role;
+    private final Parameter role;
     private final Integer value;
     private final Integer prestigePoints;
 
-    public CharacterCard(int era, int playersMinimum, Parameter role, Integer value, Integer prestigePoints) {}
+    public CharacterCard(int era, int playersMinimum, Parameter role, Integer value, Integer prestigePoints) {
+        super(era);
+        this.playersMinimum = playersMinimum;
+        this.role = role;
+        this.value = value;
+        this.prestigePoints = prestigePoints;
+    }
 
-    public int playersMinimum() {
+    public int getPlayersMinimum() {
         return playersMinimum;
     }
 
@@ -18,8 +22,12 @@ public class CharacterCard extends Card {
         return role;
     }
 
-    public Optional<Integer> getValue() {}
+    public Integer getValue() {
+        return value;
+    }
 
-    public Optional<Integer> getPrestigePoints() {}
+    public Integer getPrestigePoints() {
+        return prestigePoints;
+    }
 }
 

@@ -14,7 +14,5 @@ public class TileBoost implements IF_Event{
     }
 
     @Override
-    public void handleEvent(Player player) {
-        return List.of();
-    }
+    public void handleEvent(Player player) {}
 }

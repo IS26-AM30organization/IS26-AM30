@@ -31,4 +31,6 @@ public class Player {
     public Set<BuildingCard> getBuildings() {
         return buildings;
     }
+
+    public void updateStats(Parameter stat, int sum) {}
 }
