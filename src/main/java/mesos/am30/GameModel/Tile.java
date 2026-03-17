@@ -7,21 +7,26 @@ public class Tile {
     private final Integer upArrows;
     private final Integer downArrows;
     private final Integer food;
+    private final int playersMinimum;
 
-    public Tile(Player currentPlayer, Integer upArrows, Integer downArrows, Integer food) {
-        this.currentPlayer = currentPlayer;
+    public Tile(int playersMinimum, Integer upArrows, Integer downArrows, Integer food) {
+        this.playersMinimum = playersMinimum;
         this.upArrows = upArrows;
         this.downArrows = downArrows;
         this.food = food;
     }
 
-    public Player getCurrentPlayer() {
-        return currentPlayer;
+    public Optional<Player> getCurrentPlayer() {
+        return Optional.ofNullable(this.currentPlayer);
     }
+
+    public int getPlayersMinimum() { return playersMinimum; }
 
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
+
+    public void clearCurrentPlayer() {this.currentPlayer = null;}
 
     public Integer getUpArrows() {
         return upArrows;

@@ -13,15 +13,34 @@ public interface IF_MVC {
     Set<BuildingCard> getUpperBuildings();
     Set<Card> getLowerRow();
     Set<BuildingCard> getLowerBuildings();
-    Map<Parameter, Card> getPlayerCards(Player player);
+    Map<Parameter, List<CharacterCard>> getPlayerCards(Player player);
+    Set<BuildingCard> getPlayerBuildings(Player player);
     List<Player> getPlayersOrder();
     List<Optional<Integer>> getMove(Tile tile);
     Map<Parameter, Integer> getParameters(Player player);
 
+    /**
+     * Returns null
+     */
     void start(int playersNumber);
+
+    /**
+     * Saves player in chosen tile and removes player from playersOrder, if the tile wasn't alreadt picked.
+     * If the tile was already picked, nothing happens.
+     */
     void pickTile(Player player, Tile tile);
+
+    /**
+     * If the card is on the table, removes the card from the table and adds the card to the player tribe or buildings.
+     * If the card isn't on the table, nothing happens.
+     */
     void pickCard(Player player, Card card);
+
+    /**
+     * Handles all recurring events in the player buildings.
+     */
     void handleBuildings(Player player);
+
     void nextRound();
     void endGame();
 }
