@@ -20,7 +20,7 @@ class FinalBoostTest {
 
     @BeforeEach
     void setUp() {
-        testingCard=new FinalBoost(3, Parameter.GATHERER,2);
+        testingCard=new FinalBoost(Parameter.GATHERER,2);
     }
 
     @Test
