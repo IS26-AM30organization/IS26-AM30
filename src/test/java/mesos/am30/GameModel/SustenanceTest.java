@@ -17,6 +17,12 @@ class SustenanceTest {
     @Mock
     private Player mockPlayer;
 
+    @Mock
+    private BuildingCard mockBuilding;
+
+    @Mock
+    private StatsBoost mockStatsBoost;
+
     @BeforeEach
     void setUp() {
         sustenanceCard = new Sustenance(-4);
@@ -96,6 +102,34 @@ class SustenanceTest {
         for (Parameter p : mockPlayer.getTribe().keySet()) {
             foodCost += mockPlayer.getTribe().get(p).size();
         }
+        verify(mockPlayer).updateStats(Parameter.FOOD, -2);
+        verify(mockPlayer).updateStats(Parameter.PRESTIGE_POINTS, sustenanceCard.getPrestigePoints() * Math.abs(2 - (foodCost - foodDiscount)));
+    }
+
+    @Test
+    void handleEvent_Buildings() {
+        // set the Mock Building
+        when(mockBuilding.getEventType()).thenReturn(EventType.SUSTENANCE);
+        when(mockBuilding.getEvent()).thenReturn(mockStatsBoost);
+
+        // set the Mock Player
+        int foodDiscount = mockPlayer.getTribe().get(Parameter.GATHERER).size() * 3;
+        when(mockPlayer.getBuildings()).thenReturn(Set.of(mockBuilding));
+        when(mockPlayer.getParameters()).thenReturn(Map.of(
+                Parameter.GATHERER, foodDiscount,
+                Parameter.FOOD, 2,
+                Parameter.PRESTIGE_POINTS, 10
+        ));
+
+        // Act
+        sustenanceCard.handleEvent(mockPlayer);
+
+        // Assert
+        int foodCost = 0;
+        for (Parameter p : mockPlayer.getTribe().keySet()) {
+            foodCost += mockPlayer.getTribe().get(p).size();
+        }
+        verify(mockStatsBoost).handleEvent(mockPlayer);
         verify(mockPlayer).updateStats(Parameter.FOOD, -2);
         verify(mockPlayer).updateStats(Parameter.PRESTIGE_POINTS, sustenanceCard.getPrestigePoints() * Math.abs(2 - (foodCost - foodDiscount)));
     }

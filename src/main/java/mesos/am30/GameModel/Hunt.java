@@ -43,6 +43,9 @@ public class Hunt implements IF_Event {
      */
     @Override
     public void handleEvent(Player player) {
+        for (BuildingCard b : player.getBuildings()) {
+            if (b.getEventType() == EventType.HUNT) b.getEvent().handleEvent(player);
+        }
         int hunters = player.getTribe().get(Parameter.HUNTER).size();
         player.updateStats(Parameter.FOOD, 1);
         player.updateStats(Parameter.PRESTIGE_POINTS, hunters * prestigePoints);

@@ -37,24 +37,6 @@ public class ShamanicRitual implements IF_Event {
     }
 
     /**
-     * Getter for the attribute "starsPool".
-     *
-     * @return this.starsPool
-     */
-    public Map<Player, Integer> getStarsPool() {
-        return starsPool;
-    }
-
-    /**
-     * Getter for the attribute "playersNumber".
-     *
-     * @return this.playersNumber
-     */
-    public int getPlayersNumber() {
-        return playersNumber;
-    }
-
-    /**
      * Getter for the attribute "lostPrestigePoints".
      *
      * @return this.lostPrestigePoints
@@ -92,10 +74,30 @@ public class ShamanicRitual implements IF_Event {
             for (Player p : starsPool.keySet()) {
                 if (starsPool.get(p).equals(sortedStars.getFirst())) {
                     // Players with fewer Stars
+                    for(BuildingCard b : p.getBuildings()) {
+                        // handle ShamanBoost Building
+                        if (b.getEventType() == EventType.SHAMANIC_RITUAL ) {
+                            ShamanBoost event = (ShamanBoost) b.getEvent();
+                            if (!event.isFirstOrLast()) {
+                                event.setEventPrestigePoints(lostPrestigePoints);
+                                event.handleEvent(p);
+                            }
+                        }
+                    }
                     p.updateStats(Parameter.PRESTIGE_POINTS, lostPrestigePoints);
                 }
                 if (starsPool.get(p).equals(sortedStars.getLast())) {
                     // Players with more Stars
+                    for(BuildingCard b : p.getBuildings()) {
+                        // handle ShamanBoost Building
+                        if (b.getEventType() == EventType.SHAMANIC_RITUAL ) {
+                            ShamanBoost event = (ShamanBoost) b.getEvent();
+                            if (event.isFirstOrLast()) {
+                                event.setEventPrestigePoints(gainedPrestigePoints);
+                                event.handleEvent(p);
+                            }
+                        }
+                    }
                     p.updateStats(Parameter.PRESTIGE_POINTS, gainedPrestigePoints);
                 }
             }
