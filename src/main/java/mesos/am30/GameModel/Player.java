@@ -32,5 +32,20 @@ public class Player {
         return buildings;
     }
 
-    public void updateStats(Parameter stat, int sum) {}
+    public void updateStats(Parameter stat,int sum){
+        //using getOrDefault default method of HashMap -> if no value is present, returns defaultValue.
+        int currentValue = this.parameters.getOrDefault(stat, 0);
+
+        int updatedValue = currentValue + sum;
+        if(updatedValue < 0) updatedValue = 0;
+        this.parameters.put(stat, updatedValue);
+    }
+
+    public void updateStats(SpecialBuff eventBuff){
+        specialBuffs.add(eventBuff);
+    }
+
+    public List<CharacterCard> getCharacterType(Parameter characterType){
+        return tribe.getOrDefault(characterType, new ArrayList<>());
+    }
 }
