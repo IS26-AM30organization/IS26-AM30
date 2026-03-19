@@ -8,12 +8,14 @@ public class Player {
     private final Map<Parameter, List<CharacterCard>> tribe;
     private final Set<Integer> inventions;
     private final Set<BuildingCard> buildings;
+    private final Set<SpecialBuff> specialBuffs;
 
     public Player() {
         this.parameters = new HashMap<>();
         this.tribe = new HashMap<>();
         this.inventions = new HashSet<>(10);
         this.buildings = new HashSet<>();
+        this.specialBuffs = new HashSet<>();
     }
 
     public Map<Parameter, Integer> getParameters() {

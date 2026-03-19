@@ -35,7 +35,7 @@ class FullSetTest {
         for (Parameter p : roles) {
             List<CharacterCard> list = new ArrayList<>();
             tribeMap.put(p, list);
-            when(player.getCharacterType(p)).thenReturn(list);
+            lenient().when(player.getCharacterType(p)).thenReturn(list);
         }
         when(player.getTribe()).thenReturn(tribeMap);
     }
