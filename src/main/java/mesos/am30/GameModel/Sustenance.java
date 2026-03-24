@@ -44,6 +44,10 @@ public class Sustenance implements IF_Event {
      */
     @Override
     public void handleEvent(Player player) {
+        // handle the Building Stats Boost
+        for (BuildingCard b : player.getBuildings()) {
+            if (b.getEventType() == EventType.SUSTENANCE) b.getEvent().handleEvent(player);
+        }
         // compute the Food cost
         int foodCost = 0;
         for (Parameter p : player.getTribe().keySet()) {

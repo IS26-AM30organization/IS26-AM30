@@ -9,20 +9,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(MockitoExtension.class)
-class FinalPPBoostTest {
-    private FinalPPBoost testingCard;
+class OneTimeBoostTest {
+    private OneTimeBoost testingPPCard;
+    private OneTimeBoost testingShamanCard;
 
     @Mock
     private Player mockPlayer;
 
     @BeforeEach
     void setUp() {
-        testingCard = new FinalPPBoost(25);
+        testingPPCard = new OneTimeBoost(25, Parameter.PRESTIGE_POINTS);
+        testingShamanCard = new OneTimeBoost(3, Parameter.SHAMAN);
     }
 
     @Test
-    void handleEvent() {
-        testingCard.handleEvent(mockPlayer);
+    void prestigeTest() {
+        testingPPCard.handleEvent(mockPlayer);
         verify(mockPlayer).updateStats(Parameter.PRESTIGE_POINTS, 25);
+    }
+
+    @Test
+    void shamanTest(){
+        testingShamanCard.handleEvent(mockPlayer);
+        verify(mockPlayer).updateStats(Parameter.SHAMAN, 3);
     }
 }

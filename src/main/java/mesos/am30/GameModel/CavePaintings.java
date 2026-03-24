@@ -30,15 +30,6 @@ public class CavePaintings implements IF_Event {
     }
 
     /**
-     * Getter for the attribute "artistMinimum".
-     *
-     * @return this.artistMinimum
-     */
-    public int getArtistMinimum() {
-        return artistMinimum;
-    }
-
-    /**
      * Getter for the attribute "lostPrestigePoints".
      *
      * @return this.lostPrestigePoints
@@ -67,7 +58,10 @@ public class CavePaintings implements IF_Event {
      */
     @Override
     public void handleEvent(Player player) {
+        for (BuildingCard b : player.getBuildings()) {
+            if (b.getEventType() == EventType.CAVE_PAINTINGS) b.getEvent().handleEvent(player);
+        }
         int artists = player.getTribe().get(Parameter.ARTIST).size();
-        player.updateStats(Parameter.PRESTIGE_POINTS, (artists < artistMinimum) ? lostPrestigePoints : gainedPrestigePoints);
+        player.updateStats(Parameter.PRESTIGE_POINTS, (artists < artistMinimum) ? lostPrestigePoints : gainedPrestigePoints * artists);
     }
 }

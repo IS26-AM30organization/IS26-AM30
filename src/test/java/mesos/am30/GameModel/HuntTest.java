@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 class HuntTest {
@@ -17,6 +18,12 @@ class HuntTest {
 
     @Mock
     private Player mockPlayer;
+
+    @Mock
+    private BuildingCard mockBuilding;
+
+    @Mock
+    private StatsBoost mockStatsBoost;
 
     @BeforeEach
     void setUp() {
@@ -36,6 +43,29 @@ class HuntTest {
         huntCard.handleEvent(mockPlayer);
 
         // Assert
+        verify(mockPlayer).updateStats(Parameter.FOOD, 1);
+        verify(mockPlayer).updateStats(Parameter.PRESTIGE_POINTS, huntCard.getPrestigePoints() * hunters.size());
+    }
+
+    @Test
+    void handleEvent_Buildings() {
+        // set the Mock Building
+        when(mockBuilding.getEventType()).thenReturn(EventType.HUNT);
+        when(mockBuilding.getEvent()).thenReturn(mockStatsBoost);
+
+        // set the Mock Player
+        List<CharacterCard> hunters = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            hunters.add(mock(CharacterCard.class));
+        }
+        when(mockPlayer.getTribe()).thenReturn(Map.of(Parameter.HUNTER, hunters));
+        when(mockPlayer.getBuildings()).thenReturn(Set.of(mockBuilding));
+
+        // Act
+        huntCard.handleEvent(mockPlayer);
+
+        // Assert
+        verify(mockStatsBoost).handleEvent(mockPlayer);
         verify(mockPlayer).updateStats(Parameter.FOOD, 1);
         verify(mockPlayer).updateStats(Parameter.PRESTIGE_POINTS, huntCard.getPrestigePoints() * hunters.size());
     }

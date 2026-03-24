@@ -4,19 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 public class FinalBoost implements IF_Event {
-    private final int prestigePoints;
     private final Parameter target;
     private final int multiplier;
 
-    public FinalBoost(int prestigePoints, Parameter target, int multiplier) {
-        this.prestigePoints = prestigePoints;
+    public FinalBoost(Parameter target, int multiplier) {
         this.target = target;
         this.multiplier = multiplier;
     }
 
-    public int getPrestigePoints() {
-        return prestigePoints;
-    }
 
     @Override
     public void handleEvent(Player player) {
