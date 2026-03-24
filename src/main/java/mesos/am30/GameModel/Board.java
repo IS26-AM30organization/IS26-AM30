@@ -1,10 +1,20 @@
 package mesos.am30.GameModel;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import mesos.am30.IF_GameModel;
 
-public class Board {
+import static java.nio.charset.StandardCharsets.*;
+
+public class Board implements IF_GameModel {
     private static Set<Card> allCards;
-    private Set<Card> usedCards;     //potrebbe essere inutile
+    private final Set<Card> allBuildings;
+    //private Set<Card> usedCards;     //potrebbe essere inutile
 
     private static List<Tile> allTiles;
     private final List<Tile> usedTiles;
@@ -25,9 +35,34 @@ public class Board {
         // (non pesca carte se giocatori<2, usa regole da 5 se giocatori>5)
     public Board(List<Player> players) {
 
+        //perparo la lettura del json
+        Gson gson = new Gson();
+        Type setType = new TypeToken<Set<Player>>(){}.getType();
+        Type tileType = new  TypeToken<List<Tile>>(){}.getType();
+
+        //creo allCards (dal json)
+        InputStream allcharacter = Board.class.getClassLoader().getResourceAsStream("characters.json");
+        Reader reader = new InputStreamReader(allcharacter, UTF_8);
+        Set<Card> cardsFromJson = gson.fromJson(reader, setType);
+        InputStream allevents = Board.class.getClassLoader().getResourceAsStream("events.json");
+        reader = new InputStreamReader(allevents, UTF_8);
+        cardsFromJson.addAll(gson.fromJson(reader, setType));
+        allCards = cardsFromJson;
+
+        //creo allBuildings (dal json)
+        InputStream allbuildings = Board.class.getClassLoader().getResourceAsStream("buildings.json");
+        reader = new InputStreamReader(allbuildings, UTF_8);
+        allBuildings = gson.fromJson(reader, setType);
+
+        //creo allTiles (dal json)
+        InputStream alltiles =  Board.class.getClassLoader().getResourceAsStream("tiles.json");
+        reader = new InputStreamReader(alltiles, UTF_8);
+        allTiles = gson.fromJson(reader, tileType);
+
         //setto players e playersOrder:
         this.players = players;
-        this.playersOrder = players;
+        this.playersOrder = new ArrayList<>();
+        playersOrder.addAll(players);
         Collections.shuffle(playersOrder);
 
         //scelgo le tile utili
@@ -36,8 +71,7 @@ public class Board {
                 .toList();
 
         //mischio le carte edifici:
-        List<BuildingCard> drawFromBuildings = new ArrayList<>(allCards.stream()
-                .filter(x -> x instanceof BuildingCard)
+        List<BuildingCard> drawFromBuildings = new ArrayList<>(allBuildings.stream()
                 .map(x -> (BuildingCard) x)
                 .toList());
         Collections.shuffle(drawFromBuildings);
@@ -52,60 +86,118 @@ public class Board {
         };
 
         //creo i deck di edifici:
+        List<List<BuildingCard>> createBuildingDecks = new ArrayList<>();
         for (int i = 0; i < b.length; i++) {
             int era = i;
             List<BuildingCard> buildings = drawFromBuildings.stream()
                     .filter(x -> x.getEra() == era)
                     .limit(b[i])
                     .toList();
-            buildingDecks.add(buildings);
+            createBuildingDecks.add(buildings);
         }
+        buildingDecks = createBuildingDecks;
 
-        //mischio le carte personaggi in base al numero di giocatori:
+        //mischio le carte personaggi ed eventi in base al numero di giocatori:
+        List<List<Card>> createDecks = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             int era = i;
             List<Card> deck = new ArrayList<>(allCards.stream()
-                    .filter(x -> x instanceof CharacterCard)
+                    .filter(x -> (x instanceof CharacterCard))
                     .filter(x -> x.getEra() == era)
                     .filter(x -> x.getPlayersMinimum() == players.size())
                     .toList());
+            deck.addAll(allCards.stream()
+                    .filter(x -> x instanceof EventCard)
+                    .filter(x -> x.getEra() == era)
+                    .toList());
             Collections.shuffle(deck);
-            decks.add(deck);
+            createDecks.add(deck);
+        }
+        decks = createDecks;
+
+        //PRIMO ROUND!!!
+        List<Card> firstLowerRow = new ArrayList<>();
+        List<Card> firstUpperRow = new ArrayList<>();
+        lowerBuildings = new ArrayList<>();
+        upperBuildings = buildingDecks.getFirst();
+        buildingDecks.removeFirst();
+        while(firstLowerRow.size() < players.size()+2) {
+            Card card = decks.getFirst().getFirst();
+            if(card instanceof EventCard) {
+                firstUpperRow.add(card);
+            } else {
+                firstLowerRow.add(card);
+            }
+            decks.getFirst().removeFirst();
+        }
+        while(firstUpperRow.size() < players.size()+5) {
+            firstUpperRow.add(decks.getFirst().getFirst());
+            decks.getFirst().removeFirst();
+        }
+        lowerRow = firstLowerRow;
+        upperRow = firstUpperRow;
+        Card toMoveLast = null;
+        for(Card card : upperRow) {
+            if((card instanceof EventCard)&&(((EventCard) card).getEvent() instanceof Sustenance)) {
+                toMoveLast = card;
+                break;
+            }
+        }
+        if (toMoveLast!=null){
+            upperRow.remove(toMoveLast);
+            upperRow.add(toMoveLast);
         }
 
+
         //creo usedCards (inutile?):
+        /*Set<Card> usedCards = new HashSet<>();
         usedCards.clear();
         usedCards.addAll(decks.stream().flatMap(List::stream).toList());
-        usedCards.addAll(buildingDecks.stream().flatMap(List::stream).toList());
+        usedCards.addAll(buildingDecks.stream().flatMap(List::stream).toList());*/
     }
 
     // 3 METODI SEPARATI PER NEXT ROUND:
-    public void discardLowerRow() {
+    private void discardLowerRow() {
         lowerRow.clear();
     }
-    public void moveDown(){
+    private void moveDown(){
         lowerRow.addAll(upperRow);
         upperRow.clear();
     }
     // pesca fino a completamento upperRow o a esaurimento carte dell'era corrente
-    public void draw(){
+    private void draw(){
         for (int i = upperRow.size(); i < players.size()+4; i++){
-            if (!decks.isEmpty()&&!decks.get(1).isEmpty()) {
-                upperRow.add(decks.get(1).get(1));
-                decks.get(1).remove(1);
+            if (!decks.isEmpty()&&!decks.getFirst().isEmpty()) {
+                upperRow.add(decks.getFirst().getFirst());
+                decks.getFirst().removeFirst();
             }
         }
     }
 
+    //gestisco eventi (per ora privato)
+    private void handleEvent(EventCard card){
+        for (Player player : players) {
+            card.getEvent().handleEvent(player);
+        }
+    }
+
+    private void handleEvent(BuildingCard card, Player player){
+        card.getEvent().handleEvent(player);
+    }
+
     //chiama la nuova era: sposta e pesca gli edifici,
     //sblocca in draw() i personaggi dell'era successiva
-    public void nextEra(){
+    private void nextEra(){
         lowerBuildings.clear();
         lowerBuildings.addAll(upperBuildings);
         upperBuildings.clear();
-        upperBuildings.addAll(buildingDecks.get(1));
-        buildingDecks.remove(1);
-        decks.remove(1);
+        if (!buildingDecks.isEmpty()) {
+            upperBuildings.addAll(buildingDecks.getFirst());
+            buildingDecks.removeFirst();
+        }
+        if(!decks.isEmpty()) {
+            decks.removeFirst();
+        }
         //draw();
     }
 
@@ -118,23 +210,44 @@ public class Board {
      */
     public boolean nextRound() {
         playersOrder.clear();
+        //creo nuovo order e resetto tiles
         for(Tile t : usedTiles){
-            t.getCurrentPlayer().ifPresent(x -> playersOrder.add(x));
+            t.getCurrentPlayer().ifPresent(x -> {
+                playersOrder.add(x);
+                //BONUS DI ORDINE
+            });
             t.clearCurrentPlayer();
+        }
+        for(Card card : lowerRow){
+            if(card instanceof EventCard) {
+                handleEvent((EventCard) card);
+            }
         }
         discardLowerRow();
         moveDown();
         draw();
         if (upperRow.size() < players.size()+4) {
             nextEra();
-            draw();
+            if(decks.isEmpty()){
+                for(Card card : upperRow){
+                    if(card instanceof EventCard) {
+                        handleEvent((EventCard) card);
+                    }
+                }
+                upperRow.clear();
+                lowerRow.clear();
+                upperBuildings.clear();
+                lowerBuildings.clear();
+            }else draw();
             return true;
         } else return false;
     }
 
+    /*
     public Set<Card> getUsedCards() {
         return usedCards;
     }
+     */
 
     //AZIONI GIOCATORE:
 
@@ -144,9 +257,9 @@ public class Board {
             upperRow.remove(card);
         } else if (lowerRow.contains(card)) {
             lowerRow.remove(card);
-        } else if (upperBuildings.contains((BuildingCard) card)) {
+        } else if ((card instanceof BuildingCard)&&(upperBuildings.contains((BuildingCard) card))) {
             upperBuildings.remove((BuildingCard) card);
-        } else if (lowerBuildings.contains((BuildingCard) card)) {
+        } else if ((card instanceof BuildingCard)&&(lowerBuildings.contains((BuildingCard) card))) {
             lowerBuildings.remove((BuildingCard) card);
         } else return;
         if (card instanceof CharacterCard) {
@@ -162,11 +275,11 @@ public class Board {
             playersOrder.remove(player);
     }
 
-    public List<Tile> getUsedTiles() {
+    public List<Tile> getTiles() {
         return usedTiles;
     }
 
-    public List<List<Card>> getDecks() {
+    private List<List<Card>> getDecks() {
         return decks;
     }
 

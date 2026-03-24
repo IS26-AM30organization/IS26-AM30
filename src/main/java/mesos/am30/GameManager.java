@@ -1,4 +1,4 @@
-package mesos.am30;
+/*package mesos.am30;
 
 import mesos.am30.GameModel.*;
 
@@ -11,7 +11,7 @@ public class GameManager implements IF_MVC {
 
     @Override
     public List<Tile> getTiles() {
-        return board.getUsedTiles();
+        return board.getTiles();
     }
 
     @Override
@@ -75,6 +75,7 @@ public class GameManager implements IF_MVC {
     @Override
     public void nextRound() { board.nextRound(); }
 
+    /*
     @Override
     public void endGame() {
         //DA IMPLEMENTARE
@@ -90,3 +91,4 @@ public class GameManager implements IF_MVC {
     //private void resetUpperRow() {} RIMOSSA
     private void nextEra() {  board.nextEra(); }
 }
+*/

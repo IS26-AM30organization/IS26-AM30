@@ -7,22 +7,24 @@ import java.util.Set;
 import java.util.Map;
 import java.util.Optional;
 
-public interface IF_MVC {
+public interface IF_GameModel {
     List<Tile> getTiles();
-    Set<Card> getUpperRow();
-    Set<BuildingCard> getUpperBuildings();
-    Set<Card> getLowerRow();
-    Set<BuildingCard> getLowerBuildings();
-    Map<Parameter, List<CharacterCard>> getPlayerCards(Player player);
-    Set<BuildingCard> getPlayerBuildings(Player player);
+    List<Card> getUpperRow();
+    List<BuildingCard> getUpperBuildings();
+    List<Card> getLowerRow();
+    List<BuildingCard> getLowerBuildings();
+    //Map<Parameter, List<CharacterCard>> getPlayerCards(Player player);
+    //Set<BuildingCard> getPlayerBuildings(Player player);
     List<Player> getPlayersOrder();
-    List<Optional<Integer>> getMove(Tile tile);
-    Map<Parameter, Integer> getParameters(Player player);
+    //List<Optional<Integer>> getMove(Tile tile);
+    //Map<Parameter, Integer> getParameters(Player player);
 
+    /*
     /**
      * Returns null
      */
-    void start(int playersNumber);
+    //void start(int playersNumber);
+
 
     /**
      * Saves player in chosen tile and removes player from playersOrder, if the tile wasn't alreadt picked.
@@ -36,11 +38,12 @@ public interface IF_MVC {
      */
     void pickCard(Player player, Card card);
 
+    /*
     /**
      * Handles all recurring events in the player buildings.
      */
-    void handleBuildings(Player player);
+    //void handleBuildings(Player player);
 
-    void nextRound();
-    void endGame();
+    boolean nextRound();
+    //oid endGame();
 }
