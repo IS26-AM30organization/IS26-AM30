@@ -8,15 +8,11 @@ public class BuildingCard extends Card {
 
 
     public BuildingCard(int era, IF_Event event, EventType eventType, int foodCost, int ppGainEnd) {
-        super(era);
+        super(era, 2);
         this.event = event;
         this.eventType = eventType;
         this.foodCost = foodCost;
         this.ppGainEnd = ppGainEnd;
-    }
-
-    public EventType getEventType() {
-        return eventType;
     }
 
     public int getFoodCost() {
@@ -29,5 +25,9 @@ public class BuildingCard extends Card {
 
     public IF_Event getEvent() {
         return event;
+    }
+
+    public EventType getEventType() {
+        return eventType;
     }
 }

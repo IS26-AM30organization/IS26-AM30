@@ -4,7 +4,7 @@ public class EventCard extends Card {
     private final IF_Event event;
 
     public EventCard(int era, IF_Event event) {
-        super(era);
+        super(era, 2);
         this.event = event;
     }
 
