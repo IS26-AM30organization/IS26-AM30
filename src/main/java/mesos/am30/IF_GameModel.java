@@ -13,18 +13,7 @@ public interface IF_GameModel {
     List<BuildingCard> getUpperBuildings();
     List<Card> getLowerRow();
     List<BuildingCard> getLowerBuildings();
-    //Map<Parameter, List<CharacterCard>> getPlayerCards(Player player);
-    //Set<BuildingCard> getPlayerBuildings(Player player);
     List<Player> getPlayersOrder();
-    //List<Optional<Integer>> getMove(Tile tile);
-    //Map<Parameter, Integer> getParameters(Player player);
-
-    /*
-    /**
-     * Returns null
-     */
-    //void start(int playersNumber);
-
 
     /**
      * Saves player in chosen tile and removes player from playersOrder, if the tile wasn't alreadt picked.
@@ -36,14 +25,27 @@ public interface IF_GameModel {
      * If the card is on the table, removes the card from the table and adds the card to the player tribe or buildings.
      * If the card isn't on the table, nothing happens.
      */
-    void pickCard(Player player, Card card);
+    void pickCard(Player player, CharacterCard card);
 
-    /*
     /**
-     * Handles all recurring events in the player buildings.
+     * If the card is on the table, removes the card from the table and adds the card to the player tribe or buildings.
+     * If the card isn't on the table, nothing happens.
      */
-    //void handleBuildings(Player player);
+    void pickCard(Player player, BuildingCard card);
 
+    /**
+     * it loads the decks and choose the buildings
+     */
+    void prepare();
+
+    /**
+     * it draws the rows for the first round
+     */
+    void start();
+
+    /**
+     * it handles EVERYTHING to change round
+     * @return true if nextEra
+     */
     boolean nextRound();
-    //oid endGame();
 }
