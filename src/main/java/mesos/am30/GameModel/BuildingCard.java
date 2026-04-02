@@ -3,11 +3,16 @@ package mesos.am30.GameModel;
 public class BuildingCard extends Card {
     private final IF_Event event;
     private final EventType eventType;
+    private final int foodCost;
+    private final int ppGainEnd;
 
-    public BuildingCard(int era, IF_Event event, EventType eventType) {
+
+    public BuildingCard(int era, IF_Event event, EventType eventType, int foodCost, int ppGainEnd) {
         super(era, 2);
         this.event = event;
         this.eventType = eventType;
+        this.foodCost = foodCost;
+        this.ppGainEnd = ppGainEnd;
     }
 
     public IF_Event getEvent() {
