@@ -15,6 +15,14 @@ public class BuildingCard extends Card {
         this.ppGainEnd = ppGainEnd;
     }
 
+    public int getFoodCost() {
+        return foodCost;
+    }
+
+    public int getPpGainEnd() {
+        return ppGainEnd;
+    }
+
     public IF_Event getEvent() {
         return event;
     }

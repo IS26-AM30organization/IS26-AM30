@@ -3,16 +3,14 @@ package mesos.am30.GameModel;
 import java.util.List;
 
 public class TileBoost implements IF_Event{
-    private final int boost;
+    private final SpecialBuff buffType;
 
-    public TileBoost(int boost) {
-        this.boost = boost;
-    }
-
-    public int getBoost() {
-        return boost;
+    public TileBoost(SpecialBuff buffType) {
+        this.buffType = buffType;
     }
 
     @Override
-    public void handleEvent(Player player) {}
+    public void handleEvent(Player player) {
+        player.updateStats(buffType);
+    }
 }
