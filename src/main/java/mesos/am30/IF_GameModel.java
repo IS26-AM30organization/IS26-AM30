@@ -2,6 +2,7 @@ package mesos.am30;
 
 import mesos.am30.GameModel.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -36,7 +37,7 @@ public interface IF_GameModel {
     /**
      * it loads the decks and choose the buildings
      */
-    void prepare();
+    void prepare() throws IOException;
 
     /**
      * it draws the rows for the first round

@@ -34,6 +34,10 @@ public class Player {
         return buildings;
     }
 
+    public Set<SpecialBuff> getSpecialBuffs() {
+        return specialBuffs;
+    }
+
     public void updateStats(Parameter stat,int sum){
         //using getOrDefault default method of HashMap -> if no value is present, returns defaultValue.
         int currentValue = this.parameters.getOrDefault(stat, 0);
@@ -50,4 +54,5 @@ public class Player {
     public List<CharacterCard> getCharacterType(Parameter characterType){
         return tribe.getOrDefault(characterType, new ArrayList<>());
     }
+
 }

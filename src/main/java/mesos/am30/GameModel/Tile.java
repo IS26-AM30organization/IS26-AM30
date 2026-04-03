@@ -7,10 +7,8 @@ public class Tile {
     private final Integer upArrows;
     private final Integer downArrows;
     private final Integer food;
-    private final int playersMinimum;
 
-    public Tile(int playersMinimum, Integer upArrows, Integer downArrows, Integer food) {
-        this.playersMinimum = playersMinimum;
+    public Tile(Integer upArrows, Integer downArrows, Integer food) {
         this.upArrows = upArrows;
         this.downArrows = downArrows;
         this.food = food;
@@ -19,8 +17,6 @@ public class Tile {
     public Optional<Player> getCurrentPlayer() {
         return Optional.ofNullable(this.currentPlayer);
     }
-
-    public int getPlayersMinimum() { return playersMinimum; }
 
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;

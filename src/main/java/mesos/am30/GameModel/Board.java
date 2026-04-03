@@ -1,10 +1,11 @@
 package mesos.am30.GameModel;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.*;
 
-import com.sun.jdi.ArrayReference;
+import com.google.gson.reflect.TypeToken;
 import mesos.am30.IF_GameModel;
-import mesos.am30.Utility;
 
 public class Board implements IF_GameModel {
 
@@ -43,20 +44,46 @@ public class Board implements IF_GameModel {
     }
 
     //board set
-    public void prepare(){
+    public void prepare() throws IOException {
         //first playersOrder
         playersOrder.addAll(players);
         Collections.shuffle(playersOrder);
 
-        //call to card and tile reader
-        List<Card> buildings = new ArrayList<>(Utility.cardLoader("buildings.json"));
-        List<Card> characters = new ArrayList<>(Utility.cardLoader("characters.json"));
-        List<Card> events = new ArrayList<>(Utility.cardLoader("events.json"));
-        List<Card> finalEventCards = new ArrayList<>(Utility.cardLoader("finals.json"));
-        List<Tile> usedTiles = new ArrayList<>(Utility.tileLoader("tiles.json"));
+        int playerNum = players.size();
 
-        //number of buildings drawn:
-        long[] b = switch (players.size()) {
+        Type charcType = new TypeToken<CharacterCard>(){}.getType();
+        Type eventType = new TypeToken<EventCard>(){}.getType();
+
+        List<CharacterCard> requiredCharacters = Utility.cardLoader("characters.json", playerNum, charcType);
+        List<EventCard> requiredEvents = Utility.cardLoader("events.json", playerNum, eventType);
+        List<EventCard> finalEvents = Utility.cardLoader("finals.json", playerNum, eventType);
+
+        List<Card> fullDeck = new ArrayList<>();
+        fullDeck.addAll(requiredCharacters);
+        fullDeck.addAll(requiredEvents);
+        fullDeck.addAll(finalEvents);
+
+        Type tileType = new  TypeToken<Tile>(){}.getType();
+        List<Tile> usedTiles = Utility.cardLoader("tiles.json", playerNum, tileType);
+
+
+        Type buildingType = new  TypeToken<BuildingCard>(){}.getType();
+        List<BuildingCard> requiredBuildings = Utility.cardLoader("buildings.json", playerNum, buildingType);
+
+        //Creating Deck + Shuffling
+        List<List<Card>> createDecks = new ArrayList<>();
+        for (int i = 0; i <= 4; i++) {
+            int era = i;
+            List<Card> deck = new ArrayList<>(fullDeck.stream()
+                    .filter(x -> x.getEra() == era + 1)
+                    .toList()); //returns immutable List, no good to draw cards
+            Collections.shuffle(deck);
+            createDecks.add(deck);
+        }
+        decks = createDecks;
+
+        //defining #Buildings based on playerNum
+        long[] b = switch (playerNum) {
             case 0,1 -> new long[]{0, 0, 0};
             case 2 -> new long[]{1, 2, 3};
             case 3 -> new long[]{2, 2, 4};
@@ -64,36 +91,20 @@ public class Board implements IF_GameModel {
             default -> new long[]{2, 3, 5};
         };
 
-        //building card decks:
-        Collections.shuffle(buildings);
+        //Creating Buildings + Shuffling
+        Collections.shuffle(requiredBuildings);
         List<List<BuildingCard>> createBuildingDecks = new ArrayList<>();
         for (int i = 0; i < b.length; i++) {
             int era = i;
-            List<BuildingCard> drawFromBuildings = buildings.stream()
-                    .map(x -> (BuildingCard) x)
+            List<BuildingCard> buildings = new ArrayList<>(requiredBuildings.stream()
                     .filter(x -> x.getEra() == era)
                     .limit(b[i])
-                    .toList();
-            createBuildingDecks.add(drawFromBuildings);
+                    .toList());
+            createBuildingDecks.add(buildings);
         }
         buildingDecks = createBuildingDecks;
-
-        //event and character cards:
-        List<List<Card>> createDecks = new ArrayList<>();
-        for (int i = 1; i < 4; i++) {
-            int era = i;
-            List<Card> deck = new ArrayList<>(characters.stream()
-                    .filter(x -> x.getEra() == era)
-                    .toList());
-            deck.addAll(events.stream()
-                    .filter(x -> x.getEra() == era)
-                    .toList());
-            Collections.shuffle(deck);
-            createDecks.add(deck);
-        }
-        createDecks.getLast().addAll(finalEventCards);
-        decks = createDecks;
     }
+
 
     //first round
     public void start(){
@@ -183,7 +194,7 @@ public class Board implements IF_GameModel {
                 if (tileBoost[playersOrder.size()]>=0 || (x.getParameters().get(Parameter.FOOD)>0))
                     x.updateStats(Parameter.FOOD,tileBoost[playersOrder.size()]);
                     else x.updateStats(Parameter.PRESTIGE_POINTS,-2);
-                if (tileBoost[playersOrder.size()]>0 && x.getSpecialBuffs().contains(SpecialBuff_ADDITIONAL_FOOD_TILE)) x.updateStats(Parameter.FOOD, 1);
+                if (tileBoost[playersOrder.size()]>0 && x.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_FOOD_TILE)) x.updateStats(Parameter.FOOD, 1);
             });
             t.clearCurrentPlayer();
         }

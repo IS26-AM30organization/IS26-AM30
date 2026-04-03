@@ -21,7 +21,7 @@ class StatsBoostTest {
 
     @BeforeEach
     void setUp() {
-        statsBoost = new StatsBoost(2, Parameter.HUNTER, EventType.EVENT);
+        statsBoost = new StatsBoost(2, Parameter.HUNTER, EventType.ROUND);
     }
 
     @Test
