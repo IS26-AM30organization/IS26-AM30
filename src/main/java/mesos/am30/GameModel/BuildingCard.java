@@ -8,7 +8,7 @@ public class BuildingCard extends Card {
 
 
     public BuildingCard(int era, IF_Event event, EventType eventType, int foodCost, int ppGainEnd) {
-        super(era, 2);
+        super(era);
         this.event = event;
         this.eventType = eventType;
         this.foodCost = foodCost;
