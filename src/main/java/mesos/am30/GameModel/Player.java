@@ -4,13 +4,16 @@ package mesos.am30.GameModel;
 import java.util.*;
 
 public class Player {
+    private String nickname;
+
     private final Map<Parameter, Integer> parameters;
     private final Map<Parameter, List<CharacterCard>> tribe;
     private final Set<Integer> inventions;
     private final Set<BuildingCard> buildings;
     private final Set<SpecialBuff> specialBuffs;
 
-    public Player() {
+    public Player(String nickname) {
+        this.nickname = nickname;
         this.parameters = new HashMap<>();
         this.tribe = new HashMap<>();
         this.inventions = new HashSet<>(10);
@@ -55,4 +58,16 @@ public class Player {
         return tribe.getOrDefault(characterType, new ArrayList<>());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true; //same mem address
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return Objects.equals(nickname, player.nickname) && Objects.equals(parameters, player.parameters) && Objects.equals(tribe, player.tribe) && Objects.equals(inventions, player.inventions) && Objects.equals(buildings, player.buildings) && Objects.equals(specialBuffs, player.specialBuffs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nickname, parameters, tribe, inventions, buildings, specialBuffs);
+    }
 }

@@ -1,5 +1,7 @@
 package mesos.am30.GameModel;
 
+import java.util.Objects;
+
 public class BuildingCard extends Card {
     private final IF_Event event;
     private final EventType eventType;
@@ -29,5 +31,17 @@ public class BuildingCard extends Card {
 
     public EventType getEventType() {
         return eventType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BuildingCard that = (BuildingCard) o;
+        return foodCost == that.foodCost && ppGainEnd == that.ppGainEnd && Objects.equals(event, that.event) && eventType == that.eventType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(event, eventType, foodCost, ppGainEnd);
     }
 }

@@ -1,5 +1,7 @@
 package mesos.am30.GameModel;
 
+import java.util.Objects;
+
 public class CharacterCard extends Card {
     private final Parameter role;
     private final Integer value;
@@ -22,6 +24,18 @@ public class CharacterCard extends Card {
 
     public Integer getPrestigePoints() {
         return prestigePoints;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CharacterCard that = (CharacterCard) o;
+        return role == that.role && Objects.equals(value, that.value) && Objects.equals(prestigePoints, that.prestigePoints);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(role, value, prestigePoints);
     }
 }
 
