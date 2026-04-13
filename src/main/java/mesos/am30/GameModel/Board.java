@@ -191,10 +191,10 @@ public class Board implements IF_GameModel {
         for(Tile t : usedTiles){
             t.getCurrentPlayer().ifPresent(x -> {
                 playersOrder.add(x);
-                if (tileBoost[playersOrder.size()]>=0 || (x.getParameters().get(Parameter.FOOD)>0))
+                if (tileBoost[playersOrder.size()-1]>=0 || (x.getParameters().get(Parameter.FOOD)>0))
                     x.updateStats(Parameter.FOOD,tileBoost[playersOrder.size()]);
                     else x.updateStats(Parameter.PRESTIGE_POINTS,-2);
-                if (tileBoost[playersOrder.size()]>0 && x.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_FOOD_TILE)) x.updateStats(Parameter.FOOD, 1);
+                if (tileBoost[playersOrder.size()-1]>0 && x.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_FOOD_TILE)) x.updateStats(Parameter.FOOD, 1);
             });
             t.clearCurrentPlayer();
         }
@@ -225,7 +225,8 @@ public class Board implements IF_GameModel {
     public boolean nextRound() {
         scanTiles();
 
-        for(Card card : lowerRow)
+        ArrayList<Card> tempLower = new ArrayList<>(lowerRow);
+        for(Card card : tempLower)
             if(card instanceof EventCard)
                 handleBoardEvent((EventCard) card);
 
@@ -266,8 +267,13 @@ public class Board implements IF_GameModel {
     }
 
     //player actions:
+
+    /**
+     * If the character is found on the board, it's drawn and added to the player's tribe
+     * @param player who picks
+     * @param card character picked
+     */
     public void pickCard(Player player, CharacterCard card) {
-        //non assegna la carta se non la trova sul tavolo
         if (upperRow.contains(card)) {
             upperRow.remove(card);
         } else if (lowerRow.contains(card)) {
@@ -280,17 +286,22 @@ public class Board implements IF_GameModel {
                 player.updateStats(Parameter.FOOD,card.getValue());
             }
 
-            else if (card.getRole().equals(Parameter.SHAMAN))
-                if (!player.getInventions().contains(card.getValue())){
+            else if (card.getRole().equals(Parameter.INVENTOR)) {
+                if (!player.getInventions().contains(card.getValue())) {
                     player.getInventions().add(card.getValue());
-                    player.updateStats(Parameter.SHAMAN,1);
+                    player.updateStats(Parameter.INVENTOR, 1);
                 }
-
+            }
             else player.updateStats(card.getRole(),card.getValue());
 
             handleBuildings(player, EventType.ROUND);
     }
 
+    /**
+     * If the building is found on the board, the player pays for it, it gets drawn and added to the player's buildings.
+     * @param player who picks
+     * @param card character picked
+     */
     public void pickCard(Player player, BuildingCard card) {
         if (upperBuildings.contains((BuildingCard) card)) {
             upperBuildings.remove((BuildingCard) card);
@@ -298,7 +309,7 @@ public class Board implements IF_GameModel {
             lowerBuildings.remove((BuildingCard) card);
         } else return;
         player.getBuildings().add((BuildingCard) card);
-        player.updateStats(Parameter.FOOD, 0-card.getFoodCost());
+        player.updateStats(Parameter.FOOD, card.getFoodCost()>player.getParameters().get(Parameter.BUILDER) ? player.getParameters().get(Parameter.BUILDER)-card.getFoodCost() : 0);
     }
 
     public void pickTile(Player player, Tile tile) {

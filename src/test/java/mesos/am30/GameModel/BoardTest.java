@@ -10,6 +10,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class BoardTest {
-    private Board boardOf1;
     private Board boardOf2;
     private Board boardOf3;
     private Board boardOf4;
     private Board boardOf5;
-    private Board boardOf6;
 
     @Mock
     private Player p1;
@@ -39,6 +38,18 @@ class BoardTest {
     FullSet fullSet;
     @Mock
     private Sustenance sustenance;
+    @Mock
+    private CharacterCard b;
+    @Mock
+    private CharacterCard h;
+    @Mock
+    private CharacterCard i1;
+    @Mock
+    private CharacterCard i2;
+    @Mock
+    private BuildingCard b1;
+    @Mock
+    private BuildingCard b2;
 
     @BeforeEach
     void setUp() {
@@ -66,7 +77,6 @@ class BoardTest {
                                     new CharacterCard(1, Parameter.ARTIST, 1, 0),
                                     new CharacterCard(1, Parameter.ARTIST, 1, 0),
                                     new CharacterCard(1, Parameter.HUNTER, 5, 0),
-                                    new CharacterCard(1, Parameter.ARTIST, 2, 3),
                                     new CharacterCard(2, Parameter.HUNTER, 2, 0)
                             )
                     )
@@ -109,10 +119,10 @@ class BoardTest {
         assertEquals(7,boardOf3.getUpperRow().size());
         assertEquals(8,boardOf4.getUpperRow().size());
         assertEquals(7,boardOf5.getUpperRow().size());
-        assertEquals(4,boardOf2.getLowerRow().size());
-        assertEquals(5,boardOf3.getLowerRow().size());
-        assertEquals(6,boardOf4.getLowerRow().size());
-        assertEquals(7,boardOf5.getLowerRow().size());
+        assertEquals(3,boardOf2.getLowerRow().size());
+        assertEquals(4,boardOf3.getLowerRow().size());
+        assertEquals(5,boardOf4.getLowerRow().size());
+        assertEquals(6,boardOf5.getLowerRow().size());
     }
 
 
@@ -123,7 +133,8 @@ class BoardTest {
                 new CharacterCard(1, Parameter.GATHERER, 1, 0));
         boardOf3.getUpperRow().addAll(List.of(
                 new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0)
+                new CharacterCard(1, Parameter.GATHERER, 1, 0),
+                new EventCard(1, sustenance)
         ));
         boardOf3.getDecks().add(new ArrayList<>(List.of(
                 new CharacterCard(1, Parameter.GATHERER, 1, 0),
@@ -144,6 +155,8 @@ class BoardTest {
                 new CharacterCard(2, Parameter.GATHERER, 1, 0)
         )));
 
+        //List.of(p1,p2,p3).forEach(p -> when(sustenance.handleEvent(p)).thenReturn(0));
+
         Map<Parameter, List<CharacterCard>> mockTribe = mock(Map.class);
         List.of(p1, p2, p3).forEach(p -> when(p.getTribe()).thenReturn(mockTribe));
         List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.ARTIST)).thenReturn(new ArrayList<CharacterCard>()));
@@ -156,12 +169,83 @@ class BoardTest {
 
         boardOf3.nextRound();
         assertEquals(7,boardOf3.getUpperRow().size());
-        assertEquals(2, boardOf3.getLowerRow().size());
+        assertEquals(3, boardOf3.getLowerRow().size());
         boardOf3.nextRound();
+        List.of(p1, p2, p3).forEach(p -> verify(sustenance).handleEvent(p1));
         assertEquals(7,boardOf3.getUpperRow().size());
         assertEquals(7, boardOf3.getLowerRow().size());
         boardOf3.nextRound();
         assertEquals(0,boardOf3.getUpperRow().size());
         assertEquals(0, boardOf3.getLowerRow().size());
+    }
+
+    @Test
+    void pickCard() {
+        Map<Parameter, Integer> mockParameters1 = mock(Map.class);
+        Map<Parameter, Integer> mockParameters2 = mock(Map.class);
+        Map<Parameter, List<CharacterCard>> mockTribe1 = mock(Map.class);
+        Map<Parameter, List<CharacterCard>> mockTribe2 = mock(Map.class);
+
+        when(p1.getTribe()).thenReturn(mockTribe1);
+        when(p1.getTribe().get(Parameter.HUNTER)).thenReturn(new ArrayList<>());
+
+        when(p1.getParameters()).thenReturn(mockParameters1);
+        when(p1.getParameters().get(Parameter.BUILDER)).thenReturn(3);
+        when(p1.getTribe().get(Parameter.BUILDER)).thenReturn(new ArrayList<>());
+
+        when(p2.getTribe()).thenReturn(mockTribe2);
+        when(p2.getTribe().get(Parameter.INVENTOR)).thenReturn(new ArrayList<>());
+        when(p2.getInventions()).thenReturn(new HashSet<>(10));
+        p2.getInventions().add(3);
+
+        when(h.getRole()).thenReturn(Parameter.HUNTER);
+        when(h.getValue()).thenReturn(1);
+        when(b.getRole()).thenReturn(Parameter.BUILDER);
+        when(b.getValue()).thenReturn(2);
+        when(i1.getRole()).thenReturn(Parameter.INVENTOR);
+        when(i1.getValue()).thenReturn(4);
+        when(i2.getRole()).thenReturn(Parameter.INVENTOR);
+        when(i2.getValue()).thenReturn(3);
+        when(b1.getFoodCost()).thenReturn(5);
+        when(b2.getFoodCost()).thenReturn(2);
+
+        boardOf5.getUpperRow().addAll(List.of(h,i2));
+        boardOf5.getLowerRow().addAll(List.of(i1,b));
+        boardOf5.getUpperBuildings().add(b1);
+        boardOf5.getLowerBuildings().add(b2);
+
+        assertEquals(2,boardOf5.getUpperRow().size());
+
+        boardOf5.pickCard(p1,h);
+        verify(p1).updateStats(Parameter.HUNTER,1);
+        verify(p1).updateStats(Parameter.FOOD,1);
+        assertEquals(1,boardOf5.getUpperRow().size());
+
+        boardOf5.pickCard(p2,h);
+        assertEquals(1,boardOf5.getUpperRow().size());
+
+        boardOf5.pickCard(p1,b);
+        verify(p1).updateStats(Parameter.BUILDER,2);
+        assertEquals(1,boardOf5.getUpperRow().size());
+        assertEquals(1,boardOf5.getLowerRow().size());
+
+        assertTrue(p2.getInventions().contains(3));
+        assertFalse(p2.getInventions().contains(4));
+        boardOf5.pickCard(p2,i1);
+        verify(p2).updateStats(Parameter.INVENTOR,1);
+        assertTrue(p2.getInventions().contains(4));
+        boardOf5.pickCard(p2,i2);
+        verify(p2, never()).updateStats(Parameter.INVENTOR,2);
+        List.of(1,2,5,6,7,8,9,10).forEach(i -> {assertFalse(p2.getInventions().contains(i));});
+
+        assertTrue(boardOf5.getUpperBuildings().contains(b1));
+        boardOf5.pickCard(p1,b1);
+        verify(p1).updateStats(Parameter.FOOD,-2);
+        assertFalse(boardOf5.getUpperBuildings().contains(b1));
+
+        assertTrue(boardOf5.getLowerBuildings().contains(b2));
+        boardOf5.pickCard(p1,b2);
+        verify(p1).updateStats(Parameter.FOOD,0);
+        assertFalse(boardOf5.getUpperBuildings().contains(b2));
     }
 }
