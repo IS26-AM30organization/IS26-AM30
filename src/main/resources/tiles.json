@@ -1,0 +1,44 @@
+[
+  {
+    "playersMinimum": 5,
+    "upArrows":       null,
+    "downArrows":     null,
+    "food":           3
+  },
+  {
+    "playersMinimum": 2,
+    "upArrows":       null,
+    "downArrows":     1,
+    "food":           null
+  },
+  {
+    "playersMinimum": 2,
+    "upArrows":       1,
+    "downArrows":     null,
+    "food":           null
+  },
+  {
+    "playersMinimum": 3,
+    "upArrows":       null,
+    "downArrows":     2,
+    "food":           null
+  },
+  {
+    "playersMinimum": 2,
+    "upArrows":       1,
+    "downArrows":     1,
+    "food":           null
+  },
+  {
+    "playersMinimum": 2,
+    "upArrows":       2,
+    "downArrows":     null,
+    "food":           null
+  },
+  {
+    "playersMinimum": 4,
+    "upArrows":       2,
+    "downArrows":     1,
+    "food":           null
+  }
+]

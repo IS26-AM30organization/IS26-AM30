@@ -1,0 +1,250 @@
+[
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "foodCost":         3,
+    "ppGain":           3,
+    "eventType":        "ONETIME",
+    "event": {
+      "eventClass":     "TileBoost",
+      "buffType":       "ADDITIONAL_FOOD_TILE"
+    }
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "foodCost":         4,
+    "ppGain":           3,
+    "eventType":        "ROUND",
+    "event": {
+      "eventClass":     "FullSet",
+      "foodGain":       5
+    }
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "foodCost":         3,
+    "ppGain":           4,
+    "eventType":        "ROUND",
+    "event": {
+      "eventClass":     "DoubleInventions",
+      "foodGain":       3
+    }
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "foodCost":         5,
+    "ppGain":           2,
+    "eventType":        "SHAMANIC_RITUAL",
+    "event": {
+      "eventClass":   "ShamanBoost",
+      "firstOrLast":  false
+    }
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "foodCost":         4,
+    "ppGain":           4,
+    "eventType":        "SUSTENANCE",
+    "event": {
+      "eventClass":     "StatsBoost",
+      "food":           1,
+      "prestigePoints": 0,
+      "role":           "GATHERER"
+    }
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "foodCost":         5,
+    "ppGain":           3,
+    "eventType":        "SUSTENANCE",
+    "event": {
+      "eventClass":     "StatsBoost",
+      "food":           1,
+      "prestigePoints": 0,
+      "role":           "ARTIST"
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "foodCost":         6,
+    "ppGain":           4,
+    "eventType":        "ONETIME",
+    "event": {
+      "eventClass":     "OneTimeBoost",
+      "gain":           3,
+      "target":         "SHAMAN"
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "foodCost":         6,
+    "ppGain":           4,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FinalBuilderBoost",
+      "multiplier":     2
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "foodCost":         5,
+    "ppGain":           6,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FullSetFinal",
+      "ppGain":         6
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "foodCost":         7,
+    "ppGain":           2,
+    "eventType":        "HUNT",
+    "event": {
+      "eventClass":     "StatsBoost",
+      "food":           1,
+      "prestigePoints": 1,
+      "role":           "HUNTER"
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "foodCost":         5,
+    "ppGain":           6,
+    "eventType":        "CAVE_PAINTINGS",
+    "event": {
+      "eventClass":     "StatsBoost",
+      "food":           1,
+      "prestigePoints": 0,
+      "role":           "ARTIST"
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "foodCost":         7,
+    "ppGain":           0,
+    "eventType":        "SHAMANIC_RITUAL",
+    "event": {
+      "eventClass":   "ShamanBoost",
+      "firstOrLast":  true
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "foodCost":         7,
+    "ppGain":           4,
+    "eventType":        "SUSTENANCE",
+    "event": {
+      "eventClass":     "StatsBoost",
+      "food":           1,
+      "prestigePoints": 0,
+      "role":           "INVENTOR"
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "foodCost":         9,
+    "ppGain":           3,
+    "eventType":        "ONETIME",
+    "event": {
+      "eventClass":     "TileBoost",
+      "buffType":       "ADDITIONAL_UP_TILE"
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "foodCost":         6,
+    "ppGain":           6,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FinalBoost",
+      "target":         "INVENTOR",
+      "multiplier":     2
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "foodCost":         6,
+    "ppGain":           3,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FinalBoost",
+      "target":         "BUILDER",
+      "multiplier":     4
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "foodCost":         7,
+    "ppGain":           6,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FinalBoost",
+      "target":         "GATHERER",
+      "multiplier":     4
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "foodCost":         7,
+    "ppGain":           4,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FinalBoost",
+      "target":         "ARTIST",
+      "multiplier":     4
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "foodCost":         7,
+    "ppGain":           4,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FinalBoost",
+      "target":         "SHAMAN",
+      "multiplier":     4
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "foodCost":         8,
+    "ppGain":           8,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FinalBoost",
+      "target":         "HUNTER",
+      "multiplier":     3
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "foodCost":         10,
+    "ppGain":           0,
+    "eventType":        "FINAL",
+    "event": {
+      "eventClass":     "FinalPPBoost",
+      "ppGain":         25
+    }
+  }
+]

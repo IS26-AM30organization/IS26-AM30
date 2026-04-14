@@ -1,0 +1,590 @@
+[
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -1,
+    "prestigePoints":   2
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   5,
+    "role":             "BUILDER",
+    "value":            -2,
+    "prestigePoints":   1
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -1,
+    "prestigePoints":   3
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   3,
+    "role":             "HUNTER",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   3,
+    "role":             "HUNTER",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   4,
+    "role":             "INVENTOR",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            4,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   4,
+    "role":             "INVENTOR",
+    "value":            5,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            6,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   4,
+    "role":             "INVENTOR",
+    "value":            7,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "SHAMAN",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   5,
+    "role":             "SHAMAN",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "SHAMAN",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   4,
+    "role":             "SHAMAN",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   4,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   5,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              1,
+    "playersMinimum":   3,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -2,
+    "prestigePoints":   3
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -1,
+    "prestigePoints":   4
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -2,
+    "prestigePoints":   1
+  },
+  {
+    "era":              2,
+    "playersMinimum":   3,
+    "role":             "BUILDER",
+    "value":            -1,
+    "prestigePoints":   2
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   5,
+    "role":             "HUNTER",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   4,
+    "role":             "HUNTER",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   3,
+    "role":             "HUNTER",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            8,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            6,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            7,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   4,
+    "role":             "INVENTOR",
+    "value":            9,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            5,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "SHAMAN",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   5,
+    "role":             "SHAMAN",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "SHAMAN",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "SHAMAN",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   3,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   5,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   3,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              2,
+    "playersMinimum":   4,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -2,
+    "prestigePoints":   3
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -2,
+    "prestigePoints":   2
+  },
+  {
+    "era":              3,
+    "playersMinimum":   5,
+    "role":             "BUILDER",
+    "value":            -1,
+    "prestigePoints":   4
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "BUILDER",
+    "value":            -1,
+    "prestigePoints":   5
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   5,
+    "role":             "HUNTER",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "HUNTER",
+    "value":            1,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   4,
+    "role":             "INVENTOR",
+    "value":            10,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            8,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   3,
+    "role":             "INVENTOR",
+    "value":            3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            9,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   3,
+    "role":             "INVENTOR",
+    "value":            4,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "INVENTOR",
+    "value":            10,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   4,
+    "role":             "SHAMAN",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "SHAMAN",
+    "value":            3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "SHAMAN",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   3,
+    "role":             "SHAMAN",
+    "value":            2,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "SHAMAN",
+    "value":            3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   5,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "ARTIST",
+    "value":            0,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   4,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  },
+  {
+    "era":              3,
+    "playersMinimum":   5,
+    "role":             "GATHERER",
+    "value":            -3,
+    "prestigePoints":   0
+  }
+]

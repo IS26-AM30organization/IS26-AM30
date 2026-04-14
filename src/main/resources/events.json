@@ -1,0 +1,107 @@
+[
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":     "SUSTENANCE",
+      "prestigePoints": -1
+    }
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":           "SHAMANIC_RITUAL",
+      "lostPrestigePoints":   -3,
+      "gainedPrestigePoints": 5
+    }
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":           "CAVE_PAINTINGS",
+      "artistMinimum":        1,
+      "lostPrestigePoints":   -2,
+      "gainedPrestigePoints": 1
+    }
+  },
+  {
+    "era":              1,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":     "HUNT",
+      "prestigePoints": 1
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":     "SUSTENANCE",
+      "prestigePoints": -2
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":           "SHAMANIC_RITUAL",
+      "lostPrestigePoints":   -5,
+      "gainedPrestigePoints": 10
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":           "CAVE_PAINTINGS",
+      "artistMinimum":        2,
+      "lostPrestigePoints":   -2,
+      "gainedPrestigePoints": 2
+    }
+  },
+  {
+    "era":              2,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":     "HUNT",
+      "prestigePoints": 2
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":           "CAVE_PAINTINGS",
+      "artistMinimum":        3,
+      "lostPrestigePoints":   -2,
+      "gainedPrestigePoints": 3
+    }
+  },
+  {
+    "era":              3,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":     "HUNT",
+      "prestigePoints": 3
+    }
+  },
+  {
+    "era":              4,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":     "SUSTENANCE",
+      "prestigePoints": -3
+    }
+  },
+  {
+    "era":              4,
+    "playersMinimum":   2,
+    "event": {
+      "eventClass":           "SHAMANIC_RITUAL",
+      "lostPrestigePoints":   -7,
+      "gainedPrestigePoints": 15
+    }
+  }
+]
