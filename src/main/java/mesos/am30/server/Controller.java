@@ -7,103 +7,70 @@ import mesos.am30.view.IF_GameView;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Controller {
     final IF_GameModel board;
-    private ReadWriteLock pickLock;
-    private ConcurrentHashMap<Player, IF_GameView> clientConnections;
-    private Player currentPlayer;
-    private int currPlayerUpMoves;
-    private int currPlayerDownMoves;
 
-    public Controller(IF_GameModel board, List<Player> players, ConcurrentHashMap<Player, IF_GameView> clientConnections) {
+    public Controller(IF_GameModel board) {
         this.board = board;
-        this.clientConnections = clientConnections;
-        this.pickLock = new ReentrantReadWriteLock();
-        this.currentPlayer = null;
-        this.currPlayerUpMoves = 0;
-        this.currPlayerDownMoves = 0;
     }
 
-    public void pickTile(Player requestingPlayer, Tile chosenTile) throws IOException {
-        //allow all clients to check if they are the current player with no delay
-        pickLock.readLock().lock();
-        try {
-            if (currentPlayer == null) return;
-            if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
-        } finally {
-            pickLock.readLock().unlock(); //required finally block to handle returns.
-        }
-        //if player X has clicked twice, the following handles it
-        pickLock.writeLock().lock();
-        try {
-            if (currentPlayer == null) return;
-            if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
-            board.pickTile(requestingPlayer, chosenTile);
-        } finally {
-            pickLock.writeLock().unlock();
+    synchronized public void startGame() throws IOException {
+        board.prepare();
+        board.start();
+    }
+
+    synchronized public void pickTile(Player requestingPlayer, Tile chosenTile) throws IOException {
+        if (!Utility.isTilePhase(board)) return;
+        if (!isPlayerTurn(requestingPlayer, board.getCurrentPlayer())) return;
+        board.pickTile(requestingPlayer, chosenTile);
+    }
+
+    synchronized public void pickCard(Player requestingPlayer, CharacterCard card) throws IOException {
+        if (!Utility.isPickPhase(board)) return;
+
+        Player currentPlayer = board.getCurrentPlayer();
+        if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
+
+        if (tryPickedCard(currentPlayer, card)) {
+            board.pickCard(requestingPlayer, card);
+
+            if (currentPlayer.hasNoMoves()) board.endPlayerTurn();
         }
     }
 
-    public void pickCard(Player requestingPlayer, CharacterCard card) throws IOException {
-        IF_GameView connection = clientConnections.get(requestingPlayer);
+    //OTHER METHODS:
 
-        pickLock.readLock().lock();
-        try {
-            if (currentPlayer == null) return;
-            if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
-        } finally {
-            pickLock.readLock().unlock();
-        }
-        //if player X has clicked twice, the following handles it
-        pickLock.writeLock().lock();
-        try {
-            if (currentPlayer == null) return;
-            if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
+    private boolean isPlayerTurn(Player requestingPlayer, Player currentPlayer) throws IOException {
+        IF_GameView connection = board.getPlayerView(requestingPlayer);
 
-            if (canPlayerPick(board.getUpperRow(), card, currPlayerUpMoves)) {
-                board.pickCard(requestingPlayer, card);
-                currPlayerUpMoves--;
-            } else if (canPlayerPick(board.getLowerRow(), card, currPlayerDownMoves)) {
-                board.pickCard(requestingPlayer, card);
-                currPlayerDownMoves--;
-            } else {
-                if (connection != null) {
-                    connection.notifyError(ErrorType.WRONG_CARD);
-                }
-            }
-        } finally {
-            pickLock.writeLock().unlock();
-        }
-
-    }
-
-    private boolean canPlayerPick(List<Card> cards, CharacterCard card, int moves) {
-        if (cards.contains(card) && moves > 0) return true;
+        if(currentPlayer == null) return false;
+        if(requestingPlayer.equals(currentPlayer)) return true;
+        if(connection == null) return false;
+        connection.notifyError(ErrorType.NOT_YOUR_TURN);
         return false;
     }
 
-    private boolean isPlayerTurn(Player requestingPlayer, Player currentPlayer) throws IOException {
-        IF_GameView connection = clientConnections.get(requestingPlayer);
-        if (!requestingPlayer.equals(currentPlayer)) {
-            if (connection != null) {
-                connection.notifyError(ErrorType.NOT_YOUR_TURN);
-            }
-            return false;
+    private boolean tryPickedCard(Player requestingPlayer, CharacterCard card) throws IOException {
+        if (requestingPlayer.hasEnoughUpMoves() && cardIsInRow(board.getUpperRow(), card)) {
+            requestingPlayer.decreaseRemainingUpMoves();
+            return true;
         }
-        return true;
+        else if (requestingPlayer.hasEnoughDownMoves() && cardIsInRow(board.getLowerRow(), card)) {
+            requestingPlayer.decreaseRemainingDownMoves();
+            return true;
+        }
+        sendError(requestingPlayer, ErrorType.WRONG_CARD);
+        return false;
     }
 
-    public void nextPlayer(Player player, int upMoves, int downMoves) {
-        pickLock.writeLock().lock();
-        try {
-            this.currentPlayer = player;
-            this.currPlayerUpMoves = upMoves;
-            this.currPlayerDownMoves = downMoves;
-        } finally {
-            pickLock.writeLock().unlock();
-        }
+    private boolean cardIsInRow(List<Card> cards, CharacterCard card) {
+        return cards.contains(card);
     }
+
+    private void sendError(Player player, ErrorType errorType) throws IOException {
+        IF_GameView connection = board.getPlayerView(player);
+        if (connection != null) connection.notifyError(errorType);
+    }
+
 }

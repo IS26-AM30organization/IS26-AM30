@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import com.google.gson.reflect.TypeToken;
+import mesos.am30.view.IF_GameView;
 
 public class Board implements IF_GameModel {
 
@@ -42,7 +43,7 @@ public class Board implements IF_GameModel {
         };
     }
 
-    //board set
+    //board setup
     public void prepare() throws IOException {
         //first playersOrder
         playersOrder.addAll(players);
@@ -315,6 +316,18 @@ public class Board implements IF_GameModel {
             tile.setCurrentPlayer(player);
             playersOrder.remove(player);
     }
+
+    public Player getCurrentPlayer() {
+        return null;
+    }
+
+    public void endPlayerTurn() {
+    }
+
+    public IF_GameView getPlayerView(Player requestingPlayer) {
+        return null;
+    }
+
 
     public List<Tile> getTiles() {
         return usedTiles;

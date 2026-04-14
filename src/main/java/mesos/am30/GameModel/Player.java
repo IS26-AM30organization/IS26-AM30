@@ -6,6 +6,9 @@ import java.util.*;
 public class Player {
     private String nickname;
 
+    private int remainingUpMoves;
+    private int remainingDownMoves;
+
     private final Map<Parameter, Integer> parameters;
     private final Map<Parameter, List<CharacterCard>> tribe;
     private final Set<Integer> inventions;
@@ -58,6 +61,8 @@ public class Player {
         return tribe.getOrDefault(characterType, new ArrayList<>());
     }
 
+    //METHODS FOR CONTROLLER
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true; //same mem address
@@ -69,5 +74,25 @@ public class Player {
     @Override
     public int hashCode() {
         return Objects.hash(nickname, parameters, tribe, inventions, buildings, specialBuffs);
+    }
+
+    public void decreaseRemainingUpMoves() {
+        remainingUpMoves--;
+    }
+
+    public void decreaseRemainingDownMoves() {
+        remainingDownMoves--;
+    }
+
+    public boolean hasNoMoves() {
+        return this.remainingUpMoves == 0 && this.remainingDownMoves == 0;
+    }
+
+    public boolean hasEnoughUpMoves() {
+        return this.remainingUpMoves > 0;
+    }
+
+    public boolean hasEnoughDownMoves() {
+        return this.remainingDownMoves > 0;
     }
 }

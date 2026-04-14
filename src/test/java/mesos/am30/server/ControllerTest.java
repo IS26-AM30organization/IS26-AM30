@@ -27,22 +27,22 @@ class ControllerTest {
 
     @BeforeEach
     void setUp() {
-        player1 = new Player("Alice");
-        player2 = new Player("Bob");
+        player1 = mock(Player.class);
+        player2 = mock(Player.class);
         List<Player> players = Arrays.asList(player1, player2);
 
         mockView1 = mock(IF_GameView.class);
         mockView2 = mock(IF_GameView.class);
-
-        ConcurrentHashMap<Player, IF_GameView> clientConnections = new ConcurrentHashMap<>();
-        clientConnections.put(player1, mockView1);
-        clientConnections.put(player2, mockView2);
-
         mockBoard = mock(IF_GameModel.class);
-        controller = new Controller(mockBoard, players, clientConnections);
 
-        controller.nextPlayer(player1, 2, 2);
+        controller = new Controller(mockBoard);
+
+        lenient().when(mockBoard.getCurrentPlayer()).thenReturn(player1);
+        lenient().when(mockBoard.getPlayerView(player1)).thenReturn(mockView1);
+        lenient().when(mockBoard.getPlayerView(player2)).thenReturn(mockView2);
+
     }
+
     @Test
     void pickTile_RightPlayer() throws IOException {
         Tile myTile = new Tile(5, 2, 1);
@@ -68,6 +68,7 @@ class ControllerTest {
         CharacterCard targetCard = new CharacterCard(1, Parameter.SHAMAN, 3, 3);
 
         when(mockBoard.getUpperRow()).thenReturn(Arrays.asList(targetCard));
+        when(player1.hasEnoughUpMoves()).thenReturn(true);
         controller.pickCard(player1, targetCard);
 
         verify(mockView1, never()).notifyError(any());
@@ -77,8 +78,8 @@ class ControllerTest {
     void pickCard_CorrectPlayer_NoMoves() throws IOException {
         CharacterCard targetCard = new CharacterCard(1, Parameter.SHAMAN, 5, 3);
 
-        when(mockBoard.getUpperRow()).thenReturn(Arrays.asList(targetCard));
-        controller.nextPlayer(player1, 0, 0);
+        when(player1.hasEnoughUpMoves()).thenReturn(false);
+        when(player1.hasEnoughDownMoves()).thenReturn(false);
         controller.pickCard(player1, targetCard);
 
         verify(mockView1, times(1)).notifyError(ErrorType.WRONG_CARD);
@@ -88,7 +89,6 @@ class ControllerTest {
     void pickCard_IncorrectPlayer() throws IOException {
         CharacterCard targetCard = new CharacterCard(1, Parameter.SHAMAN, 3, 3);
 
-        controller.nextPlayer(player1, 0, 0);
         controller.pickCard(player2, targetCard);
 
         verify(mockView2, times(1)).notifyError(ErrorType.NOT_YOUR_TURN);
@@ -100,8 +100,6 @@ class ControllerTest {
         CharacterCard cardInBoard = new CharacterCard(1, Parameter.SHAMAN, 3, 3);
         CharacterCard cardRequested = new CharacterCard(2, Parameter.HUNTER, 2, 2);
 
-        when(mockBoard.getUpperRow()).thenReturn(Arrays.asList(cardInBoard));
-        when(mockBoard.getLowerRow()).thenReturn(Arrays.asList(cardInBoard));
         controller.pickCard(player1, cardRequested);
 
         verify(mockView1, times(1)).notifyError(ErrorType.WRONG_CARD);

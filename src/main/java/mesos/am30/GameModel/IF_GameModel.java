@@ -1,5 +1,7 @@
 package mesos.am30.GameModel;
 
+import mesos.am30.view.IF_GameView;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -44,4 +46,20 @@ public interface IF_GameModel {
      * @return true if nextEra
      */
     boolean nextRound();
+
+    /**
+     * it returns currentPlayer for Controller checks
+     */
+    Player getCurrentPlayer();
+
+    /**
+     * forces the model to update currentPlayer to the following one
+     */
+    void endPlayerTurn();
+
+    /**
+     * to obtain requestedPlayer's virtualView to send errorMessages directly from the Controller
+     * @return if !=null used to send errorMessages
+     */
+    IF_GameView getPlayerView(Player requestingPlayer);
 }
