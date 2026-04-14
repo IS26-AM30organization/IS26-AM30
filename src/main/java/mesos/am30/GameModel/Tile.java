@@ -1,8 +1,9 @@
 package mesos.am30.GameModel;
 
+import java.io.Serializable;
 import java.util.Optional;
 
-public class Tile {
+public class Tile implements Serializable {
     private Player currentPlayer;
     private final Integer upArrows;
     private final Integer downArrows;

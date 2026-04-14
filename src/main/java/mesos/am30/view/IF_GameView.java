@@ -14,25 +14,21 @@ public interface IF_GameView {
      * Ask the Client the number of players.
      * <br>This method asks the first Client connecting to a lobby how many players will participate.
      *
-     * @return Number of players expecting to participate and connect to the lobby
      * @throws IOException Socket communication error
-     * @throws ClassNotFoundException Message communication error
      */
-    int askPlayersNumber() throws IOException, ClassNotFoundException;
+    void askPlayersNumber() throws IOException;
 
     /**
      * Ask the Client for its nickname.
      * <br>This method asks the Client which nickname he wants to use.
      *
-     * @return Nickname of the Client
      * @throws IOException Socket communication error
-     * @throws ClassNotFoundException Message communication error
      */
-    String askNickname() throws IOException, ClassNotFoundException;
+    void askNickname() throws IOException;
     void setController(IF_GameController controller);
     void startListening();
 
-    void notifyTurn(Move move) throws IOException;
+    void notifyTurn(String nickname, Move move) throws IOException;
     void notifyError(ErrorType errorType) throws IOException;
     void update(ViewParameter toUpdate, List<Object> parameters) throws IOException;
 }
