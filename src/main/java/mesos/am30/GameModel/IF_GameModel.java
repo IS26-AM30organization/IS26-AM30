@@ -1,12 +1,7 @@
-package mesos.am30;
-
-import mesos.am30.GameModel.*;
+package mesos.am30.GameModel;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.Optional;
 
 public interface IF_GameModel {
     List<Tile> getTiles();

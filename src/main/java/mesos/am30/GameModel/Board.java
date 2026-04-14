@@ -5,7 +5,6 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import com.google.gson.reflect.TypeToken;
-import mesos.am30.IF_GameModel;
 
 public class Board implements IF_GameModel {
 
