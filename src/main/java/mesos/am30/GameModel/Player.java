@@ -49,7 +49,10 @@ public class Player {
         int currentValue = this.parameters.getOrDefault(stat, 0);
 
         int updatedValue = currentValue + sum;
-        if(updatedValue < 0) updatedValue = 0;
+        if(updatedValue < 0) {
+            if (stat == Parameter.FOOD) updateStats(Parameter.PRESTIGE_POINTS, -2*updatedValue);
+            if (stat != Parameter.PRESTIGE_POINTS) updatedValue = 0;
+        }
         this.parameters.put(stat, updatedValue);
     }
 
@@ -82,6 +85,11 @@ public class Player {
 
     public void decreaseRemainingDownMoves() {
         remainingDownMoves--;
+    }
+
+    public void setMoves(int up, int down) {
+        this.remainingUpMoves = up;
+        this.remainingDownMoves = down;
     }
 
     public boolean hasNoMoves() {

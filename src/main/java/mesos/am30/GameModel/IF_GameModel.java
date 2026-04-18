@@ -16,20 +16,24 @@ public interface IF_GameModel {
     /**
      * Saves player in chosen tile and removes player from playersOrder, if the tile wasn't alreadt picked.
      * If the tile was already picked, nothing happens.
+     *
+     * @return
      */
-    void pickTile(Player player, Tile tile);
+    void pickTile(Player player, Tile tile) throws IOException;
 
     /**
      * If the card is on the table, removes the card from the table and adds the card to the player tribe or buildings.
      * If the card isn't on the table, nothing happens.
      */
-    void pickCard(Player player, CharacterCard card);
+    boolean pickCard(Player player, CharacterCard card) throws IOException;
 
     /**
      * If the card is on the table, removes the card from the table and adds the card to the player tribe or buildings.
      * If the card isn't on the table, nothing happens.
+     *
+     * @return
      */
-    void pickCard(Player player, BuildingCard card);
+    boolean pickCard(Player player, BuildingCard card) throws IOException;
 
     /**
      * it loads the decks and choose the buildings
@@ -45,7 +49,7 @@ public interface IF_GameModel {
      * it handles EVERYTHING to change round
      * @return true if nextEra
      */
-    boolean nextRound();
+    boolean nextRound() throws IOException;
 
     /**
      * it returns currentPlayer for Controller checks

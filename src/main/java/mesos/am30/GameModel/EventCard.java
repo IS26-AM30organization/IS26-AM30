@@ -11,4 +11,24 @@ public class EventCard extends Card {
     public IF_Event getEvent() {
         return event;
     }
+
+    protected void drawUp(Board board){
+        board.drawUp(this);
+    }
+
+    protected void drawDown(Board board){
+        drawUp(board);
+    }
+
+    protected void discard(Board board){
+        for (Player player : board.getPlayersOrder()) {
+            event.handleEvent(player);
+        }
+        board.discard(this);
+    }
+
+    @Override
+    protected void reorder(Board board) {
+        super.reorder(board);
+    }
 }

@@ -26,7 +26,7 @@ class ControllerTest {
     private IF_GameModel mockBoard;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         player1 = mock(Player.class);
         player2 = mock(Player.class);
         List<Player> players = Arrays.asList(player1, player2);
@@ -35,7 +35,8 @@ class ControllerTest {
         mockView2 = mock(IF_GameView.class);
         mockBoard = mock(IF_GameModel.class);
 
-        controller = new Controller(mockBoard);
+        controller = new Controller(5);
+        controller.startTest(mockBoard);
 
         lenient().when(mockBoard.getCurrentPlayer()).thenReturn(player1);
         lenient().when(mockBoard.getPlayerView(player1)).thenReturn(mockView1);

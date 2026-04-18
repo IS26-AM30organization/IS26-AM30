@@ -37,5 +37,16 @@ public class CharacterCard extends Card {
     public int hashCode() {
         return Objects.hash(role, value, prestigePoints);
     }
-}
 
+    protected void drawUp(Board board){
+        board.drawUp(this);
+    }
+
+    protected void drawDown(Board board){
+        board.drawDown(this);
+    }
+
+    protected void discard(Board board){
+        board.discard(this);
+    }
+}

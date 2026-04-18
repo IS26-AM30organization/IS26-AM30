@@ -1,5 +1,6 @@
 package mesos.am30.view;
 
+import mesos.am30.GameModel.Player;
 import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
 import mesos.am30.common.ViewParameter;
@@ -32,7 +33,7 @@ public interface IF_GameView {
     void setController(IF_GameController controller);
     void startListening();
 
-    void notifyTurn(Move move) throws IOException;
+    void notifyTurn(Player player, Move move) throws IOException;
     void notifyError(ErrorType errorType) throws IOException;
-    void update(ViewParameter toUpdate, List<Object> parameters) throws IOException;
+    void update(ViewParameter toUpdate, List<?> parameters) throws IOException;
 }

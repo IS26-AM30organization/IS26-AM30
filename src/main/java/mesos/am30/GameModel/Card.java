@@ -10,4 +10,13 @@ public abstract class Card {
     public int getEra() {
         return this.era;
     }
+
+    protected void drawUp(Board board){}
+
+    protected void drawDown(Board board){}
+
+    protected void discard (Board board){}
+
+    protected void reorder (Board board){}
+
 }

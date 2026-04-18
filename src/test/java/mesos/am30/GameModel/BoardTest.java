@@ -1,5 +1,6 @@
 package mesos.am30.GameModel;
 
+import mesos.am30.view.IF_GameView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -35,6 +36,18 @@ class BoardTest {
     @Mock
     private Player p5;
     @Mock
+    private IF_GameView v1;
+    @Mock
+    private IF_GameView v2;
+    @Mock
+    private IF_GameView v3;
+    @Mock
+    private IF_GameView v4;
+    @Mock
+    private IF_GameView v5;
+    @Mock
+    private IF_GameView v6;
+    @Mock
     FullSet fullSet;
     @Mock
     private Sustenance sustenance;
@@ -53,10 +66,10 @@ class BoardTest {
 
     @BeforeEach
     void setUp() {
-        boardOf2 = new Board(List.of(p1, p2));
-        boardOf3 = new Board(List.of(p1, p2, p3));
-        boardOf4 = new Board(List.of(p1, p2, p3, p4));
-        boardOf5 = new Board(List.of(p1, p2, p3, p4, p5));
+        boardOf2 = new Board(List.of(p1, p2),List.of(v1,v2));
+        boardOf3 = new Board(List.of(p1, p2, p3),List.of(v1,v2,v3));
+        boardOf4 = new Board(List.of(p1, p2, p3, p4),List.of(v1,v2,v3,v4));
+        boardOf5 = new Board(List.of(p1, p2, p3, p4, p5),List.of(v1,v2,v3,v4));
     }
 
     //eq("String") is needed as Mockito requires either none or all matchers in method call
@@ -128,7 +141,7 @@ class BoardTest {
 
     //checks nextRound, nextEra and end
     @Test
-    void nextRound() {
+    void nextRound() throws IOException {
         boardOf3.getLowerRow().add(
                 new CharacterCard(1, Parameter.GATHERER, 1, 0));
         boardOf3.getUpperRow().addAll(List.of(
@@ -180,7 +193,7 @@ class BoardTest {
     }
 
     @Test
-    void pickCard() {
+    void pickCard() throws IOException {
         Map<Parameter, Integer> mockParameters1 = mock(Map.class);
         Map<Parameter, Integer> mockParameters2 = mock(Map.class);
         Map<Parameter, List<CharacterCard>> mockTribe1 = mock(Map.class);
