@@ -6,9 +6,10 @@ import mesos.am30.common.ViewParameter;
 import mesos.am30.server.IF_GameController;
 
 import java.io.IOException;
+import java.rmi.Remote;
 import java.util.List;
 
-public interface IF_GameView {
+public interface IF_GameView extends Remote {
 
     /**
      * Ask the Client the number of players.
@@ -32,23 +33,8 @@ public interface IF_GameView {
      *
      * @param controller Controller calling the method
      */
-    void setController(IF_GameController controller);
+    void setController(IF_GameController controller) throws IOException;
 
-    /**
-     * Start listening for Controller messages.
-     * <br>This method notifies the View to start listening for Controller messages.
-     */
-    void startListening();
-
-    /**
-     * Notify the View about the Turn change.
-     * <br>This method is called in order to notify the View about the turn change, telling who has to move and what he has to do.
-     * <br><strong>Pre:</strong> nickname != null && move != null
-     *
-     * @param nickname Nickname of the Player who has to move
-     * @param move Next move to perform
-     * @throws IOException The connection cannot be established correctly
-     */
     void notifyTurn(String nickname, Move move) throws IOException;
 
     /**

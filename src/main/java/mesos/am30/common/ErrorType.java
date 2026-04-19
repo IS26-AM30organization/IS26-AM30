@@ -7,5 +7,6 @@ public enum ErrorType {
     NOT_YOUR_TURN,
     WRONG_TILE,
     WRONG_CARD,
-    NOT_ENOUGH_FOOD
+    NOT_ENOUGH_FOOD,
+    WRONG_IP
 }
