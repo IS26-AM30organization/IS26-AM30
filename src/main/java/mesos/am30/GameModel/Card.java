@@ -11,6 +11,10 @@ public abstract class Card {
         return this.era;
     }
 
+    public boolean isPickacble() {
+        return false;
+    }
+
     protected void drawUp(Board board){}
 
     protected void drawDown(Board board){}

@@ -27,6 +27,11 @@ public class CharacterCard extends Card {
     }
 
     @Override
+    public boolean isPickacble() {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CharacterCard that = (CharacterCard) o;

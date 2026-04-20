@@ -212,8 +212,10 @@ public class Board implements IF_GameModel {
 
                 //boost based on new playersOrder
                 x.updateStats(Parameter.FOOD,tileBoost[playersOrder.size()]);
-                if (tileBoost[playersOrder.size()-1]>0 && x.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_FOOD_TILE))
+                if (tileBoost[playersOrder.size()-1]>0 && x.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_FOOD_TILE)) {
                     x.updateStats(Parameter.FOOD, 1);
+                    x.removeBuff(SpecialBuff.ADDITIONAL_FOOD_TILE);
+                }
 
                 //player's moves update
                 x.setMoves(t.getUpArrows(), t.getDownArrows());
@@ -253,6 +255,10 @@ public class Board implements IF_GameModel {
      */
     public boolean nextRound() throws IOException {
         if (playersOrder.isEmpty()) scanTiles();
+
+        for (Player player : players) {
+            handleBuildings(player,EventType.ONETIME);
+        }
 
         ArrayList<Card> tempLower = new ArrayList<>(lowerRow);
         for(Card card : tempLower)
@@ -368,12 +374,24 @@ public class Board implements IF_GameModel {
     }
 
     private boolean iPickedCardWhosNext(Player player) throws IOException {
-
-        if (player.hasNoMoves()) {
-            playersOrder.remove(player);
-            playersOrder.add(player);
+        while(anyChoosableCard(player)) {
+            if (player.hasNoMoves()) {
+                playersOrder.remove(player);
+                if(player.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_UP_TILE)) {
+                    player.setMoves(1,0);
+                    player.removeBuff(SpecialBuff.ADDITIONAL_UP_TILE);
+                    playersOrder.add(player);
+                    List<Player> tempPlayers = playersOrder;
+                    for (Player p : tempPlayers){
+                        if (p.hasNoMoves()){
+                            playersOrder.remove(p);
+                            playersOrder.add(p);
+                        }
+                    }
+                }
+                playersOrder.add(player);
+            }
         }
-
         if(playersOrder.getFirst().hasNoMoves())
             return true;
         else
@@ -390,6 +408,26 @@ public class Board implements IF_GameModel {
         } else {
             notifyEveryone(playersOrder.getFirst(), Move.PICK_TILE);
         }
+    }
+
+    private boolean anyChoosableCard(Player player){
+        if (player.hasEnoughUpMoves() &&
+                anyCharacterLeft(upperRow)) {
+            player.setUpMoves(0);
+            return true;
+        }
+        if (player.hasEnoughDownMoves() &&
+                anyCharacterLeft(lowerRow)) {
+            player.setDownMoves(0);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean anyCharacterLeft(List<Card> cards){
+        for (Card card : cards)
+            if (card.isPickacble()) return true;
+        return false;
     }
 
     private Move whereDoIPickCards(Player player) {

@@ -40,16 +40,15 @@ public class Controller {
     }
 
     synchronized public void pickTile(Player requestingPlayer, Tile chosenTile) throws IOException {
-        if (!Utility.isTilePhase(board)) return;
         if (!isPlayerTurn(requestingPlayer, board.getCurrentPlayer())) return;
+        if (!requestingPlayer.hasNoMoves()) return;
         board.pickTile(requestingPlayer, chosenTile);
     }
 
     synchronized public void pickCard(Player requestingPlayer, CharacterCard card) throws IOException {
-        if (!Utility.isPickPhase(board)) return;
-
         Player currentPlayer = board.getCurrentPlayer();
         if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
+        if (requestingPlayer.hasNoMoves()) return;
 
         if (tryPickedCard(currentPlayer, card)) {
             if (board.pickCard(requestingPlayer, card))
@@ -59,16 +58,15 @@ public class Controller {
     }
 
     synchronized public void pickCard(Player requestingPlayer, BuildingCard card) throws IOException {
-        if (!Utility.isPickPhase(board)) return;
-
-        IF_GameView connection = board.getPlayerView(requestingPlayer);
-
         Player currentPlayer = board.getCurrentPlayer();
         if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
+        if (requestingPlayer.hasNoMoves()) return;
 
         if (tryPickedCard(currentPlayer, card)) {
-            if (currentPlayer.getParameters().get(Parameter.FOOD)+currentPlayer.getParameters().get(Parameter.BUILDER)>card.getFoodCost())
-                connection.notifyError(ErrorType.NOT_ENOUGH_FOOD);
+            if (!card.canBeBought(currentPlayer)) {
+                sendError(requestingPlayer, ErrorType.NOT_ENOUGH_FOOD);
+                return;
+            }
             if (board.pickCard(requestingPlayer, card))
                 if (board.nextRound())
                     return; //HERE LOGIC TO END GAME
@@ -77,12 +75,9 @@ public class Controller {
     //OTHER METHODS:
 
     private boolean isPlayerTurn(Player requestingPlayer, Player currentPlayer) throws IOException {
-        IF_GameView connection = board.getPlayerView(requestingPlayer);
-
         if(currentPlayer == null) return false;
         if(requestingPlayer.equals(currentPlayer)) return true;
-        if(connection == null) return false;
-        connection.notifyError(ErrorType.NOT_YOUR_TURN);
+        sendError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
         return false;
     }
 

@@ -60,6 +60,10 @@ public class Player {
         specialBuffs.add(eventBuff);
     }
 
+    public void removeBuff(SpecialBuff specialBuff) {
+        specialBuffs.remove(specialBuff);
+    }
+
     public List<CharacterCard> getCharacterType(Parameter characterType){
         return tribe.getOrDefault(characterType, new ArrayList<>());
     }
@@ -88,9 +92,18 @@ public class Player {
     }
 
     public void setMoves(int up, int down) {
+        setUpMoves(up);
+        setDownMoves(down);
+    }
+
+    public void setUpMoves(int up) {
         this.remainingUpMoves = up;
+    }
+
+    public void setDownMoves(int down) {
         this.remainingDownMoves = down;
     }
+
 
     public boolean hasNoMoves() {
         return this.remainingUpMoves == 0 && this.remainingDownMoves == 0;

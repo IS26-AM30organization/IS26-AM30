@@ -33,6 +33,15 @@ public class BuildingCard extends Card {
         return eventType;
     }
 
+    public boolean isPickable() {
+        return true;
+    }
+
+    public boolean canBeBought(Player player) {
+        return player.getParameters().get(Parameter.FOOD)
+                + player.getParameters().get(Parameter.BUILDER) >= foodCost;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

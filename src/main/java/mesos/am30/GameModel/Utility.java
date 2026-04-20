@@ -42,13 +42,6 @@ public class Utility {
         return extractedList;
     }
 
-    public static boolean isTilePhase(IF_GameModel board) {
-        return true;
-    }
-
-    public static boolean isPickPhase(IF_GameModel board) {
-        return true;
-    }
 }
 /*
 https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/com/google/gson/JsonElement.html
