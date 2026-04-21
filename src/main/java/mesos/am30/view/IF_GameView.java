@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.rmi.Remote;
 import java.util.List;
 
+/**
+ * Views's Interface for ModelViewController pattern.
+ * <br>Interface for the methods that the Server calls directly on the View in order to notify a request/Error/update.
+ */
 public interface IF_GameView extends Remote {
 
     /**
@@ -35,6 +39,15 @@ public interface IF_GameView extends Remote {
      */
     void setController(IF_GameController controller) throws IOException;
 
+    /**
+     * Notify the View about the Turn change.
+     * <br>This method is called in order to notify the View about the turn change, telling who has to move and what he has to do.
+     * <br><strong>Pre:</strong> nickname != null && move != null
+     *
+     * @param nickname Nickname of the Player who has to move
+     * @param move Next move to perform
+     * @throws IOException The connection cannot be established correctly
+     */
     void notifyTurn(String nickname, Move move) throws IOException;
 
     /**
@@ -56,4 +69,12 @@ public interface IF_GameView extends Remote {
      * @throws IOException The connection cannot be established correctly
      */
     void update(ViewParameter toUpdate, List<Object> parameters) throws IOException;
+
+    /**
+     * End of the Game.
+     * <br>This method is called in order to end the Game Client-side.
+     *
+     * @throws IOException The connection cannot be established correctly
+     */
+    void end() throws IOException;
 }

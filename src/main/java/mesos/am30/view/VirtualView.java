@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * @since 1.0
  */
 public abstract class VirtualView implements IF_GameView {
-    private final IF_GameUI userInterface;
+    protected final IF_GameUI userInterface;
     protected final ViewModel model;
     protected String nickname = "stillToConnect";   // avoid null value messages
 

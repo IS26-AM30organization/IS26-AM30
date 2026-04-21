@@ -10,14 +10,14 @@ import mesos.am30.server.IF_GameController;
 import mesos.am30.server.IF_Server;
 
 import java.io.IOException;
-import java.rmi.Remote;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class RMIView extends VirtualView implements Remote {
+public class RMIView extends VirtualView {
+    private IF_Server remoteServer;
     private IF_GameController controller;
 
     public RMIView(IF_GameUI userInterface) throws RemoteException {
@@ -35,11 +35,12 @@ public class RMIView extends VirtualView implements Remote {
     public void findServer(String path, int port) throws IOException {
         try {
             Registry registry = LocateRegistry.getRegistry(path, port);
-            IF_Server remoteServer = (IF_Server) registry.lookup("Game");
+            remoteServer = (IF_Server) registry.lookup("Game");
             remoteServer.handleConnection(this);
         }
         catch (NotBoundException e){
             notifyError(ErrorType.WRONG_IP);
+            end();
         }
     }
 
@@ -47,6 +48,9 @@ public class RMIView extends VirtualView implements Remote {
     @Override
     protected void toController(Choice choice, Object parameter) throws IOException {
         switch (choice) {
+            case PLAYERS_NUMBER -> remoteServer.setPlayersNumber(this, (int) parameter);
+            case NICKNAME -> remoteServer.setNickname(this, (String) parameter);
+
             case CHOOSE_TILE -> controller.chooseTile(nickname,(Tile) parameter);
 
             case CHOOSE_BUILDING -> controller.chooseBuilding(nickname, (BuildingCard) parameter);
@@ -56,7 +60,13 @@ public class RMIView extends VirtualView implements Remote {
     }
 
     @Override
-    public void setController(IF_GameController controller) {
+    public void setController(IF_GameController controller) throws IOException {
         this.controller = controller;
+    }
+
+    @Override
+    public void end() throws IOException {
+        userInterface.printEnd();
+        UnicastRemoteObject.unexportObject(this, true);
     }
 }

@@ -57,6 +57,9 @@ class VirtualViewTest {
 
             @Override
             public void setController(IF_GameController controller) {}
+
+            @Override
+            public void end() {}
         };
     }
 

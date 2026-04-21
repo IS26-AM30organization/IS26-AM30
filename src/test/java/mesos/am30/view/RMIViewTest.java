@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -50,9 +51,9 @@ class RMIViewTest {
 
     // free the port after each test, in order to avoid "Port already in use" error
     @AfterEach
-    void tearDown() throws Exception {
-        UnicastRemoteObject.unexportObject(rmiView, true);
-        UnicastRemoteObject.unexportObject(testRegistry, true);
+    void tearDown() {
+        try { UnicastRemoteObject.unexportObject(rmiView, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
+        try { UnicastRemoteObject.unexportObject(testRegistry, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
     }
 
     @Test

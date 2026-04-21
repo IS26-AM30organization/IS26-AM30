@@ -10,4 +10,5 @@ public interface IF_GameUI {
     void printMove(String nickname, Move move);
     void printError(ErrorType errorType);
     void refresh(ViewModel viewModel);
+    void printEnd();
 }
