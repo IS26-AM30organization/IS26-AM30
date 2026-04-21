@@ -77,4 +77,12 @@ public interface IF_GameView extends Remote {
      * @throws IOException The connection cannot be established correctly
      */
     void end() throws IOException;
+
+    /**
+     * Heartbeat for the View.
+     * <br>This method is called in order to verify if the View is still connected.
+     *
+     * @throws IOException The connection is no more established
+     */
+    void ping() throws IOException;
 }

@@ -1,12 +1,15 @@
 package mesos.am30.common;
 
 public enum ErrorType {
+    WRONG_IP,
     WRONG_PLAYERS_NUMBER,
     WRONG_NICKNAME,
+    NOT_EXISTING_LOBBY,
+    ALREADY_EXISTING_LOBBY,
     FULL_LOBBY,
     NOT_YOUR_TURN,
     WRONG_TILE,
     WRONG_CARD,
     NOT_ENOUGH_FOOD,
-    WRONG_IP
+    END_FOR_DISCONNECTION
 }

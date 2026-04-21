@@ -264,4 +264,10 @@ public abstract class VirtualView implements IF_GameView {
         }
         userInterface.refresh(model);
     }
+
+    /**
+     * @see IF_GameView Implementation Client-Side of the ping method
+     */
+    @Override
+    public void ping() throws IOException { /* heartbeat */ }
 }

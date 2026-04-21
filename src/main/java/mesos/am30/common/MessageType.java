@@ -7,5 +7,6 @@ public enum MessageType {
     CHOOSE,
     ERROR,
     UPDATE,
-    PING
+    PING,
+    END
 }
