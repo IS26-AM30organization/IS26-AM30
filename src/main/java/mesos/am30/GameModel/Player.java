@@ -44,6 +44,8 @@ public class Player {
         return specialBuffs;
     }
 
+    public String getNickname() {return nickname; }
+
     public void updateStats(Parameter stat,int sum){
         //using getOrDefault default method of HashMap -> if no value is present, returns defaultValue.
         int currentValue = this.parameters.getOrDefault(stat, 0);

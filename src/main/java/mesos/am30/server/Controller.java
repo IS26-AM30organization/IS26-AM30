@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Controller {
+public class Controller implements IF_GameController {
     private IF_GameModel board;
     private Map<IF_GameView, Player> connections;
     private int numPlayers;
@@ -39,13 +39,16 @@ public class Controller {
         board.start();
     }
 
-    synchronized public void pickTile(Player requestingPlayer, Tile chosenTile) throws IOException {
+    synchronized public void chooseTile(String nickname, Tile chosenTile) throws IOException {
+        Player requestingPlayer = getPlayerByNickname(nickname);
         if (!isPlayerTurn(requestingPlayer, board.getCurrentPlayer())) return;
         if (!requestingPlayer.hasNoMoves()) return;
         board.pickTile(requestingPlayer, chosenTile);
     }
 
-    synchronized public void pickCard(Player requestingPlayer, CharacterCard card) throws IOException {
+    synchronized public void chooseCharacter(String nickname, CharacterCard card) throws IOException {
+        Player requestingPlayer = getPlayerByNickname(nickname);
+
         Player currentPlayer = board.getCurrentPlayer();
         if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
         if (requestingPlayer.hasNoMoves()) return;
@@ -57,7 +60,9 @@ public class Controller {
         }
     }
 
-    synchronized public void pickCard(Player requestingPlayer, BuildingCard card) throws IOException {
+    synchronized public void chooseBuilding(String nickname, BuildingCard card) throws IOException {
+        Player requestingPlayer = getPlayerByNickname(nickname);
+
         Player currentPlayer = board.getCurrentPlayer();
         if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
         if (requestingPlayer.hasNoMoves()) return;
@@ -118,6 +123,11 @@ public class Controller {
     private void sendError(Player player, ErrorType errorType) throws IOException {
         IF_GameView connection = board.getPlayerView(player);
         if (connection != null) connection.notifyError(errorType);
+    }
+
+    private Player getPlayerByNickname(String nickname) {
+        return connections.values().stream()
+            .filter(p -> nickname.equals(p.getNickname())).toList().getFirst();
     }
 
 }
