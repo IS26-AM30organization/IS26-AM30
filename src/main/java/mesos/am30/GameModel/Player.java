@@ -1,21 +1,27 @@
 package mesos.am30.GameModel;
 
-
+import java.io.Serializable;
 import java.util.*;
 
-public class Player {
+public class Player implements Serializable {
+    private final String nickname;
     private final Map<Parameter, Integer> parameters;
     private final Map<Parameter, List<CharacterCard>> tribe;
     private final Set<Integer> inventions;
     private final Set<BuildingCard> buildings;
     private final Set<SpecialBuff> specialBuffs;
 
-    public Player() {
+    public Player(String nickname) {
+        this.nickname = nickname;
         this.parameters = new HashMap<>();
         this.tribe = new HashMap<>();
         this.inventions = new HashSet<>(10);
         this.buildings = new HashSet<>();
         this.specialBuffs = new HashSet<>();
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 
     public Map<Parameter, Integer> getParameters() {

@@ -4,8 +4,11 @@ import mesos.am30.GameModel.BuildingCard;
 import mesos.am30.GameModel.CharacterCard;
 import mesos.am30.GameModel.Tile;
 
-public interface IF_GameController {
-    void chooseTile(String nickname, Tile tile);
-    void chooseCharacter(String nickname, CharacterCard characterCard);
-    void chooseBuilding(String nickname, BuildingCard buildingCard);
+import java.io.IOException;
+import java.rmi.Remote;
+
+public interface IF_GameController extends Remote {
+    void chooseTile(String nickname, Tile tile) throws IOException;
+    void chooseCharacter(String nickname, CharacterCard characterCard) throws IOException;
+    void chooseBuilding(String nickname, BuildingCard buildingCard) throws IOException;
 }

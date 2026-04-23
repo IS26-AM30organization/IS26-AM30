@@ -1,6 +1,8 @@
 package mesos.am30.GameModel;
 
-public abstract class Card {
+import java.io.Serializable;
+
+public abstract class Card implements Serializable {
     private final int era;
 
     public Card(int era) {
