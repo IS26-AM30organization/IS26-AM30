@@ -1,4 +1,4 @@
-package mesos.am30.view;
+package mesos.am30.client;
 
 import mesos.am30.common.*;
 import mesos.am30.server.IF_GameController;

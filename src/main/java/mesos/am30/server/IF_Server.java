@@ -1,6 +1,6 @@
 package mesos.am30.server;
 
-import mesos.am30.view.IF_GameView;
+import mesos.am30.client.IF_GameView;
 
 import java.io.IOException;
 import java.rmi.Remote;
@@ -50,4 +50,6 @@ public interface IF_Server extends Remote {
      * @throws IOException The connection cannot be established correctly
      */
     void setPlayersNumber(IF_GameView view, int playersNumber) throws IOException;
+
+    void ping () throws IOException;
 }

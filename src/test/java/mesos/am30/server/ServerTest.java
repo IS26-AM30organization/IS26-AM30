@@ -2,7 +2,7 @@ package mesos.am30.server;
 
 import mesos.am30.GameModel.Player;
 import mesos.am30.common.ErrorType;
-import mesos.am30.view.IF_GameView;
+import mesos.am30.client.IF_GameView;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

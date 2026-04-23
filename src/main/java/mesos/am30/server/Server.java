@@ -2,7 +2,7 @@ package mesos.am30.server;
 
 import mesos.am30.GameModel.Player;
 import mesos.am30.common.ErrorType;
-import mesos.am30.view.IF_GameView;
+import mesos.am30.client.IF_GameView;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -150,6 +150,11 @@ public class Server extends UnicastRemoteObject implements IF_Server {
             lobby = new Controller(playersNumber);
             view.askNickname();
         }
+    }
+
+    @Override
+    public void ping() throws IOException {
+
     }
 
     /**

@@ -1,4 +1,4 @@
-package mesos.am30.view;
+package mesos.am30.client;
 
 import mesos.am30.GameModel.BuildingCard;
 import mesos.am30.GameModel.CharacterCard;
@@ -25,6 +25,10 @@ public class RMIView extends VirtualView {
         UnicastRemoteObject.exportObject(this, 0);
     }
 
+    void setRemoteServer(IF_Server remoteServer) {
+        this.remoteServer = remoteServer;
+    }
+
     /**
      * Open the connection to the Server
      * @param path URL of the server
@@ -37,11 +41,31 @@ public class RMIView extends VirtualView {
             Registry registry = LocateRegistry.getRegistry(path, port);
             remoteServer = (IF_Server) registry.lookup("Game");
             remoteServer.handleConnection(this);
+            startHeartbeat(remoteServer);
         }
-        catch (NotBoundException e){
+        catch (IOException | NotBoundException e){
             notifyError(ErrorType.WRONG_IP);
             end();
         }
+    }
+
+    // start a Heartbeat thread
+    void startHeartbeat(IF_Server server) {
+        new Thread(() -> {
+            try {
+                while(true) {
+                    Thread.sleep(1000);
+                    server.ping();
+                }
+            } catch (IOException | InterruptedException crashed) {
+                try {
+                    notifyError(ErrorType.CONNECTION_CRASHED);
+                    end();
+                } catch (IOException ignored) {
+
+                }
+            }
+        }).start();
     }
 
     // Client writes to controller
@@ -49,6 +73,7 @@ public class RMIView extends VirtualView {
     protected void toController(Choice choice, Object parameter) throws IOException {
         switch (choice) {
             case PLAYERS_NUMBER -> remoteServer.setPlayersNumber(this, (int) parameter);
+
             case NICKNAME -> remoteServer.setNickname(this, (String) parameter);
 
             case CHOOSE_TILE -> controller.chooseTile(nickname,(Tile) parameter);
