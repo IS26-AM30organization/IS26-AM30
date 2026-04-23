@@ -9,8 +9,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,6 +36,9 @@ class SocketViewTest {
 
     @Mock
     private IF_GameUI mockUI;
+
+    public SocketViewTest() {
+    }
 
     @BeforeEach
     void setUp() throws IOException, InterruptedException {
@@ -70,6 +73,55 @@ class SocketViewTest {
         serverSocket.close();
         proxySocket.close();
         clientSocket.close();
+    }
+
+    @Test
+    void findServer_Found() {
+        // Act
+        new Thread(() -> {
+            try {
+                view.findServer("localhost", serverSocket.getLocalPort());
+            } catch (IOException ignored) { /* test will not throw IOException */ }
+        }).start();
+
+        // Assert
+        verify(mockUI, never()).printError(ErrorType.WRONG_IP);
+        verify(mockUI, never()).printEnd();
+    }
+
+    @Test
+    void findServer_NotFound() throws IOException {
+        // Act
+        view.findServer("", 0);
+
+        // Assert
+        verify(mockUI).printError(ErrorType.WRONG_IP);
+        verify(mockUI).printEnd();
+    }
+
+    @Test
+    void startListeningThread_WrongDisconnection() throws IOException, InterruptedException {
+        // Act
+        view.startListeningThread();
+        proxySocket.close();
+
+        // Assert
+        Thread.sleep(200);
+        verify(mockUI, times(1)).printError(ErrorType.CONNECTION_CRASHED);
+        verify(mockUI, times(1)).printEnd();
+    }
+
+    @Test
+    void startListeningThread_CorrectDisconnection() throws IOException, InterruptedException {
+        // Act
+        view.startListeningThread();
+        proxyOut.writeObject(new Message(MessageType.END));
+        proxyOut.flush();
+
+        // Assert
+        Thread.sleep(200);
+        verify(mockUI, times(1)).printEnd();
+        verify(mockUI, never()).printError(ErrorType.CONNECTION_CRASHED);
     }
 
     @Test
@@ -158,5 +210,17 @@ class SocketViewTest {
                 .filter(c -> viewModel.getUpperRow().indexOf(c) >= 4)
                 .allMatch(c -> c instanceof EventCard));
         verify(mockUI).refresh(viewModel);
+    }
+
+    @Test
+    void startListeningThread_END() throws IOException, InterruptedException {
+        // Act
+        view.startListeningThread();
+        proxyOut.writeObject(new Message(MessageType.END));
+        proxyOut.flush();
+
+        // Assert
+        Thread.sleep(200);
+        verify(mockUI).printEnd();
     }
 }

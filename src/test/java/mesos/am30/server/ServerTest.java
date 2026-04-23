@@ -63,7 +63,7 @@ class ServerTest {
     }
 
     @Test
-    void handleDisconnection() throws IOException, InterruptedException {
+    void handleDisconnection_Present() throws IOException, InterruptedException {
         // set up disconnected View
         doThrow(new IOException()).when(mockView).ping();
         List<IF_GameView> clients = Server.getConnectedViews();
@@ -82,6 +82,30 @@ class ServerTest {
         }
         assertTrue(Server.getConnectedViews().isEmpty());
         assertNull(Server.getLobby());
+    }
+
+    @Test
+    void handleDisconnection_NotPresent() throws IOException, InterruptedException {
+        // set up disconnected View
+        doThrow(new IOException()).when(mockView).ping();
+        List<IF_GameView> clients = Server.getConnectedViews();
+        for (int i = 0; i < 3; i++) clients.add(mock(IF_GameView.class));
+        Server.setLobby(new Controller(4));
+
+        // Act
+        Server.getInstance().handleConnection(mockView);
+        clients.remove(mockView);
+
+        // Assert
+        Thread.sleep(1500);
+        assertThrows(IOException.class, () -> mockView.ping());
+        assertFalse(clients.contains(mockView));
+        for (IF_GameView view : clients) {
+            verify(view, never()).notifyError(ErrorType.END_FOR_DISCONNECTION);
+            verify(view, never()).end();
+        }
+        assertFalse(Server.getConnectedViews().isEmpty());
+        assertNotNull(Server.getLobby());
     }
 
     @Test

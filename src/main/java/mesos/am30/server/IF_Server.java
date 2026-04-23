@@ -51,5 +51,11 @@ public interface IF_Server extends Remote {
      */
     void setPlayersNumber(IF_GameView view, int playersNumber) throws IOException;
 
+    /**
+     * Heartbeat for the Server.
+     * <br>This method is called in order to verify if the Server is still connected.
+     *
+     * @throws IOException The connection is no more established
+     */
     void ping () throws IOException;
 }

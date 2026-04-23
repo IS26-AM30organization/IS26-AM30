@@ -129,7 +129,7 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     private void startHeartbeat(IF_GameView view) {
         new Thread(() -> {
             try {
-                while(true) {
+                while (connectedViews.contains(view)) {
                     Thread.sleep(1000);
                     view.ping();
                 }
@@ -152,6 +152,9 @@ public class Server extends UnicastRemoteObject implements IF_Server {
         }
     }
 
+    /**
+     * @see IF_Server Implementation of the ping method
+     */
     @Override
     public void ping() throws IOException {
 
@@ -182,6 +185,7 @@ public class Server extends UnicastRemoteObject implements IF_Server {
      * @param disconnected The Client instance of the IF_GameView who disconnected
      */
     public synchronized void handleDisconnection(IF_GameView disconnected) {
+        if (!connectedViews.contains(disconnected)) return;
         connectedViews.remove(disconnected);
         connectedViews.forEach(view -> {
             try {

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 /**
  * Socket communication handler View-side.
@@ -22,6 +21,7 @@ public class SocketView extends VirtualView {
     private Socket socket = null;
     private ObjectOutputStream outputStream = null;
     private ObjectInputStream inputStream = null;
+    private volatile boolean connectionOpen;
 
     /**
      * Constructor for SocketView.
@@ -30,6 +30,7 @@ public class SocketView extends VirtualView {
      */
     public SocketView(IF_GameUI userInterface) {
         super(userInterface);
+        connectionOpen = true;
     }
 
     // Test setter for the attribute socket
@@ -67,7 +68,7 @@ public class SocketView extends VirtualView {
 
             // listen for Server messages
             startListeningThread();
-        } catch (UnknownHostException exception) {
+        } catch (IOException exception) {
             notifyError(ErrorType.WRONG_IP);
             end();
         }
@@ -78,34 +79,44 @@ public class SocketView extends VirtualView {
         // start listening Thread (SocketProxy -> SocketView)
         new Thread(() -> {
             try {
-                while (true) {
-                    Message message = (Message) inputStream.readObject();
-                    switch (message.getType()) {
-                        // give the number of Players for the lobby
-                        case FIRST_PLAYER -> askPlayersNumber();
-                        // give the Client nickname
-                        case NICKNAME -> askNickname();
-                        // notification of turn action
-                        case NOTIFY -> {
-                            ClienTurnMessage turnMessage = (ClienTurnMessage) message;
-                            notifyTurn(turnMessage.getNickname(), turnMessage.getMove());
+                while (connectionOpen) {
+                    try {
+                        Message message = (Message) inputStream.readObject();
+                        switch (message.getType()) {
+                            // give the number of Players for the lobby
+                            case FIRST_PLAYER -> askPlayersNumber();
+                            // give the Client nickname
+                            case NICKNAME -> askNickname();
+                            // notification of turn action
+                            case NOTIFY -> {
+                                ClienTurnMessage turnMessage = (ClienTurnMessage) message;
+                                notifyTurn(turnMessage.getNickname(), turnMessage.getMove());
+                            }
+                            // notification of not valid move
+                            case ERROR -> {
+                                ErrorMessage errorMessage = (ErrorMessage) message;
+                                notifyError(errorMessage.getError());
+                            }
+                            // notification of View update
+                            case UPDATE -> {
+                                ModelUpdateMessage updateMessage = (ModelUpdateMessage) message;
+                                update(updateMessage.getToUpdate(), updateMessage.getParameters());
+                            }
+                            // end of the Game
+                            case END -> end();
+                            // heartbeat
+                            case PING -> ping();
                         }
-                        // notification of not valid move
-                        case ERROR -> {
-                            ErrorMessage errorMessage = (ErrorMessage) message;
-                            notifyError(errorMessage.getError());
-                        }
-                        // notification of View update
-                        case UPDATE -> {
-                            ModelUpdateMessage updateMessage = (ModelUpdateMessage) message;
-                            update(updateMessage.getToUpdate(), updateMessage.getParameters());
-                        }
-                    }
+                    } catch (ClassNotFoundException ignored) { /* not valid message */ }
                 }
             } catch (IOException exception) {
                 try { socket.close(); } catch (IOException ignored) { /* connection closed Server-Side */ }
-                try { end(); } catch (IOException ignored) { /* userInterface error */ }
-            } catch (ClassNotFoundException ignored) { /* not valid message */ }
+                try {
+                    if (!connectionOpen) return;
+                    notifyError(ErrorType.CONNECTION_CRASHED);
+                    end();
+                } catch (IOException ignored) { /* userInterface error */ }
+            }
         }).start();
     }
 
@@ -125,6 +136,7 @@ public class SocketView extends VirtualView {
      */
     @Override
     public synchronized void end() throws IOException {
+        connectionOpen = false;
         userInterface.printEnd();
         if (!socket.isClosed()) socket.close();
     }
