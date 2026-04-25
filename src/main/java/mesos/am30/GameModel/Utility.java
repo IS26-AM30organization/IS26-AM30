@@ -22,6 +22,9 @@ public class Utility {
                 .create();
 
         InputStream fileStream = Utility.class.getClassLoader().getResourceAsStream(fileName);
+        if (fileStream == null) {
+            throw new IllegalArgumentException("File not found: " + fileName);
+        }
         Reader reader = new InputStreamReader(fileStream, UTF_8); //might want a try-catch
 
         JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();

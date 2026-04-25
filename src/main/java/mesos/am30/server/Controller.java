@@ -5,6 +5,7 @@ import mesos.am30.common.ErrorType;
 import mesos.am30.view.IF_GameView;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +17,7 @@ public class Controller implements IF_GameController {
 
     public Controller(int numPlayers) {
         this.numPlayers = numPlayers;
+        this.connections = new HashMap<>(numPlayers);
     }
 
     synchronized protected void startTest(IF_GameModel board) throws IOException {
@@ -24,10 +26,14 @@ public class Controller implements IF_GameController {
         this.board.start();
     }
 
-    boolean connect(IF_GameView gameView, String nickname) throws IOException {
-        connections.put(new Player(nickname), gameView);
-        if (connections.size()==numPlayers) return true;
-        else return false;
+    public boolean isFull() {
+        return connections.size() == numPlayers;
+    }
+
+    public boolean connect(IF_GameView view, String nickname) throws IOException {
+        connections.put(new Player(nickname), view);
+        view.setController(this);
+        return connections.size() == numPlayers;
     }
 
     synchronized public void startGame() throws IOException {
@@ -136,4 +142,13 @@ public class Controller implements IF_GameController {
             .filter(p -> nickname.equals(p.getNickname())).toList().getFirst();
     }
 
+    // Test getter for the attribute playersNumber
+    int getPlayersNumber() {
+        return numPlayers;
+    }
+
+    // Test getter for the attribute clients
+    Map<Player, IF_GameView> getClients() {
+        return connections;
+    }
 }

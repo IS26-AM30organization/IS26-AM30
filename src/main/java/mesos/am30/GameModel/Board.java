@@ -66,12 +66,10 @@ public class Board implements IF_GameModel {
 
         List<CharacterCard> requiredCharacters = Utility.cardLoader("characters.json", playerNum, charcType);
         List<EventCard> requiredEvents = Utility.cardLoader("events.json", playerNum, eventType);
-        List<EventCard> finalEvents = Utility.cardLoader("finals.json", playerNum, eventType);
 
         List<Card> fullDeck = new ArrayList<>();
         fullDeck.addAll(requiredCharacters);
         fullDeck.addAll(requiredEvents);
-        fullDeck.addAll(finalEvents);
 
         Type tileType = new  TypeToken<Tile>(){}.getType();
         usedTiles = Utility.cardLoader("tiles.json", playerNum, tileType);
