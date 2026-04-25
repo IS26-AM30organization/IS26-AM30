@@ -24,6 +24,19 @@ public class Player {
         this.specialBuffs = new HashSet<>();
     }
 
+    public void addBuilding(BuildingCard card){
+        buildings.add(card);
+        updateStats(
+                Parameter.FOOD, card.getFoodCost()>parameters.get(Parameter.BUILDER) ?
+                        parameters.get(Parameter.BUILDER)-card.getFoodCost()
+                        : 0);
+    }
+
+    public void addCharacter (CharacterCard card){
+        tribe.get(card.getRole()).add(card);
+        updateStats(card.getRole(),card.getValue());
+    }
+
     public Map<Parameter, Integer> getParameters() {
         return parameters;
     }
@@ -50,12 +63,36 @@ public class Player {
         //using getOrDefault default method of HashMap -> if no value is present, returns defaultValue.
         int currentValue = this.parameters.getOrDefault(stat, 0);
 
+        if (stat.equals(Parameter.INVENTOR)) {
+            if (!inventions.contains(sum)) {
+                inventions.add(sum);
+                sum = 1;
+            } else sum = 0;
+        }
+
+        if (stat.equals(Parameter.HUNTER)){
+            updateStats(Parameter.FOOD,sum);
+            sum = 1;
+        }
+
         int updatedValue = currentValue + sum;
         if(updatedValue < 0) {
             if (stat == Parameter.FOOD) updateStats(Parameter.PRESTIGE_POINTS, -2*updatedValue);
             if (stat != Parameter.PRESTIGE_POINTS) updatedValue = 0;
         }
+
+
+
         this.parameters.put(stat, updatedValue);
+    }
+
+    public void lastRoundPoints(){
+        updateStats(Parameter.PRESTIGE_POINTS,(tribe.get(Parameter.ARTIST).size()/2)*10);
+        for(CharacterCard card : tribe.get(Parameter.BUILDER))
+            updateStats(Parameter.PRESTIGE_POINTS, card.getPrestigePoints());
+        for(BuildingCard card : buildings)
+            updateStats(Parameter.PRESTIGE_POINTS, card.getPpGainEnd());
+        updateStats(Parameter.PRESTIGE_POINTS,tribe.get(Parameter.INVENTOR).size()*parameters.get(Parameter.INVENTOR));
     }
 
     public void updateStats(SpecialBuff eventBuff){

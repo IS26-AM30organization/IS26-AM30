@@ -5,15 +5,15 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import com.google.gson.reflect.TypeToken;
-import mesos.am30.common.Move;
 import mesos.am30.common.ViewParameter;
+import mesos.am30.server.IF_GameController;
 import mesos.am30.view.IF_GameView;
 
 public class Board implements IF_GameModel {
 
     private List<IF_GameView> views;
 
-    private final List<Tile> usedTiles;
+    private List<Tile> usedTiles;
     private List<List<Card>> decks;
     private List<List<BuildingCard>> buildingDecks;
 
@@ -27,16 +27,16 @@ public class Board implements IF_GameModel {
 
     private int[] tileBoost;
 
+    private GameManager game;
+
     //constructor
     public Board(List<Player> players, List<IF_GameView> views) {
         this.players = players;
         playersOrder = new ArrayList<>();
         this.views = views;
 
-
         decks = new ArrayList<>();
         buildingDecks = new ArrayList<>();
-
         usedTiles = new ArrayList<>();
 
         upperRow = new ArrayList<>();
@@ -57,8 +57,7 @@ public class Board implements IF_GameModel {
     //board setup
     public void prepare() throws IOException {
         //first playersOrder
-        playersOrder.addAll(players);
-        Collections.shuffle(playersOrder);
+        game = new GameManager(this, players, views);
 
         int playerNum = players.size();
 
@@ -75,8 +74,7 @@ public class Board implements IF_GameModel {
         fullDeck.addAll(finalEvents);
 
         Type tileType = new  TypeToken<Tile>(){}.getType();
-        List<Tile> usedTiles = Utility.cardLoader("tiles.json", playerNum, tileType);
-
+        usedTiles = Utility.cardLoader("tiles.json", playerNum, tileType);
 
         Type buildingType = new  TypeToken<BuildingCard>(){}.getType();
         List<BuildingCard> requiredBuildings = Utility.cardLoader("buildings.json", playerNum, buildingType);
@@ -156,14 +154,6 @@ public class Board implements IF_GameModel {
         upperRow.clear();
     }
 
-    protected void drawUp (Card card){
-        upperRow.add(card);
-    }
-
-    protected void drawDown(Card card){
-        lowerRow.add(card);
-    }
-
     protected void discard (Card card){
         if(upperRow.contains(card)){
             upperRow.remove(card);
@@ -182,28 +172,13 @@ public class Board implements IF_GameModel {
         }
     }
 
-    //event handler -- NO USAGES AFTER LAST UPDATE
-    private void handleBoardEvent(EventCard card){
-        for (Player player : players) {
-            card.getEvent().handleEvent(player);
-        }
-        if (lowerRow.contains(card)) lowerRow.remove(card);
-        else if (upperRow.contains(card)) upperRow.remove(card);
-    }
-
     private void handleBuildings(Player player, EventType type){
         for (BuildingCard building : player.getBuildings()){
             if (building.getEventType()==type) building.getEvent().handleEvent(player);
         }
     }
 
-    /*
-    private void handleEvent(BuildingCard card, Player player){
-        card.getEvent().handleEvent(player);
-    }
-     */
-
-    private void scanTiles() throws IOException {
+    protected void scanTiles() throws IOException {
         playersOrder.clear();
         //scanning new players order, tiles get resetted
         for(Tile t : usedTiles){
@@ -224,8 +199,6 @@ public class Board implements IF_GameModel {
             //tile reset:
             t.clearCurrentPlayer();
 
-            updateEveryone(ViewParameter.TILES, usedTiles);
-            updateEveryone(ViewParameter.PLAYERS, players);
         }
     }
 
@@ -262,18 +235,14 @@ public class Board implements IF_GameModel {
 
         ArrayList<Card> tempLower = new ArrayList<>(lowerRow);
         for(Card card : tempLower)
-            discard(card);
+            card.discard(this);
 
         moveDown();
         drawUpperRow();
 
-        while (upperRow.size() < players.size()+4) {
+        if (upperRow.size() < players.size()+4) {
             nextEra();
             if(decks.isEmpty()) {
-                updateEveryone(ViewParameter.UPPER_ROW, upperRow);
-                updateEveryone(ViewParameter.LOWER_ROW, lowerRow);
-                updateEveryone(ViewParameter.LOWER_BUILDINGS, lowerBuildings);
-                updateEveryone(ViewParameter.UPPER_BUILDINGS, upperBuildings);
                 end();
                 return true;
             }
@@ -281,29 +250,23 @@ public class Board implements IF_GameModel {
                     drawUpperRow();
             }
         }
-        updateEveryone(ViewParameter.UPPER_ROW, upperRow);
-        updateEveryone(ViewParameter.LOWER_ROW, lowerRow);
-        updateEveryone(ViewParameter.LOWER_BUILDINGS, lowerBuildings);
-        updateEveryone(ViewParameter.UPPER_BUILDINGS, upperBuildings);
-        notifyEveryone(playersOrder.getFirst(), Move.PICK_TILE);
+
+        game.iChangedTurn();
         return false;
     }
 
     private void end(){
-        for(Card card : lowerRow)
-            discard(card);
+        List<Card> tempLower = new ArrayList<>(lowerRow);
+        for(Card card : tempLower)
+            card.discard(this);
 
-        for(Card card : upperRow)
-            discard(card);
+        List<Card> tempUpper = new ArrayList<>(upperRow);
+        for(Card card : tempUpper)
+            card.discard(this);
 
         for (Player player : players) {
             handleBuildings(player, EventType.FINAL);
-            player.updateStats(Parameter.PRESTIGE_POINTS,(player.getTribe().get(Parameter.ARTIST).size()/2)*10);
-            for(CharacterCard card : player.getTribe().get(Parameter.BUILDER))
-                player.updateStats(Parameter.PRESTIGE_POINTS, card.getPrestigePoints());
-            for(BuildingCard card : player.getBuildings())
-                player.updateStats(Parameter.PRESTIGE_POINTS, card.getPpGainEnd());
-            player.updateStats(Parameter.PRESTIGE_POINTS,player.getTribe().get(Parameter.INVENTOR).size()*player.getParameters().get(Parameter.INVENTOR));
+            player.lastRoundPoints();
         }
 
         upperRow.clear();
@@ -322,28 +285,14 @@ public class Board implements IF_GameModel {
     public boolean pickCard(Player player, CharacterCard card) throws IOException {
         if (upperRow.contains(card)) {
             upperRow.remove(card);
-            updateEveryone(ViewParameter.UPPER_ROW, upperRow);
+            game.updateEveryone(ViewParameter.UPPER_ROW, upperRow);
         } else if (lowerRow.contains(card)) {
             lowerRow.remove(card);
-            updateEveryone(ViewParameter.LOWER_ROW, lowerRow);
+            game.updateEveryone(ViewParameter.LOWER_ROW, lowerRow);
         } else return false;
-            player.getTribe().get(card.getRole()).add((CharacterCard) card);
-
-            if (card.getRole().equals(Parameter.HUNTER)){
-                player.updateStats(Parameter.HUNTER,1);
-                player.updateStats(Parameter.FOOD,card.getValue());
-            }
-
-            else if (card.getRole().equals(Parameter.INVENTOR)) {
-                if (!player.getInventions().contains(card.getValue())) {
-                    player.getInventions().add(card.getValue());
-                    player.updateStats(Parameter.INVENTOR, 1);
-                }
-            }
-            else player.updateStats(card.getRole(),card.getValue());
-            updateEveryone(ViewParameter.PLAYERS, players);
+            player.addCharacter(card);
             handleBuildings(player, EventType.ROUND);
-            return iPickedCardWhosNext(player);
+            return game.iPickedCard(player);
     }
 
     /**
@@ -354,148 +303,45 @@ public class Board implements IF_GameModel {
      * @return
      */
     public boolean pickCard(Player player, BuildingCard card) throws IOException {
-        if (upperBuildings.contains((BuildingCard) card)) {
-            upperBuildings.remove((BuildingCard) card);
-            updateEveryone(ViewParameter.UPPER_ROW, upperRow);
-        } else if ((lowerBuildings.contains((BuildingCard) card))) {
-            lowerBuildings.remove((BuildingCard) card);
-            updateEveryone(ViewParameter.LOWER_ROW, lowerRow);
+        if (upperBuildings.contains(card)) {
+            upperBuildings.remove(card);
+            game.updateEveryone(ViewParameter.UPPER_ROW, upperRow);
+        } else if ((lowerBuildings.contains(card))) {
+            lowerBuildings.remove(card);
+            game.updateEveryone(ViewParameter.LOWER_ROW, lowerRow);
         } else return false;
-        player.getBuildings().add((BuildingCard) card);
-        player.updateStats(Parameter.FOOD, card.getFoodCost()>player.getParameters().get(Parameter.BUILDER) ? player.getParameters().get(Parameter.BUILDER)-card.getFoodCost() : 0);
-        updateEveryone(ViewParameter.PLAYERS, players);
-        return iPickedCardWhosNext(player);
+        player.addBuilding(card);
+        return game.iPickedCard(player);
     }
 
     public void pickTile(Player player, Tile tile) throws IOException {
             tile.setCurrentPlayer(player);
-            iPickedTileWhosNext(player);
-            updateEveryone(ViewParameter.TILES, usedTiles);
+            game.iPickedTile(player);
     }
 
-    private boolean iPickedCardWhosNext(Player player) throws IOException {
-        while(anyChoosableCard(player)) {
-            if (player.hasNoMoves()) {
-                playersOrder.remove(player);
-                if(player.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_UP_TILE)) {
-                    player.setMoves(1,0);
-                    player.removeBuff(SpecialBuff.ADDITIONAL_UP_TILE);
-                    playersOrder.add(player);
-                    List<Player> tempPlayers = playersOrder;
-                    for (Player p : tempPlayers){
-                        if (p.hasNoMoves()){
-                            playersOrder.remove(p);
-                            playersOrder.add(p);
-                        }
-                    }
-                }
-                playersOrder.add(player);
-            }
-        }
-        if(playersOrder.getFirst().hasNoMoves())
-            return true;
-        else
-            notifyEveryone(playersOrder.getFirst(), whereDoIPickCards(player));
-        return false;
+    protected void testGame(GameManager game) { this.game = game; }
+
+    protected void drawUp (Card card){
+        upperRow.add(card);
     }
 
-    private void iPickedTileWhosNext(Player player) throws IOException {
-        playersOrder.remove(player);
-
-        if (playersOrder.isEmpty()){
-            scanTiles();
-            notifyEveryone(playersOrder.getFirst(), whereDoIPickCards(player));
-        } else {
-            notifyEveryone(playersOrder.getFirst(), Move.PICK_TILE);
-        }
+    protected void drawDown(Card card){
+        lowerRow.add(card);
     }
 
-    private boolean anyChoosableCard(Player player){
-        if (player.hasEnoughUpMoves() &&
-                anyCharacterLeft(upperRow)) {
-            player.setUpMoves(0);
-            return true;
-        }
-        if (player.hasEnoughDownMoves() &&
-                anyCharacterLeft(lowerRow)) {
-            player.setDownMoves(0);
-            return true;
-        }
-        return false;
-    }
+    public Player getCurrentPlayer() { return playersOrder.getFirst(); }
 
-    private boolean anyCharacterLeft(List<Card> cards){
-        for (Card card : cards)
-            if (card.isPickacble()) return true;
-        return false;
-    }
+    public List<Tile> getTiles() { return usedTiles; }
 
-    private Move whereDoIPickCards(Player player) {
-        Move move = null;
-        if (playersOrder.getFirst().hasNoMoves()){
-            move = Move.PICK_TILE;
-        } else if (
-                playersOrder.getFirst().hasEnoughUpMoves() &&
-                        playersOrder.getFirst().hasEnoughDownMoves()
-        ){
-            move = Move.PICK_ANY_CARD;
-        } else if (playersOrder.getFirst().hasEnoughUpMoves()) {
-            move = Move.PICK_FROM_UP;
-        } else if (playersOrder.getFirst().hasEnoughDownMoves()) {
-            move = Move.PICK_FROM_DOWN;
-        }
-        return move;
-    }
+    protected List<List<Card>> getDecks() { return decks; }
 
-    private void notifyEveryone (Player player, Move move) throws IOException {
-        for(IF_GameView view : views){
-            view.notifyTurn(player, move);
-        }
-    }
+    public List<Card> getUpperRow() { return upperRow; }
 
-    private void updateEveryone(ViewParameter where, List<?> what) throws IOException {
-        for(IF_GameView view : views){
-            view.update(where, what);
-        }
-    }
+    public List<BuildingCard> getUpperBuildings() { return upperBuildings; }
 
-    public Player getCurrentPlayer() {
-        return playersOrder.getFirst();
-    }
+    public List<Card> getLowerRow() { return lowerRow; }
 
-    public void endPlayerTurn() {
-    }
+    public List<BuildingCard> getLowerBuildings() { return lowerBuildings; }
 
-    public IF_GameView getPlayerView(Player requestingPlayer) {
-        return null;
-    }
-
-
-    public List<Tile> getTiles() {
-        return usedTiles;
-    }
-
-    protected List<List<Card>> getDecks() {
-        return decks;
-    }
-
-    public List<Card> getUpperRow() {
-        return upperRow;
-    }
-
-    public List<BuildingCard> getUpperBuildings() {
-        return upperBuildings;
-    }
-
-    public List<Card> getLowerRow() {
-        return lowerRow;
-    }
-
-    public List<BuildingCard> getLowerBuildings() {
-        return lowerBuildings;
-    }
-
-    public List<Player> getPlayersOrder() {
-        return playersOrder;
-    }
+    public List<Player> getPlayersOrder() { return playersOrder; }
 }

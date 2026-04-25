@@ -3,8 +3,8 @@ package mesos.am30.GameModel;
 public class EventCard extends Card {
     private final IF_Event event;
 
-    public EventCard(int era, IF_Event event) {
-        super(era);
+    public EventCard(int era, IF_Event event, int id) {
+        super(era, id);
         this.event = event;
     }
 

@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Controller implements IF_GameController {
     private IF_GameModel board;
-    private Map<IF_GameView, Player> connections;
+    private Map<Player, IF_GameView> connections;
     private int numPlayers;
 
     public Controller(int numPlayers) {
@@ -25,15 +25,15 @@ public class Controller implements IF_GameController {
     }
 
     boolean connect(IF_GameView gameView, String nickname) throws IOException {
-        connections.put(gameView, new Player(nickname));
+        connections.put(new Player(nickname), gameView);
         if (connections.size()==numPlayers) return true;
         else return false;
     }
 
     synchronized public void startGame() throws IOException {
         board = new Board(
-                connections.values().stream().toList(),
-                connections.keySet().stream().toList()
+                connections.keySet().stream().toList(),
+                connections.values().stream().toList()
         );
         board.prepare();
         board.start();
@@ -51,7 +51,10 @@ public class Controller implements IF_GameController {
 
         Player currentPlayer = board.getCurrentPlayer();
         if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
-        if (requestingPlayer.hasNoMoves()) return;
+        if (requestingPlayer.hasNoMoves()) {
+            sendError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
+            return;
+        }
 
         if (tryPickedCard(currentPlayer, card)) {
             if (board.pickCard(requestingPlayer, card))
@@ -65,7 +68,10 @@ public class Controller implements IF_GameController {
 
         Player currentPlayer = board.getCurrentPlayer();
         if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
-        if (requestingPlayer.hasNoMoves()) return;
+        if (requestingPlayer.hasNoMoves()) {
+            sendError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
+            return;
+        }
 
         if (tryPickedCard(currentPlayer, card)) {
             if (!card.canBeBought(currentPlayer)) {
@@ -121,12 +127,12 @@ public class Controller implements IF_GameController {
     }
 
     private void sendError(Player player, ErrorType errorType) throws IOException {
-        IF_GameView connection = board.getPlayerView(player);
+        IF_GameView connection = connections.get(player);
         if (connection != null) connection.notifyError(errorType);
     }
 
     private Player getPlayerByNickname(String nickname) {
-        return connections.values().stream()
+        return connections.keySet().stream()
             .filter(p -> nickname.equals(p.getNickname())).toList().getFirst();
     }
 

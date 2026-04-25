@@ -7,8 +7,8 @@ public class CharacterCard extends Card {
     private final Integer value;
     private final Integer prestigePoints;
 
-    public CharacterCard(int era, Parameter role, Integer value, Integer prestigePoints) {
-        super(era);
+    public CharacterCard(int era, Parameter role, Integer value, Integer prestigePoints, int id) {
+        super(era, id);
         this.role = role;
         this.value = value;
         this.prestigePoints = prestigePoints;
@@ -35,7 +35,7 @@ public class CharacterCard extends Card {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CharacterCard that = (CharacterCard) o;
-        return role == that.role && Objects.equals(value, that.value) && Objects.equals(prestigePoints, that.prestigePoints);
+        return role == that.role && Objects.equals(value, that.value) && Objects.equals(prestigePoints, that.prestigePoints) && this.id == that.getId();
     }
 
     @Override

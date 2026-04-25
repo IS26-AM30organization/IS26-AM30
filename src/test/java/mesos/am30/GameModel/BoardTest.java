@@ -1,5 +1,6 @@
 package mesos.am30.GameModel;
 
+import mesos.am30.server.IF_GameController;
 import mesos.am30.view.IF_GameView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,6 +64,10 @@ class BoardTest {
     private BuildingCard b1;
     @Mock
     private BuildingCard b2;
+    @Mock
+    private EventCard diNap;
+    @Mock
+    private GameManager game;
 
     @BeforeEach
     void setUp() {
@@ -78,35 +83,35 @@ class BoardTest {
         try (MockedStatic<Utility> utility = mockStatic(Utility.class)) {
             utility.when(()->Utility.cardLoader(eq("characters.json"),anyInt(),any())).thenReturn(new ArrayList<>(
                             List.of(
-                                    new CharacterCard(1, Parameter.ARTIST, 1, 0),
-                                    new CharacterCard(1, Parameter.HUNTER, 5, 0),
-                                    new CharacterCard(1, Parameter.ARTIST, 2, 3),
-                                    new CharacterCard(1, Parameter.ARTIST, 1, 0),
-                                    new CharacterCard(1, Parameter.HUNTER, 5, 0),
-                                    new CharacterCard(1, Parameter.ARTIST, 2, 3),
-                                    new CharacterCard(1, Parameter.ARTIST, 1, 0),
-                                    new CharacterCard(1, Parameter.HUNTER, 5, 0),
-                                    new CharacterCard(1, Parameter.ARTIST, 2, 3),
-                                    new CharacterCard(1, Parameter.ARTIST, 1, 0),
-                                    new CharacterCard(1, Parameter.ARTIST, 1, 0),
-                                    new CharacterCard(1, Parameter.HUNTER, 5, 0),
-                                    new CharacterCard(2, Parameter.HUNTER, 2, 0)
+                                    new CharacterCard(1, Parameter.ARTIST, 1, 0, 1),
+                                    new CharacterCard(1, Parameter.HUNTER, 5, 0,2),
+                                    new CharacterCard(1, Parameter.ARTIST, 2, 3,3 ),
+                                    new CharacterCard(1, Parameter.ARTIST, 1, 0,4),
+                                    new CharacterCard(1, Parameter.HUNTER, 5, 0,5),
+                                    new CharacterCard(1, Parameter.ARTIST, 2, 3,6),
+                                    new CharacterCard(1, Parameter.ARTIST, 1, 0,7),
+                                    new CharacterCard(1, Parameter.HUNTER, 5, 0,8),
+                                    new CharacterCard(1, Parameter.ARTIST, 2, 3,9),
+                                    new CharacterCard(1, Parameter.ARTIST, 1, 0,10),
+                                    new CharacterCard(1, Parameter.ARTIST, 1, 0,11),
+                                    new CharacterCard(1, Parameter.HUNTER, 5, 0,12),
+                                    new CharacterCard(2, Parameter.HUNTER, 2, 0,13)
                             )
                     )
             );
 
             utility.when(()->Utility.cardLoader(eq("buildings.json"),anyInt(),any())).thenReturn(new ArrayList<>(
                             List.of(
-                                    new BuildingCard(1, fullSet, EventType.ROUND, 2, 2),
-                                    new BuildingCard(2, fullSet, EventType.ROUND, 2, 2)
+                                    new BuildingCard(1, fullSet, EventType.ROUND, 2, 2, 14),
+                                    new BuildingCard(2, fullSet, EventType.ROUND, 2, 2, 15)
                             )
                     )
             );
 
             utility.when(()->Utility.cardLoader(eq("events.json"),anyInt(),any())).thenReturn(new ArrayList<>(
                             List.of(
-                                    new EventCard(1, sustenance),
-                                    new EventCard(2, sustenance)
+                                    new EventCard(1, sustenance, 16),
+                                    new EventCard(2, sustenance,17)
                             )
                     )
             );
@@ -143,48 +148,53 @@ class BoardTest {
     @Test
     void nextRound() throws IOException {
         boardOf3.getLowerRow().add(
-                new CharacterCard(1, Parameter.GATHERER, 1, 0));
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 1));
+        //when(diNap.getEvent()).thenReturn(sustenance);
         boardOf3.getUpperRow().addAll(List.of(
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new EventCard(1, sustenance)
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 2),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0,3),
+                diNap
         ));
         boardOf3.getDecks().add(new ArrayList<>(List.of(
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0),
-                new CharacterCard(1, Parameter.GATHERER, 1, 0)
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 4),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 5),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 6),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 7),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 8),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 9),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 10),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 11),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 12),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 13),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 14)
         )));
         boardOf3.getDecks().add(new ArrayList<>(List.of(
-                new CharacterCard(2, Parameter.GATHERER, 1, 0),
-                new CharacterCard(2, Parameter.GATHERER, 1, 0),
-                new CharacterCard(2, Parameter.GATHERER, 1, 0)
+                new CharacterCard(2, Parameter.GATHERER, 1, 0, 15),
+                new CharacterCard(2, Parameter.GATHERER, 1, 0, 16),
+                new CharacterCard(2, Parameter.GATHERER, 1, 0, 17)
         )));
 
         //List.of(p1,p2,p3).forEach(p -> when(sustenance.handleEvent(p)).thenReturn(0));
 
         Map<Parameter, List<CharacterCard>> mockTribe = mock(Map.class);
-        List.of(p1, p2, p3).forEach(p -> when(p.getTribe()).thenReturn(mockTribe));
-        List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.ARTIST)).thenReturn(new ArrayList<CharacterCard>()));
-        List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.BUILDER)).thenReturn(new ArrayList<CharacterCard>()));
-        List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.INVENTOR)).thenReturn(new ArrayList<CharacterCard>()));
+        //List.of(p1, p2, p3).forEach(p -> when(p.getTribe()).thenReturn(mockTribe));
+        //List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.ARTIST)).thenReturn(new ArrayList<CharacterCard>()));
+        //List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.BUILDER)).thenReturn(new ArrayList<CharacterCard>()));
+        //List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.INVENTOR)).thenReturn(new ArrayList<CharacterCard>()));
 
         Map<Parameter, Integer> mockParameters = mock(Map.class);
-        List.of(p1, p2, p3).forEach(p -> when(p.getParameters()).thenReturn(mockParameters));
-        List.of(p1, p2, p3).forEach(p -> when(p.getParameters().get(Parameter.INVENTOR)).thenReturn(2));
+        //List.of(p1, p2, p3).forEach(p -> when(p.getParameters()).thenReturn(mockParameters));
+        //List.of(p1, p2, p3).forEach(p -> when(p.getParameters().get(Parameter.INVENTOR)).thenReturn(2));
+
+        List.of(p1,p2,p3).forEach(p -> when(p.getBuildings()).thenReturn(new HashSet<>()));
+
+        boardOf3.testGame(game);
 
         boardOf3.nextRound();
         assertEquals(7,boardOf3.getUpperRow().size());
         assertEquals(3, boardOf3.getLowerRow().size());
         boardOf3.nextRound();
-        List.of(p1, p2, p3).forEach(p -> verify(sustenance).handleEvent(p1));
+        List.of(p1, p2, p3).forEach(p -> verify(diNap).discard(boardOf3));
         assertEquals(7,boardOf3.getUpperRow().size());
         assertEquals(7, boardOf3.getLowerRow().size());
         boardOf3.nextRound();
@@ -199,28 +209,30 @@ class BoardTest {
         Map<Parameter, List<CharacterCard>> mockTribe1 = mock(Map.class);
         Map<Parameter, List<CharacterCard>> mockTribe2 = mock(Map.class);
 
-        when(p1.getTribe()).thenReturn(mockTribe1);
-        when(p1.getTribe().get(Parameter.HUNTER)).thenReturn(new ArrayList<>());
+        //when(p1.getTribe()).thenReturn(mockTribe1);
+        //when(p1.getTribe().get(Parameter.HUNTER)).thenReturn(new ArrayList<>());
 
-        when(p1.getParameters()).thenReturn(mockParameters1);
-        when(p1.getParameters().get(Parameter.BUILDER)).thenReturn(3);
-        when(p1.getTribe().get(Parameter.BUILDER)).thenReturn(new ArrayList<>());
+        //when(p1.getParameters()).thenReturn(mockParameters1);
+        //when(p1.getParameters().get(Parameter.BUILDER)).thenReturn(3);
+        //when(p1.getTribe().get(Parameter.BUILDER)).thenReturn(new ArrayList<>());
 
-        when(p2.getTribe()).thenReturn(mockTribe2);
-        when(p2.getTribe().get(Parameter.INVENTOR)).thenReturn(new ArrayList<>());
+        //when(p2.getTribe()).thenReturn(mockTribe2);
+        //when(p2.getTribe().get(Parameter.INVENTOR)).thenReturn(new ArrayList<>());
         when(p2.getInventions()).thenReturn(new HashSet<>(10));
         p2.getInventions().add(3);
 
-        when(h.getRole()).thenReturn(Parameter.HUNTER);
-        when(h.getValue()).thenReturn(1);
-        when(b.getRole()).thenReturn(Parameter.BUILDER);
-        when(b.getValue()).thenReturn(2);
-        when(i1.getRole()).thenReturn(Parameter.INVENTOR);
-        when(i1.getValue()).thenReturn(4);
-        when(i2.getRole()).thenReturn(Parameter.INVENTOR);
-        when(i2.getValue()).thenReturn(3);
-        when(b1.getFoodCost()).thenReturn(5);
-        when(b2.getFoodCost()).thenReturn(2);
+        //when(h.getRole()).thenReturn(Parameter.HUNTER);
+        //when(h.getValue()).thenReturn(1);
+        //when(b.getRole()).thenReturn(Parameter.BUILDER);
+        //when(b.getValue()).thenReturn(2);
+        //when(i1.getRole()).thenReturn(Parameter.INVENTOR);
+        //when(i1.getValue()).thenReturn(4);
+        //when(i2.getRole()).thenReturn(Parameter.INVENTOR);
+        //when(i2.getValue()).thenReturn(3);
+        //when(b1.getFoodCost()).thenReturn(5);
+        //when(b2.getFoodCost()).thenReturn(2);
+
+        boardOf5.testGame(game);
 
         boardOf5.getUpperRow().addAll(List.of(h,i2));
         boardOf5.getLowerRow().addAll(List.of(i1,b));
@@ -230,35 +242,30 @@ class BoardTest {
         assertEquals(2,boardOf5.getUpperRow().size());
 
         boardOf5.pickCard(p1,h);
-        verify(p1).updateStats(Parameter.HUNTER,1);
-        verify(p1).updateStats(Parameter.FOOD,1);
+        verify(p1).addCharacter(h);
         assertEquals(1,boardOf5.getUpperRow().size());
 
         boardOf5.pickCard(p2,h);
         assertEquals(1,boardOf5.getUpperRow().size());
 
         boardOf5.pickCard(p1,b);
-        verify(p1).updateStats(Parameter.BUILDER,2);
+        verify(p1).addCharacter(b);
         assertEquals(1,boardOf5.getUpperRow().size());
         assertEquals(1,boardOf5.getLowerRow().size());
 
         assertTrue(p2.getInventions().contains(3));
         assertFalse(p2.getInventions().contains(4));
         boardOf5.pickCard(p2,i1);
-        verify(p2).updateStats(Parameter.INVENTOR,1);
-        assertTrue(p2.getInventions().contains(4));
-        boardOf5.pickCard(p2,i2);
-        verify(p2, never()).updateStats(Parameter.INVENTOR,2);
-        List.of(1,2,5,6,7,8,9,10).forEach(i -> {assertFalse(p2.getInventions().contains(i));});
+        verify(p2).addCharacter(i1);
 
         assertTrue(boardOf5.getUpperBuildings().contains(b1));
         boardOf5.pickCard(p1,b1);
-        verify(p1).updateStats(Parameter.FOOD,-2);
+        verify(p1).addBuilding(b1);
         assertFalse(boardOf5.getUpperBuildings().contains(b1));
 
         assertTrue(boardOf5.getLowerBuildings().contains(b2));
         boardOf5.pickCard(p1,b2);
-        verify(p1).updateStats(Parameter.FOOD,0);
+        verify(p1).addBuilding(b2);
         assertFalse(boardOf5.getUpperBuildings().contains(b2));
     }
 }

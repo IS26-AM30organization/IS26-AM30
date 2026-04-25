@@ -2,9 +2,24 @@ package mesos.am30.GameModel;
 
 public abstract class Card {
     private final int era;
+    final int id;
 
-    public Card(int era) {
+    public Card(int era, int id) {
         this.era = era;
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return id == card.getId();
+    }
+
+    public int getId(){
+        int num = id;
+        return num;
     }
 
     public int getEra() {
@@ -22,5 +37,4 @@ public abstract class Card {
     protected void discard (Board board){}
 
     protected void reorder (Board board){}
-
 }
