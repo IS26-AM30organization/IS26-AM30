@@ -7,7 +7,7 @@ import java.util.*;
 import com.google.gson.reflect.TypeToken;
 import mesos.am30.common.ViewParameter;
 import mesos.am30.server.IF_GameController;
-import mesos.am30.view.IF_GameView;
+import mesos.am30.client.IF_GameView;
 
 public class Board implements IF_GameModel {
 

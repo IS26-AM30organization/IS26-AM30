@@ -1,7 +1,7 @@
 package mesos.am30.GameModel;
 
 import com.google.gson.*;
-import mesos.am30.view.IF_GameView;
+import mesos.am30.client.IF_GameView;
 
 import java.io.IOException;
 import java.io.InputStream;

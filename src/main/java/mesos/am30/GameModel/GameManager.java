@@ -2,9 +2,11 @@ package mesos.am30.GameModel;
 
 import mesos.am30.common.Move;
 import mesos.am30.common.ViewParameter;
-import mesos.am30.view.IF_GameView;
+import mesos.am30.client.IF_GameView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GameManager {
@@ -120,13 +122,15 @@ public class GameManager {
 
     protected void notifyEveryone (Player player, Move move) throws IOException {
         for(IF_GameView view : views){
-            view.notifyTurn(player, move);
+            view.notifyTurn(player.getNickname(), move);
         }
     }
 
     protected void updateEveryone(ViewParameter where, List<?> what) throws IOException {
-        for(IF_GameView view : views){
-            view.update(where, what);
+        List<Object> parameters = new ArrayList<>(what);
+
+        for (IF_GameView view : views){
+            view.update(where, parameters);
         }
     }
 

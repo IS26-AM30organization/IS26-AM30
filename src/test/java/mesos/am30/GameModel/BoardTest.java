@@ -1,7 +1,7 @@
 package mesos.am30.GameModel;
 
 import mesos.am30.server.IF_GameController;
-import mesos.am30.view.IF_GameView;
+import mesos.am30.client.IF_GameView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

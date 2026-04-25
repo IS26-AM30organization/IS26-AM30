@@ -2,14 +2,13 @@ package mesos.am30.server;
 
 import mesos.am30.GameModel.*;
 import mesos.am30.common.ErrorType;
-import mesos.am30.view.IF_GameView;
+import mesos.am30.client.IF_GameView;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
 
 public class Controller implements IF_GameController {
     private IF_GameModel board;
@@ -37,12 +36,16 @@ public class Controller implements IF_GameController {
         return connections.size() == numPlayers;
     }
 
-    synchronized public void startGame() throws IOException {
+    synchronized public void startGame() {
         board = new Board(
                 connections.keySet().stream().toList(),
                 connections.values().stream().toList()
         );
-        board.prepare();
+        try {
+            board.prepare();
+        } catch (IOException e) {
+            System.err.println("[Error]: error on start-up" + e.getMessage());
+        }
         board.start();
     }
 
