@@ -1,6 +1,7 @@
 package mesos.am30.GameModel;
 
 import com.google.gson.*;
+import mesos.am30.view.IF_GameView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +9,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -23,6 +22,9 @@ public class Utility {
                 .create();
 
         InputStream fileStream = Utility.class.getClassLoader().getResourceAsStream(fileName);
+        if (fileStream == null) {
+            throw new IllegalArgumentException("File not found: " + fileName);
+        }
         Reader reader = new InputStreamReader(fileStream, UTF_8); //might want a try-catch
 
         JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
@@ -42,6 +44,7 @@ public class Utility {
         fileStream.close();
         return extractedList;
     }
+
 }
 /*
 https://javadoc.io/doc/com.google.code.gson/gson/latest/com.google.gson/com/google/gson/JsonElement.html
