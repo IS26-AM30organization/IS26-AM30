@@ -99,7 +99,7 @@ public class GameManager {
 
     protected boolean anyCharacterLeft(List<Card> cards){
         for (Card card : cards)
-            if (card.isPickacble()) return true;
+            if (card.isPickable()) return true;
         return false;
     }
 

@@ -27,7 +27,7 @@ public class CharacterCard extends Card {
     }
 
     @Override
-    public boolean isPickacble() {
+    public boolean isPickable() {
         return true;
     }
 

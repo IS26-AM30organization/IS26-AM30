@@ -28,7 +28,7 @@ public abstract class Card implements Serializable {
         return this.era;
     }
 
-    public boolean isPickacble() {
+    public boolean isPickable() {
         return false;
     }
 
