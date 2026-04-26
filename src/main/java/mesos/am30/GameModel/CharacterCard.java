@@ -32,13 +32,6 @@ public class CharacterCard extends Card {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        CharacterCard that = (CharacterCard) o;
-        return role == that.role && Objects.equals(value, that.value) && Objects.equals(prestigePoints, that.prestigePoints) && this.id == that.getId();
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash(role, value, prestigePoints);
     }
@@ -53,5 +46,11 @@ public class CharacterCard extends Card {
 
     protected void discard(Board board){
         board.discard(this);
+    }
+
+    @Override
+    protected void displayCard() {
+        System.out.println(String.format("%-10s | %-5d | %-5d",
+                role, value, prestigePoints));
     }
 }

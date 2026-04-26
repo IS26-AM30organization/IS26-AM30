@@ -31,4 +31,9 @@ public class EventCard extends Card {
     protected void reorder(Board board) {
         super.reorder(board);
     }
+
+    @Override
+    protected void displayCard() {
+        System.out.println(String.format("event"));
+    }
 }

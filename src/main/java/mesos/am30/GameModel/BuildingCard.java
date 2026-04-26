@@ -61,4 +61,10 @@ public class BuildingCard extends Card {
     public int hashCode() {
         return Objects.hash(event, eventType, foodCost, ppGainEnd);
     }
+
+    @Override
+    protected void displayCard() {
+        System.out.println(String.format("%-10s | %-5d | %-5d",
+                eventType, foodCost, ppGainEnd));
+    }
 }

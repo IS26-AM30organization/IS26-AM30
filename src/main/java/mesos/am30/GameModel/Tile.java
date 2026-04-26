@@ -1,6 +1,7 @@
 package mesos.am30.GameModel;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Tile implements Serializable {
@@ -26,14 +27,26 @@ public class Tile implements Serializable {
     public void clearCurrentPlayer() {this.currentPlayer = null;}
 
     public Integer getUpArrows() {
-        return upArrows;
+        return (upArrows == null) ? 0 : upArrows;
     }
 
     public Integer getDownArrows() {
-        return downArrows;
+        return (downArrows == null) ? 0 : downArrows;
     }
 
     public Integer getFood() {
         return food;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Tile tile = (Tile) o;
+        return Objects.equals(currentPlayer, tile.currentPlayer) && Objects.equals(upArrows, tile.upArrows) && Objects.equals(downArrows, tile.downArrows) && Objects.equals(food, tile.food);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentPlayer, upArrows, downArrows, food);
     }
 }

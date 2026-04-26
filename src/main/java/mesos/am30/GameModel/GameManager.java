@@ -72,7 +72,7 @@ public class GameManager {
         }
     }
 
-    protected void iChangedTurn() throws  IOException {
+    protected void iChangedTurn() throws IOException {
         updateEveryone(ViewParameter.TILES, board.getTiles());
         updateEveryone(ViewParameter.PLAYERS, players);
         updateEveryone(ViewParameter.UPPER_ROW, board.getUpperRow());
@@ -80,7 +80,6 @@ public class GameManager {
         updateEveryone(ViewParameter.LOWER_BUILDINGS, board.getLowerBuildings());
         updateEveryone(ViewParameter.UPPER_BUILDINGS, board.getUpperBuildings());
         notifyEveryone(playersOrder.getFirst(), Move.PICK_TILE);
-
     }
 
     protected boolean anyChoosableCard(Player player){
@@ -97,7 +96,7 @@ public class GameManager {
         return false;
     }
 
-    protected boolean anyCharacterLeft(List<Card> cards){
+    protected boolean anyCharacterLeft(List<Card> cards) {
         for (Card card : cards)
             if (card.isPickable()) return true;
         return false;
@@ -120,8 +119,9 @@ public class GameManager {
         return move;
     }
 
-    protected void notifyEveryone (Player player, Move move) throws IOException {
-        for(IF_GameView view : views){
+    protected void notifyEveryone(Player player, Move move) throws IOException {
+        System.out.println("[TURN DEBUG] currentPlayer is: " + player.getNickname() + " | Move: " + move);
+        for (IF_GameView view : views) {
             view.notifyTurn(player.getNickname(), move);
         }
     }
@@ -129,9 +129,12 @@ public class GameManager {
     protected void updateEveryone(ViewParameter where, List<?> what) throws IOException {
         List<Object> parameters = new ArrayList<>(what);
 
-        for (IF_GameView view : views){
+        for (IF_GameView view : views) {
             view.update(where, parameters);
         }
     }
-
 }
+
+
+
+

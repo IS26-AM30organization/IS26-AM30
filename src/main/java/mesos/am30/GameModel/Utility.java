@@ -14,6 +14,8 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Utility {
+    private static int idCounter = 100; //global -> each card has a unique id
+
 
     public static <T> List<T> cardLoader(String fileName, int playerNum, Type cardType) throws IOException {
         List<T> extractedList = new ArrayList<>();
@@ -36,6 +38,7 @@ public class Utility {
             int minRequired = obj.get("playersMinimum").getAsInt();
 
             if (playerNum >= minRequired) {
+                obj.addProperty("id", idCounter++);
                 T item = gson.fromJson(obj, cardType);
                 extractedList.add(item);
             }

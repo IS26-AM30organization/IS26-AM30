@@ -3,11 +3,15 @@ package mesos.am30.server;
 import mesos.am30.GameModel.*;
 import mesos.am30.common.ErrorType;
 import mesos.am30.client.IF_GameView;
+import mesos.am30.common.Message;
+import mesos.am30.common.MessageType;
+import mesos.am30.common.Move;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 public class Controller implements IF_GameController {
@@ -41,18 +45,39 @@ public class Controller implements IF_GameController {
                 connections.keySet().stream().toList(),
                 connections.values().stream().toList()
         );
+
         try {
             board.prepare();
         } catch (IOException e) {
             System.err.println("[Error]: error on start-up" + e.getMessage());
         }
         board.start();
-    }
 
-    synchronized public void chooseTile(String nickname, Tile chosenTile) throws IOException {
+        Player currentPlayer = board.getCurrentPlayer();
+        try {
+            sendMove(currentPlayer, Move.PICK_TILE);
+        } catch (IOException e) {
+        System.err.println("[Error]: error on start-up" + e.getMessage());
+        }
+    }
+    synchronized public void chooseTile(String nickname, Tile requestingTile) throws IOException {
         Player requestingPlayer = getPlayerByNickname(nickname);
+
         if (!isPlayerTurn(requestingPlayer, board.getCurrentPlayer())) return;
-        if (!requestingPlayer.hasNoMoves()) return;
+        if (!requestingPlayer.hasNoMoves()) {
+            sendError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
+            return;
+        }
+
+        Tile chosenTile = null;
+
+        try {
+            chosenTile = board.getTiles().stream().filter(t -> t.equals(requestingTile)).toList().getFirst();
+        } catch (NoSuchElementException e) {
+            sendError(requestingPlayer, ErrorType.WRONG_TILE);
+            return;
+        }
+
         board.pickTile(requestingPlayer, chosenTile);
     }
 
@@ -67,9 +92,13 @@ public class Controller implements IF_GameController {
         }
 
         if (tryPickedCard(currentPlayer, card)) {
-            if (board.pickCard(requestingPlayer, card))
-                if (board.nextRound())
+            if (board.pickCard(requestingPlayer, card)) {
+                System.out.println("[DEBUG - CONTROLLER]: pickCard() returns true");
+                if (board.nextRound()) {
+                    System.out.println("[DEBUG - CONTROLLER]: nextRound() returns true");
                     return; //HERE LOGIC TO END GAME
+                }
+            }
         }
     }
 
@@ -93,6 +122,7 @@ public class Controller implements IF_GameController {
                     return; //HERE LOGIC TO END GAME
         }
     }
+
     //OTHER METHODS:
 
     private boolean isPlayerTurn(Player requestingPlayer, Player currentPlayer) throws IOException {
@@ -139,6 +169,11 @@ public class Controller implements IF_GameController {
     private void sendError(Player player, ErrorType errorType) throws IOException {
         IF_GameView connection = connections.get(player);
         if (connection != null) connection.notifyError(errorType);
+    }
+
+    private void sendMove(Player player, Move move) throws IOException {
+        IF_GameView connection = connections.get(player);
+        if (connection != null) connection.notifyTurn(player.getNickname(), move);
     }
 
     private Player getPlayerByNickname(String nickname) {

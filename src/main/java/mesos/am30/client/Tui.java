@@ -92,7 +92,7 @@ public class Tui implements IF_GameUI{
 	/**Shows on TUI actions made by any player
 	 */
 	public void printMove(String nickname, Move move) {
-		printMessage("[System]: Player" + nickname + "has" + move);
+		printMessage("[System]: Player " + nickname + " has " + move);
 
 		if (isMatchRunning) return;
 		isMatchRunning = true;

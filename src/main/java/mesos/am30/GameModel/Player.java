@@ -37,6 +37,7 @@ public class Player implements Serializable {
     }
 
     public void addCharacter (CharacterCard card){
+        List<CharacterCard> currentTribe = tribe.computeIfAbsent(card.getRole(), k -> new ArrayList<>());
         tribe.get(card.getRole()).add(card);
         updateStats(card.getRole(),card.getValue());
     }
@@ -116,7 +117,9 @@ public class Player implements Serializable {
         if (this == o) return true; //same mem address
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return Objects.equals(nickname, player.nickname) && Objects.equals(parameters, player.parameters) && Objects.equals(tribe, player.tribe) && Objects.equals(inventions, player.inventions) && Objects.equals(buildings, player.buildings) && Objects.equals(specialBuffs, player.specialBuffs);
+        //return Objects.equals(nickname, player.nickname) && Objects.equals(parameters, player.parameters) && Objects.equals(tribe, player.tribe) && Objects.equals(inventions, player.inventions) && Objects.equals(buildings, player.buildings) && Objects.equals(specialBuffs, player.specialBuffs);
+        return Objects.equals(nickname, player.nickname);
+
     }
 
     @Override
