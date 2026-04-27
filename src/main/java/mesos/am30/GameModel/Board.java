@@ -355,4 +355,8 @@ public class Board implements IF_GameModel {
     public List<BuildingCard> getLowerBuildings() { return lowerBuildings; }
 
     public List<Player> getPlayersOrder() { return playersOrder; }
+
+    public Move getCurrentMove() {
+        return game.getCurrentMove();
+    }
 }

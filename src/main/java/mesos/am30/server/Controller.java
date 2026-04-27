@@ -62,10 +62,10 @@ public class Controller implements IF_GameController {
     }
     synchronized public void chooseTile(String nickname, Tile requestingTile) throws IOException {
         Player requestingPlayer = getPlayerByNickname(nickname);
+        Player currentPlayer = board.getCurrentPlayer();
 
-        if (!isPlayerTurn(requestingPlayer, board.getCurrentPlayer())) return;
-        if (!requestingPlayer.hasNoMoves()) {
-            sendError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
+        if (!isPlayerTurn(requestingPlayer, currentPlayer) && !requestingPlayer.hasNoMoves()) {
+            handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
 
@@ -74,7 +74,7 @@ public class Controller implements IF_GameController {
         try {
             chosenTile = board.getTiles().stream().filter(t -> t.equals(requestingTile)).toList().getFirst();
         } catch (NoSuchElementException e) {
-            sendError(requestingPlayer, ErrorType.WRONG_TILE);
+            handleError(requestingPlayer, ErrorType.WRONG_TILE);
             return;
         }
 
@@ -85,9 +85,8 @@ public class Controller implements IF_GameController {
         Player requestingPlayer = getPlayerByNickname(nickname);
 
         Player currentPlayer = board.getCurrentPlayer();
-        if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
-        if (requestingPlayer.hasNoMoves()) {
-            sendError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
+        if (!isPlayerTurn(requestingPlayer, currentPlayer) && requestingPlayer.hasNoMoves()) {
+            handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
 
@@ -104,17 +103,16 @@ public class Controller implements IF_GameController {
 
     synchronized public void chooseBuilding(String nickname, BuildingCard card) throws IOException {
         Player requestingPlayer = getPlayerByNickname(nickname);
-
         Player currentPlayer = board.getCurrentPlayer();
-        if (!isPlayerTurn(requestingPlayer, currentPlayer)) return;
-        if (requestingPlayer.hasNoMoves()) {
-            sendError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
+        
+        if (!isPlayerTurn(requestingPlayer, currentPlayer) && requestingPlayer.hasNoMoves()) {
+            handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
 
         if (tryPickedCard(currentPlayer, card)) {
             if (!card.canBeBought(currentPlayer)) {
-                sendError(requestingPlayer, ErrorType.NOT_ENOUGH_FOOD);
+                handleError(requestingPlayer, ErrorType.NOT_ENOUGH_FOOD);
                 return;
             }
             if (board.pickCard(requestingPlayer, card))
@@ -128,7 +126,7 @@ public class Controller implements IF_GameController {
     private boolean isPlayerTurn(Player requestingPlayer, Player currentPlayer) throws IOException {
         if(currentPlayer == null) return false;
         if(requestingPlayer.equals(currentPlayer)) return true;
-        sendError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
+        handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
         return false;
     }
 
@@ -141,7 +139,7 @@ public class Controller implements IF_GameController {
             requestingPlayer.decreaseRemainingDownMoves();
             return true;
         }
-        sendError(requestingPlayer, ErrorType.WRONG_CARD);
+        handleError(requestingPlayer, ErrorType.WRONG_CARD);
         return false;
     }
 
@@ -154,7 +152,7 @@ public class Controller implements IF_GameController {
             requestingPlayer.decreaseRemainingDownMoves();
             return true;
         }
-        sendError(requestingPlayer, ErrorType.WRONG_CARD);
+        handleError(requestingPlayer, ErrorType.WRONG_CARD);
         return false;
     }
 
@@ -166,9 +164,12 @@ public class Controller implements IF_GameController {
         return cards.contains(card);
     }
 
-    private void sendError(Player player, ErrorType errorType) throws IOException {
+    private void handleError(Player player, ErrorType errorType) throws IOException {
         IF_GameView connection = connections.get(player);
-        if (connection != null) connection.notifyError(errorType);
+        if (connection != null) {
+            connection.notifyError(errorType);
+            reSendCurrentMove();
+        }
     }
 
     private void sendMove(Player player, Move move) throws IOException {
@@ -189,5 +190,9 @@ public class Controller implements IF_GameController {
     // Test getter for the attribute clients
     Map<Player, IF_GameView> getClients() {
         return connections;
+    }
+
+    private void reSendCurrentMove() throws IOException {
+        sendMove(board.getCurrentPlayer(), board.getCurrentMove());
     }
 }

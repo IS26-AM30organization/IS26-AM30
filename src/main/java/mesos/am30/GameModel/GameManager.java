@@ -14,30 +14,29 @@ public class GameManager {
     private List<Player> playersOrder; //direct pointer to board's playersOrder
     private List<IF_GameView> views;
     private List<Player> players;
+    private Move currentMove;
 
     public GameManager(Board board, List<Player> players, List<IF_GameView> views) {
         this.board = board;
         this.playersOrder = board.getPlayersOrder();
         this.views = views;
         this.players = players;
+        this.currentMove = Move.PICK_TILE;
     }
 
     protected boolean iPickedCard(Player player) throws IOException {
 
         updateEveryone(ViewParameter.PLAYERS, players);
 
-        /*
-        switch (parameter) {
-            case UPPER_ROW -> updateEveryone(parameter, board.getUpperRow());
-            case LOWER_ROW -> updateEveryone(parameter, board.getLowerRow());
-            case UPPER_BUILDINGS -> updateEveryone(parameter, board.getUpperBuildings());
-            case LOWER_BUILDINGS -> updateEveryone(parameter, board.getLowerBuildings());
+        if (players.getFirst().hasNoMoves()){
+            Player p = players.getFirst();
+            players.removeFirst();
+            players.add(p);
         }
-         */
 
-        while(anyChoosableCard(player)) {
-            if (player.hasNoMoves()) {
+        while(!players.getFirst().hasNoMoves() && !anyChoosableCard(player)) {
                 playersOrder.remove(player);
+
                 if(player.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_UP_TILE)) {
                     player.setMoves(1,0);
                     player.removeBuff(SpecialBuff.ADDITIONAL_UP_TILE);
@@ -51,8 +50,8 @@ public class GameManager {
                     }
                 }
                 playersOrder.add(player);
-            }
         }
+
         if(playersOrder.getFirst().hasNoMoves())
             return true;
         else
@@ -85,14 +84,15 @@ public class GameManager {
     protected boolean anyChoosableCard(Player player){
         if (player.hasEnoughUpMoves() &&
                 anyCharacterLeft(board.getUpperRow())) {
-            player.setUpMoves(0);
             return true;
         }
         if (player.hasEnoughDownMoves() &&
                 anyCharacterLeft(board.getLowerRow())) {
-            player.setDownMoves(0);
             return true;
         }
+
+        player.setUpMoves(0);
+        player.setDownMoves(0);
         return false;
     }
 
@@ -120,7 +120,9 @@ public class GameManager {
     }
 
     protected void notifyEveryone(Player player, Move move) throws IOException {
-        System.out.println("[TURN DEBUG] currentPlayer is: " + player.getNickname() + " | Move: " + move);
+        System.out.println("[TURN LOG] currentPlayer is: " + player.getNickname() + " | Move: " + move);
+        setCurrentMove(move);
+
         for (IF_GameView view : views) {
             view.notifyTurn(player.getNickname(), move);
         }
@@ -132,6 +134,14 @@ public class GameManager {
         for (IF_GameView view : views) {
             view.update(where, parameters);
         }
+    }
+
+    private void setCurrentMove(Move currentMove) {
+        this.currentMove = currentMove;
+    }
+
+    public Move getCurrentMove() {
+        return currentMove;
     }
 }
 
