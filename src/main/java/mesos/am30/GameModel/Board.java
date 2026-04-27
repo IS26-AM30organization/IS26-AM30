@@ -115,12 +115,6 @@ public class Board implements IF_GameModel {
 
         Collections.shuffle(playersOrder);
 
-        //Prints cards
-        decks.forEach(deck -> {
-            System.out.println("--- Deck ---");
-            deck.forEach(Card::displayCard);
-            System.out.println();
-        });
     }
 
     //first round

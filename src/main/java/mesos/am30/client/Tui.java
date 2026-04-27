@@ -9,6 +9,7 @@ import mesos.am30.common.GamePhase;
 import mesos.am30.common.Move;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,11 +47,13 @@ public class Tui implements IF_GameUI{
 			String plInput = actionScanner.nextLine();
 			String[] plAction = plInput.toLowerCase().split("\\s+");
 
-			switch (gPhase) {
-                case GAME -> matchCMDs(plAction);
-				default -> printMessage("The current Phase is non existent");
-			}
+            if (Objects.requireNonNull(gPhase) == GamePhase.GAME) {
+                matchCMDs(plAction);
+            } else {
+                printMessage("The current Phase is non existent");
+            }
 		}
+		printEnd();
 	}
 
 	/**
@@ -81,7 +84,6 @@ public class Tui implements IF_GameUI{
     }
 
 	/**Invoked by views, once called, it updates the TUI
-	 * On first call it starts the terminal executor.
 	 */
 	public void refresh(ViewModel vBoard) {
 		this.vBoard = vBoard; //check if needed
@@ -90,6 +92,7 @@ public class Tui implements IF_GameUI{
 	}
 
 	/**Shows on TUI actions made by any player
+	 *  On first call it starts the terminal executor.
 	 */
 	public void printMove(String nickname, Move move) {
 		printMessage("[System]: Player " + nickname + " has " + move);
@@ -211,29 +214,33 @@ public class Tui implements IF_GameUI{
 	 */
 	private void matchCMDs(String[] plAction) {
 		String action = " ";
-		int cIndex = 0;
+		int cIndex = -1;
 
 		action = plAction[0];
 		int cmdSize = plAction.length;
 
 		if(cmdSize>0 && cmdSize<=3) {
-			switch (cmdSize) {
-				case 2 -> cIndex = parseInt(plAction[1]);
-                case 3 -> {
-                    action += " " + plAction[1];
-                    cIndex = parseInt(plAction[2]);
-                }
-                default -> printMessage("Invalid Command.");
-			}
 			try {
+				switch (cmdSize) {
+					case 2 -> cIndex = parseInt(plAction[1]);
+					case 3 -> {
+						action += " " + plAction[1];
+						cIndex = parseInt(plAction[2]);
+					}
+					default -> printMessage("Invalid Command.");
+				}
+
 				switch (action) {
 					case "-h", "-help" -> showAvailableCommands();
-                    case "tile" -> vView.checkTile(wantedTile(cIndex));
-                    case "draw up" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_UP, cIndex));
-                    case "draw down" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_DOWN, cIndex));
+					case "tile" -> {
+						System.out.println("[DEBUG - TUI] tile in switch case");
+						vView.checkTile(wantedTile(cIndex));
+					}
+					case "draw up" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_UP, cIndex));
+					case "draw down" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_DOWN, cIndex));
 					case "buy up" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_UP, cIndex));
-                    case "buy down" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_DOWN, cIndex));
-                    default -> printMessage("Invalid Command.");
+					case "buy down" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_DOWN, cIndex));
+					default -> printMessage("Invalid Command.");
 				}
 			} catch (NumberFormatException | IndexOutOfBoundsException e) {
 				printMessage("Invalid number.");

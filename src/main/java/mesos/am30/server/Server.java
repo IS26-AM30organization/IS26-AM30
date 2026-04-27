@@ -179,7 +179,6 @@ public class Server extends UnicastRemoteObject implements IF_Server {
         if (lobby == null) asynchronousViewCall(() -> view.notifyError(ErrorType.NOT_EXISTING_LOBBY));
         else if (lobby.isFull()) asynchronousViewCall(() -> view.notifyError(ErrorType.FULL_LOBBY));
         else {
-            System.out.println("[DEBUG] Test login: " + nickname);
             // check nickname
             List<String> existingNicknames = lobby.getClients().keySet().stream()
                     .map(Player::getNickname)
