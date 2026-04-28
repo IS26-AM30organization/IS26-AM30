@@ -32,22 +32,24 @@ class ServerTest {
     }
 
     @Test
-    void handleConnection_First_Player() throws IOException {
+    void handleConnection_First_Player() throws IOException, InterruptedException {
         // Act
         Server.getInstance().handleConnection(mockView);
 
         // Assert
+        Thread.sleep(200);
         assertTrue(Server.getConnectedViews().contains(mockView));
         verify(mockView).askPlayersNumber();
     }
 
     @Test
-    void handleConnection_Not_First_Player() throws IOException {
+    void handleConnection_Not_First_Player() throws IOException, InterruptedException {
         // Act
         Server.setLobby(new Controller(4));
         Server.getInstance().handleConnection(mockView);
 
         // Assert
+        Thread.sleep(200);
         assertTrue(Server.getConnectedViews().contains(mockView));
         verify(mockView).askNickname();
     }
@@ -109,11 +111,12 @@ class ServerTest {
     }
 
     @Test
-    void setPlayersNumber_New_Lobby() throws IOException {
+    void setPlayersNumber_New_Lobby() throws IOException, InterruptedException {
         // Act
         Server.getInstance().setPlayersNumber(mockView, 4);
 
         // Assert
+        Thread.sleep(200);
         assertNotNull(Server.getLobby());
         Controller controller = Server.getLobby();
         assertEquals(4, controller.getPlayersNumber());
@@ -122,12 +125,13 @@ class ServerTest {
     }
 
     @Test
-    void setPlayersNumber_Already_Existing_Lobby() throws IOException {
+    void setPlayersNumber_Already_Existing_Lobby() throws IOException, InterruptedException {
         // Act
         Server.setLobby(new Controller(2));
         Server.getInstance().setPlayersNumber(mockView, 4);
 
         // Assert
+        Thread.sleep(200);
         assertNotNull(Server.getLobby());
         Controller controller = Server.getLobby();
         assertEquals(2, controller.getPlayersNumber());
@@ -136,37 +140,40 @@ class ServerTest {
     }
 
     @Test
-    void setPlayersNumber_Low_PlayersNumber() throws IOException {
+    void setPlayersNumber_Low_PlayersNumber() throws IOException, InterruptedException {
         // Act
         Server.getInstance().setPlayersNumber(mockView, 1);
 
         // Assert
+        Thread.sleep(200);
         assertNull(Server.getLobby());
         verify(mockView).notifyError(ErrorType.WRONG_PLAYERS_NUMBER);
     }
 
     @Test
-    void setPlayersNumber_High_PlayersNumber() throws IOException {
+    void setPlayersNumber_High_PlayersNumber() throws IOException, InterruptedException {
         // Act
         Server.getInstance().setPlayersNumber(mockView, 6);
 
         // Assert
+        Thread.sleep(200);
         assertNull(Server.getLobby());
         verify(mockView).notifyError(ErrorType.WRONG_PLAYERS_NUMBER);
     }
 
     @Test
-    void setNickname_No_Lobby() throws IOException {
+    void setNickname_No_Lobby() throws IOException, InterruptedException {
         // Act
         Server.getInstance().setNickname(mockView, "nickname");
 
         // Assert
+        Thread.sleep(200);
         assertNull(Server.getLobby());
         verify(mockView).notifyError(ErrorType.NOT_EXISTING_LOBBY);
     }
 
     @Test
-    void setNickname_Already_Full_Lobby() throws IOException {
+    void setNickname_Already_Full_Lobby() throws IOException, InterruptedException {
         // set up lobby
         Server.setLobby(new Controller(0));
 
@@ -174,6 +181,7 @@ class ServerTest {
         Server.getInstance().setNickname(mockView, "nickname");
 
         // Assert
+        Thread.sleep(200);
         Controller controller = Server.getLobby();
         assertEquals(0, controller.getPlayersNumber());
         assertEquals(0, controller.getClients().size());
@@ -181,12 +189,13 @@ class ServerTest {
     }
 
     @Test
-    void setNickname_New_Nickname() throws IOException {
+    void setNickname_New_Nickname() throws IOException, InterruptedException {
         // Act
         Server.setLobby(new Controller(2));
         Server.getInstance().setNickname(mockView, "nickname");
 
         // Assert
+        Thread.sleep(200);
         assertNotNull(Server.getLobby());
         Controller controller = Server.getLobby();
         assertEquals(2, controller.getPlayersNumber());

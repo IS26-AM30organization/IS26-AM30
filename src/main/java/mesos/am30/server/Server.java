@@ -19,6 +19,8 @@ import java.rmi.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Static Server for the game "Mesos".
@@ -34,10 +36,12 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     private static Server instance = null;
     private static Controller lobby = null;
     private static List<IF_GameView> connectedViews;
+    private static ThreadPoolExecutor executor;
 
     // constructor of the instance
     Server() throws RemoteException {
         connectedViews = new ArrayList<>();
+        executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     }
 
     /**
@@ -66,6 +70,15 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     // Test getter for the attribute connectedViews
     static List<IF_GameView> getConnectedViews() {
         return connectedViews;
+    }
+
+    // handle an asynchronous view method call
+    private void asynchronousViewCall(IORunnable method) throws IOException {
+        executor.execute(() -> {
+            try {
+                method.run();
+            } catch (IOException ignored) { /* handled by heartbeat */ }
+        });
     }
 
     /**
@@ -121,8 +134,8 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     public synchronized void handleConnection(IF_GameView view) throws IOException {
         connectedViews.add(view);
         startHeartbeat(view);
-        if (lobby == null) view.askPlayersNumber();
-        else view.askNickname();
+        if (lobby == null) asynchronousViewCall(view::askPlayersNumber);
+        else asynchronousViewCall(view::askNickname);
     }
 
     // start a Heartbeat thread
@@ -144,11 +157,11 @@ public class Server extends UnicastRemoteObject implements IF_Server {
      */
     @Override
     public synchronized void setPlayersNumber(IF_GameView view, int playersNumber) throws IOException {
-        if (lobby != null) view.notifyError(ErrorType.ALREADY_EXISTING_LOBBY);
-        else if (playersNumber < 2 || playersNumber > 5) view.notifyError(ErrorType.WRONG_PLAYERS_NUMBER);
+        if (lobby != null) asynchronousViewCall(() -> view.notifyError(ErrorType.ALREADY_EXISTING_LOBBY));
+        else if (playersNumber < 2 || playersNumber > 5) asynchronousViewCall(() -> view.notifyError(ErrorType.WRONG_PLAYERS_NUMBER));
         else {
             lobby = new Controller(playersNumber);
-            view.askNickname();
+            asynchronousViewCall(view::askNickname);
         }
     }
 
@@ -156,23 +169,21 @@ public class Server extends UnicastRemoteObject implements IF_Server {
      * @see IF_Server Implementation of the ping method
      */
     @Override
-    public void ping() throws IOException {
-
-    }
+    public void ping() throws IOException {}
 
     /**
      * @see IF_Server Implementation of the handleConnection method
      */
     @Override
     public synchronized void setNickname(IF_GameView view, String nickname) throws IOException {
-        if (lobby == null) view.notifyError(ErrorType.NOT_EXISTING_LOBBY);
-        else if (lobby.isFull()) view.notifyError(ErrorType.FULL_LOBBY);
+        if (lobby == null) asynchronousViewCall(() -> view.notifyError(ErrorType.NOT_EXISTING_LOBBY));
+        else if (lobby.isFull()) asynchronousViewCall(() -> view.notifyError(ErrorType.FULL_LOBBY));
         else {
             // check nickname
             List<String> existingNicknames = lobby.getClients().keySet().stream()
                     .map(Player::getNickname)
                     .toList();
-            if (existingNicknames.contains(nickname)) view.notifyError(ErrorType.WRONG_NICKNAME);
+            if (existingNicknames.contains(nickname)) asynchronousViewCall(() -> view.notifyError(ErrorType.WRONG_NICKNAME));
             else if (lobby.connect(view, nickname)) new Thread(lobby::startGame).start();
         }
     }
@@ -189,8 +200,8 @@ public class Server extends UnicastRemoteObject implements IF_Server {
         connectedViews.remove(disconnected);
         connectedViews.forEach(view -> {
             try {
-                view.notifyError(ErrorType.END_FOR_DISCONNECTION);
-                view.end();
+                asynchronousViewCall(() -> view.notifyError(ErrorType.END_FOR_DISCONNECTION));
+                asynchronousViewCall(view::end);
             } catch (IOException ignored) { /* Client connection failed */ }
         });
         connectedViews = new ArrayList<>();
