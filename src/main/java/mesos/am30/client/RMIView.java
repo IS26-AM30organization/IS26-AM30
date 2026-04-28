@@ -39,7 +39,7 @@ public class RMIView extends VirtualView {
     public void findServer(String path, int port) throws IOException {
         try {
             Registry registry = LocateRegistry.getRegistry(path, port);
-            remoteServer = (IF_Server) registry.lookup("Game");
+            remoteServer = (IF_Server) registry.lookup("server");
             remoteServer.handleConnection(this);
             startHeartbeat(remoteServer);
         }

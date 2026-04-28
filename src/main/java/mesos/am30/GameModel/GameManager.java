@@ -28,13 +28,14 @@ public class GameManager {
 
         updateEveryone(ViewParameter.PLAYERS, players);
 
-        if (players.getFirst().hasNoMoves()){
-            Player p = players.getFirst();
-            players.removeFirst();
-            players.add(p);
+        if (playersOrder.getFirst().hasNoMoves()){
+            playersOrder.remove(player);
+            playersOrder.add(player);
         }
 
-        while(!players.getFirst().hasNoMoves() && !anyChoosableCard(player)) {
+        player = playersOrder.getFirst();
+
+        while(!player.hasNoMoves() && !anyChoosableCard(player)) {
                 playersOrder.remove(player);
 
                 if(player.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_UP_TILE)) {
@@ -50,6 +51,7 @@ public class GameManager {
                     }
                 }
                 playersOrder.add(player);
+                player = playersOrder.getFirst();
         }
 
         if(playersOrder.getFirst().hasNoMoves())

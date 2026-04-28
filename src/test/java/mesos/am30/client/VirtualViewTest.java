@@ -310,14 +310,14 @@ class VirtualViewTest {
         viewModel.setLowerBuildings(List.of(mockBuildingCard));
         viewModel.setPlayers(List.of(mockPlayer));
         viewModel.setCurrentUser("nickname");
-        viewModel.setCurrentMove(Move.PICK_CARD);
+        viewModel.setCurrentMove(Move.PICK_ANY_CARD);
 
         // Act
         virtualView.checkBuildingCard(mockBuildingCard);
 
         // Assert
         assertEquals(virtualView.nickname, viewModel.getCurrentUser().getNickname());
-        assertEquals(Move.PICK_CARD, viewModel.getCurrentMove());
+        assertEquals(Move.PICK_ANY_CARD, viewModel.getCurrentMove());
         assertTrue(viewModel.getLowerBuildings().contains(mockBuildingCard));
         assertFalse(mockPlayer.getParameters().get(Parameter.FOOD) >= mockBuildingCard.getFoodCost());
         verify(mockUI).printError(ErrorType.NOT_ENOUGH_FOOD);
