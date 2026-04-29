@@ -63,7 +63,7 @@ public class BuildingCard extends Card {
     }
 
     @Override
-    protected void displayCard() {
+    public void displayCard() {
         System.out.println(String.format("%-10s | %-5d | %-5d",
                 eventType, foodCost, ppGainEnd));
     }

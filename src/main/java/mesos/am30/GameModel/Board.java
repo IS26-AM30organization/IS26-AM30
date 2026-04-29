@@ -81,7 +81,7 @@ public class Board implements IF_GameModel {
 
         //Creating Deck + Shuffling
         List<List<Card>> createDecks = new ArrayList<>();
-        for (int i = 0; i <= 4; i++) {
+        for (int i = 0; i < 4; i++) {
             int era = i +1;
             List<Card> deck = new ArrayList<>(fullDeck.stream()
                     .filter(x -> x.getEra() == era)
@@ -252,12 +252,15 @@ public class Board implements IF_GameModel {
 
         if (upperRow.size() < players.size()+4) {
             nextEra();
+            System.out.println("[GAME LOG] changed era");
             if(decks.isEmpty()) {
+                System.out.println("[GAME LOG] deck is empty");
                 end();
+                game.sendClientEnd();
                 return true;
             }
-                else {
-                    drawUpperRow();
+            else {
+                drawUpperRow();
             }
         }
 

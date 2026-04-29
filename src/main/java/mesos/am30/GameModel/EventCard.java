@@ -33,7 +33,7 @@ public class EventCard extends Card {
     }
 
     @Override
-    protected void displayCard() {
+    public void displayCard() {
         System.out.println(String.format("event"));
     }
 }

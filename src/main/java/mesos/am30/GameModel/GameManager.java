@@ -74,13 +74,24 @@ public class GameManager {
     }
 
     protected void iChangedTurn() throws IOException {
+        updateState();
+        notifyEveryone(playersOrder.getFirst(), Move.PICK_TILE);
+    }
+
+    protected void sendClientEnd() throws IOException {
+        updateState();
+        for (IF_GameView view : views) {
+            view.end();
+        }
+    }
+
+    protected void updateState() throws IOException{
         updateEveryone(ViewParameter.TILES, board.getTiles());
         updateEveryone(ViewParameter.PLAYERS, players);
         updateEveryone(ViewParameter.UPPER_ROW, board.getUpperRow());
         updateEveryone(ViewParameter.LOWER_ROW, board.getLowerRow());
         updateEveryone(ViewParameter.LOWER_BUILDINGS, board.getLowerBuildings());
         updateEveryone(ViewParameter.UPPER_BUILDINGS, board.getUpperBuildings());
-        notifyEveryone(playersOrder.getFirst(), Move.PICK_TILE);
     }
 
     protected boolean anyChoosableCard(Player player){

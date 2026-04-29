@@ -6,11 +6,11 @@ import java.util.Optional;
 import java.util.Set;
 
 public class DoubleInventions implements IF_Event {
-    private final Set<Integer> uniqueInventions;
+    private final Set<Integer> uniqueInventions = new HashSet<>(10);
     private final int foodGain;
 
     public DoubleInventions(int foodGain) {
-        this.uniqueInventions = new HashSet<>(10);
+        //this.uniqueInventions = new HashSet<>(10);
         this.foodGain = foodGain;
     }
 

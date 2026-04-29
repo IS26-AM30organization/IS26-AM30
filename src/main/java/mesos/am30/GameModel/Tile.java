@@ -1,6 +1,8 @@
 package mesos.am30.GameModel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -48,5 +50,15 @@ public class Tile implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(currentPlayer, upArrows, downArrows, food);
+    }
+
+    public void displayTile() {
+        List<String> str = new ArrayList<>();
+
+        if (upArrows != null) str.add("\033[34m" + "UP: " + "\033[0m" + upArrows);
+        if (downArrows != null) str.add("\033[31m" + "DOWN: "+ "\033[0m" + downArrows);
+        if (currentPlayer != null) str.add("\033[32m" + "PL: " + currentPlayer.getNickname() + "\033[0m");
+
+        System.out.print(String.join(" ", str) + "      ");
     }
 }

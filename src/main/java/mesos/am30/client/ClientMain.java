@@ -1,8 +1,10 @@
 package mesos.am30.client;
 
+import java.rmi.RemoteException;
+
 public class ClientMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
         String serverIp = "127.0.0.1";
         int serverPort = 12345;
 

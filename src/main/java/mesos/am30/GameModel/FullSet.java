@@ -7,13 +7,13 @@ import java.util.Map;
 
 
 public class FullSet implements IF_Event {
-    private final Map<Parameter, Integer> collectedSets;
-    private final Map<Parameter,Integer> prevAmount; //saves each characterType amount prior to drawing a new card
+    private final Map<Parameter, Integer> collectedSets = new HashMap<>();
+    private final Map<Parameter,Integer> prevAmount = new HashMap<>(); //saves each characterType amount prior to drawing a new card
     private final int foodGain;
 
     public FullSet(int foodGain) {
-        this.collectedSets = new HashMap<>();
-        this.prevAmount = new HashMap<>();
+        //this.collectedSets = new HashMap<>();
+        //this.prevAmount = new HashMap<>();
         this.foodGain = foodGain;
     }
 

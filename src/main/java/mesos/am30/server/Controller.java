@@ -95,6 +95,7 @@ public class Controller implements IF_GameController {
                 System.out.println("[DEBUG - CONTROLLER]: pickCard() returns true");
                 if (board.nextRound()) {
                     System.out.println("[DEBUG - CONTROLLER]: nextRound() returns true");
+                    sendEnd();
                     return; //HERE LOGIC TO END GAME
                 }
             }
@@ -117,6 +118,7 @@ public class Controller implements IF_GameController {
             }
             if (board.pickCard(requestingPlayer, card))
                 if (board.nextRound())
+                    sendEnd();
                     return; //HERE LOGIC TO END GAME
         }
     }
@@ -175,6 +177,15 @@ public class Controller implements IF_GameController {
     private void sendMove(Player player, Move move) throws IOException {
         IF_GameView connection = connections.get(player);
         if (connection != null) connection.notifyTurn(player.getNickname(), move);
+    }
+
+    private void sendEnd() throws IOException {
+        IF_GameView connection = null;
+        for (Player p : connections.keySet()) {
+            connection = connections.get(p);
+            if (connection != null) connection.end();
+        }
+        System.out.println("[TURN LOG] game is ended");
     }
 
     private Player getPlayerByNickname(String nickname) {
