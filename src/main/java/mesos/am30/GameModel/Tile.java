@@ -61,4 +61,33 @@ public class Tile implements Serializable {
 
         System.out.print(String.join(" ", str) + "      ");
     }
+
+    public void createRow(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {
+        String r = "";
+        if (food != null) r = "\033[31m" + "Up: " + "\033[0m" + food;
+        if (upArrows != null) r = "\033[32m" + "Up: " + "\033[0m" + upArrows;
+        String i = "";
+        if (downArrows != null) i = "\033[31m" + "Down: " + "\033[0m" + downArrows;
+        String pp = "";
+        if (currentPlayer != null) pp = "\033[33m" + "Player: " + "\033[0m" + currentPlayer.getNickname();
+
+        //Ansi characters are a problem for length size, must be ignored
+        String ansiRegex = "\u001B\\[[;\\d]*m";
+
+        int real1 = r.replaceAll(ansiRegex, "").length();
+        int real2 = i.replaceAll(ansiRegex, "").length();
+        int real3 = pp.replaceAll(ansiRegex, "").length();
+
+        int maxWidth = Math.max(real1, Math.max(real2, real3)) + 3;
+
+        ln1.append(r);
+        for (int x = real1; x < maxWidth; x++) ln1.append(" ");
+
+        ln2.append(i);
+        for (int x = real2; x < maxWidth; x++) ln2.append(" ");
+
+        ln3.append(pp);
+        for (int x = real3; x < maxWidth; x++) ln3.append(" ");
+    }
+
 }

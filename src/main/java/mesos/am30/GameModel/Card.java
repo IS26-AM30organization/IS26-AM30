@@ -46,5 +46,7 @@ public abstract class Card implements Serializable {
 
     protected void reorder (Board board){}
 
-    public void displayCard(){}
+    public void displayCard() {}
+
+    public void createRow(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {}
 }

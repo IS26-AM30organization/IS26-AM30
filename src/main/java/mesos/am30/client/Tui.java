@@ -314,42 +314,20 @@ public class Tui implements IF_GameUI {
 		List<Tile> tiles = vBoard.getTiles();
 		List<Player> players = vBoard.getPlayers();
 
-		int i = 0;
 		System.out.println("\033[1;32m" + "\nUPPER-ROW" + "\033[0m");
-		for (Card card : upRow) {
-			System.out.print("\033[1;35m" + i + "." + "\033[0m");
-			card.displayCard();
-			i++;
-		}
-		i = 0;
+		displayRows(upRow);
+
 		System.out.println("\033[1;33m" + "\nUPPER-BUILDS" + "\033[0m");
-		for (BuildingCard bCard : upBuild) {
-			System.out.print("\033[1;35m" + i + "." + "\033[0m");
-			bCard.displayCard();
-			i++;
-		}
+		displayBuilds(upBuild);
+
 		System.out.println("\033[1;34m" + "\nTILES" + "\033[0m");
-		i = 0;
-		for (Tile tile : tiles) {
-			System.out.print("\033[1;35m" + i + "." + "\033[0m");
-			tile.displayTile();
-			i++;
-		}
-		System.out.println("\n");
+		displayTiles(tiles);
+
 		System.out.println("\033[1;32m" + "\nLOWER-ROW" + "\033[0m");
-		i = 0;
-		for (Card card : loRow) {
-			System.out.print("\033[1;35m" + i + "." + "\033[0m");
-			card.displayCard();
-			i++;
-		}
-		i = 0;
+		displayRows(loRow);
+
 		System.out.println("\033[1;33m" + "\nLOWER-BUILDS" + "\033[0m");
-		for (BuildingCard bCard : loBuild) {
-			System.out.print("\033[1;35m" + i + "." + "\033[0m");
-			bCard.displayCard();
-			i++;
-		}
+		displayBuilds(loBuild);
 
 		for (Player p : players) {
 			System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
@@ -357,6 +335,64 @@ public class Tui implements IF_GameUI {
 			p.displayStats();
 		}
 		System.out.println("\n");
+	}
+
+	private void displayRows(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {
+		System.out.println(ln1);
+		System.out.println(ln2);
+		System.out.println(ln3);
+
+		ln1.setLength(0);
+		ln2.setLength(0);
+		ln3.setLength(0);
+	}
+
+	private void displayRows(List<Card> row) {
+		if (row.isEmpty()) return;
+
+		int j = 0;
+		int maxCardsXRow = 6;
+
+		StringBuilder ln1 = new StringBuilder();
+		StringBuilder ln2 = new StringBuilder();
+		StringBuilder ln3 = new StringBuilder();
+
+		for (Card card : row) {
+			card.createRow(ln1, ln2, ln3);
+			j++;
+			if (j == maxCardsXRow) {
+				displayRows(ln1, ln2, ln3);
+				j = 0;
+			}
+		}
+		if (j > 0) displayRows(ln1, ln2, ln3);
+	}
+
+	private void displayBuilds(List<BuildingCard> builds) {
+		if (builds.isEmpty()) return;
+
+		StringBuilder ln1 = new StringBuilder();
+		StringBuilder ln2 = new StringBuilder();
+		StringBuilder ln3 = new StringBuilder();
+
+		for (Card card : builds) {
+			card.createRow(ln1, ln2, ln3);
+		}
+		displayRows(ln1, ln2, ln3);
+	}
+
+	private void displayTiles(List<Tile> tiles) {
+		if (tiles.isEmpty()) return;
+
+		StringBuilder ln1 = new StringBuilder();
+		StringBuilder ln2 = new StringBuilder();
+		StringBuilder ln3 = new StringBuilder();
+
+
+		for (Tile tile : tiles) {
+			tile.createRow(ln1, ln2, ln3);
+		}
+		displayRows(ln1, ln2, ln3);
 	}
 }
 

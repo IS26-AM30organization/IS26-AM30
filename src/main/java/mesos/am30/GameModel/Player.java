@@ -178,7 +178,7 @@ public class Player implements Serializable {
         StringBuilder rowPP = new StringBuilder();
         for (List<CharacterCard> roles : tribe.values()) {
             for (CharacterCard card : roles) {
-                card.createRows(rowRoles, rowValue, rowPP);
+                card.createRow(rowRoles, rowValue, rowPP);
                 i++;
 
                 if (i == maxCardsXRow) {
@@ -201,6 +201,9 @@ public class Player implements Serializable {
         }
     }
 
+    /**
+     * It prints the player's food, pPoints and Unique Inventions
+     */
     public void displayStats() {
         int food = parameters.get(Parameter.FOOD);
         int prestigePoints = parameters.get(Parameter.PRESTIGE_POINTS);

@@ -60,8 +60,8 @@ public class CharacterCard extends Card {
 
         System.out.print(String.join(" ", str) + "\n");
     }
-
-    public void createRows(StringBuilder rowRoles, StringBuilder rowValue, StringBuilder rowPP) {
+    @Override
+    public void createRow(StringBuilder rowRoles, StringBuilder rowValue, StringBuilder rowPP) {
         String r = "[" + role + "]";
         String i = "";
         if (value != 0) i = "ITEM: " + value;
