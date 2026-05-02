@@ -84,7 +84,7 @@ class RMIViewTest {
         verify(mockController, times(1)).chooseTile("Lore", mockTile);
         verify(mockController, never()).chooseBuilding(anyString(), any());
         verify(mockServer, never()).setNickname(any(),any());
-        verify(mockServer, never()).setPlayersNumber(any(),any(Integer.class));
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
     }
 
@@ -97,7 +97,7 @@ class RMIViewTest {
 
         // verify
         verify(mockController, times(1)).chooseBuilding("Lore", mockBuilding);
-        verify(mockServer, never()).setPlayersNumber(any(),any(Integer.class));
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockServer, never()).setNickname(any(),any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
@@ -112,22 +112,23 @@ class RMIViewTest {
 
         // verify
         verify(mockController, times(1)).chooseCharacter("Lore", mockCharacter);
-        verify(mockServer, never()).setPlayersNumber(any(),any(Integer.class));
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockServer, never()).setNickname(any(),any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
     }
 
     @Test
-    void toController_RoutesChoosePlayersNumbers() throws Exception {
+    void toController_RoutesCreateLobby() throws Exception {
         rmiView.setController(mockController);
         rmiView.setNickname("Lore");
 
-        rmiView.toController(Choice.PLAYERS_NUMBER, 3);
+        rmiView.lobbyCode = "123456";
+        rmiView.toController(Choice.CREATE_LOBBY, 3);
 
         // verify
-        verify(mockServer, times(1)).setPlayersNumber(rmiView, (int) 3);
-        verify(mockServer, never()).setNickname(any(),any());
+        verify(mockServer, times(1)).createLobby(rmiView, 3, "123456");
+        verify(mockServer, never()).setNickname(any(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
@@ -142,7 +143,7 @@ class RMIViewTest {
 
         // verify
         verify(mockServer, times(1)).setNickname(rmiView, (String) "Lore");
-        verify(mockServer, never()).setPlayersNumber(any(),any(Integer.class));
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());

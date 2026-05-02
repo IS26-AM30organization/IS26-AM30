@@ -1,7 +1,10 @@
 package mesos.am30.client;
 
 import mesos.am30.gameModel.*;
-import mesos.am30.gameModel.card.*;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
+import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.Choice;
 import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
@@ -11,6 +14,7 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * View implementation Client-Side.
@@ -25,6 +29,8 @@ public abstract class VirtualView implements IF_GameView {
     protected final IF_GameUI userInterface;
     protected final ViewModel model;
     protected String nickname = "stillToConnect";   // avoid null value messages
+    protected String lobbyCode = "";
+    protected int playersNumber = 0;
 
     /**
      * Constructor for virtualView.
@@ -85,10 +91,7 @@ public abstract class VirtualView implements IF_GameView {
                 model.setDefault();
                 toController(Choice.CHOOSE_TILE, choice);
             } else notifyError(ErrorType.WRONG_TILE);
-        } else {
-            notifyError(ErrorType.NOT_YOUR_TURN);
-            System.out.println("I'm " + nickname + " and " + model.getCurrentUser().getNickname() + " is current with " + model.getCurrentMove());
-        }
+        } else notifyError(ErrorType.NOT_YOUR_TURN);
     }
 
     /**
@@ -112,10 +115,7 @@ public abstract class VirtualView implements IF_GameView {
                 model.setDefault();
                 toController(Choice.CHOOSE_CHARACTER, choice);
             } else notifyError(ErrorType.WRONG_CARD);
-        } else {
-            notifyError(ErrorType.NOT_YOUR_TURN);
-            System.out.println(model.getCurrentUser().getNickname() + "is current with" + model.getCurrentMove());
-        }
+        } else notifyError(ErrorType.NOT_YOUR_TURN);
     }
 
     // get the correct Character Cards
@@ -125,21 +125,21 @@ public abstract class VirtualView implements IF_GameView {
             // picked Character from upper/lower row
             case PICK_ANY_CARD -> {
                 List<Card> upperRow = model.getUpperRow().stream()
-                        .filter(card -> card instanceof CharacterCard)
+                        .filter(Card::isPickable)
                         .toList();
                 List<Card> lowerRow = model.getLowerRow().stream()
-                        .filter(card -> card instanceof CharacterCard)
+                        .filter(Card::isPickable)
                         .toList();
                 row = new ArrayList<>(upperRow);
                 row.addAll(lowerRow);
             }
             // picked Character from upper row
             case PICK_FROM_UP -> row = model.getUpperRow().stream()
-                    .filter(card -> card instanceof CharacterCard)
+                    .filter(Card::isPickable)
                     .toList();
             // picked Character from lower row
             case PICK_FROM_DOWN -> row = model.getLowerRow().stream()
-                    .filter(card -> card instanceof CharacterCard)
+                    .filter(Card::isPickable)
                     .toList();
         }
         return row;
@@ -168,10 +168,7 @@ public abstract class VirtualView implements IF_GameView {
                     toController(Choice.CHOOSE_BUILDING, choice);
                 } else notifyError(ErrorType.NOT_ENOUGH_FOOD);
             } else notifyError(ErrorType.WRONG_CARD);
-        } else {
-            notifyError(ErrorType.NOT_YOUR_TURN);
-            System.out.println(model.getCurrentUser().getNickname() + "is current with" + model.getCurrentMove());
-        }
+        } else notifyError(ErrorType.NOT_YOUR_TURN);
     }
 
     // get the correct Building Cards
@@ -194,17 +191,24 @@ public abstract class VirtualView implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Client-side asking the View
+     * Asks the server to create a lobby
+     *
+     * @throws IOException
      */
     @Override
-    public synchronized void askPlayersNumber() throws IOException {
-        userInterface.askPlayersNumber();
+    public void createLobby() throws IOException {
+        playersNumber = userInterface.askPlayersNumber();
+        lobbyCode = userInterface.askLobbyCode();
+        toController(Choice.CREATE_LOBBY, playersNumber);
     }
 
-    public synchronized void answerPlayersNumber(int playersNumber) {
-        try {            toController(Choice.PLAYERS_NUMBER, playersNumber); } catch (IOException e) {
-            return;
-        }
+    /**
+     * @see IF_GameView Asks the User for a new lobby code (retry after code already taken)
+     */
+    @Override
+    public synchronized void askLobbyCode() throws IOException {
+        lobbyCode = userInterface.askLobbyCode();
+        toController(Choice.CREATE_LOBBY, playersNumber);
     }
 
     /**
@@ -212,14 +216,48 @@ public abstract class VirtualView implements IF_GameView {
      */
     @Override
     public synchronized void askNickname() throws IOException {
-        userInterface.askNickname();
+        nickname = userInterface.askNickname();
+        toController(Choice.NICKNAME, nickname);
     }
 
-    public synchronized void answerNickname(String nickname) {
-        this.nickname = nickname;
-        try{ toController(Choice.NICKNAME, nickname); } catch (IOException e) {
-            return;
-        }
+    /**
+     * Requeste available lobbies from the server
+     * @throws IOException
+     */
+    @Override
+    public synchronized void requestAvailableLobbies() throws IOException {
+        toController(Choice.GET_AVAILABLE_LOBBIES, null);
+    }
+
+    /**
+     * @see IF_GameView Show available lobbies
+     */
+    @Override
+    public synchronized void showLobbies(Map<String, Integer> availableLobbies) throws IOException {
+        userInterface.showLobbies(availableLobbies);
+    }
+
+    /**
+     * @see IF_GameView Confirm the instauration of connection
+     */
+    @Override
+    public synchronized void confirmConnection() throws IOException {
+        userInterface.confirmConnection();
+    }
+
+    /**
+     * @see IF_GameView Confirm that the User joined the Lobby
+     */
+    @Override
+    public synchronized void confirmLobbyJoined(String code) throws IOException {
+        this.lobbyCode = code;
+        userInterface.confirmLobbyJoined();
+    }
+
+    @Override
+    public void joinLobby() throws IOException{
+        lobbyCode = userInterface.askLobbyCode();
+        toController(Choice.JOIN_LOBBY, lobbyCode);
     }
 
     /**

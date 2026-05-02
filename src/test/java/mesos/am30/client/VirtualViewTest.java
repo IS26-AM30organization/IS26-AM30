@@ -68,6 +68,26 @@ class VirtualViewTest {
     }
 
     @Test
+    void confirmConnection() throws IOException {
+        virtualView.confirmConnection();
+        verify(mockUI).confirmConnection();
+    }
+
+    @Test
+    void confirmLobbyJoined() throws IOException {
+        virtualView.confirmLobbyJoined("123456");
+        assertEquals("123456", virtualView.lobbyCode);
+        verify(mockUI).confirmLobbyJoined();
+    }
+
+    @Test
+    void showLobbies() throws IOException {
+        Map<String, Integer> lobbies = Map.of("123456", 2);
+        virtualView.showLobbies(lobbies);
+        verify(mockUI).showLobbies(lobbies);
+    }
+
+    @Test
     void checkTile_Wrong_Turn() throws IOException {
         // set up VirtualView
         when(mockPlayer.getNickname()).thenReturn("nickname1");
@@ -348,15 +368,6 @@ class VirtualViewTest {
         assertNull(viewModel.getCurrentMove());
         assertTrue(viewModel.getLowerBuildings().contains(mockBuildingCard));
         assertTrue(mockPlayer.getParameters().get(Parameter.FOOD) >= mockBuildingCard.getFoodCost());
-    }
-
-    @Test
-    void askPlayersNumber() throws IOException {
-        // Act
-        virtualView.askPlayersNumber();
-
-        // Assert
-        verify(mockUI).askPlayersNumber();
     }
 
     @Test

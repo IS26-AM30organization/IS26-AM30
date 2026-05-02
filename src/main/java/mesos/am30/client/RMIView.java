@@ -75,9 +75,13 @@ public class RMIView extends VirtualView {
     @Override
     protected void toController(Choice choice, Object parameter) throws IOException {
         switch (choice) {
-            case PLAYERS_NUMBER -> asynchronousServerCall(() -> remoteServer.setPlayersNumber(this, (int) parameter));
+            case CREATE_LOBBY -> asynchronousServerCall(() -> remoteServer.createLobby(this, (Integer) parameter, lobbyCode));
 
-            case NICKNAME -> asynchronousServerCall(() -> remoteServer.setNickname(this, (String) parameter));
+            case JOIN_LOBBY -> asynchronousServerCall(() -> remoteServer.joinLobby(this, (String) parameter));
+
+            case GET_AVAILABLE_LOBBIES -> asynchronousServerCall(() -> remoteServer.showAvailableLobbies(this));
+
+            case NICKNAME -> asynchronousServerCall(() -> remoteServer.setNickname(this, (String) parameter, lobbyCode));
 
             case CHOOSE_TILE -> asynchronousServerCall(() -> controller.chooseTile(nickname,(Tile) parameter));
 
