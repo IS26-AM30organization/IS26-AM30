@@ -39,6 +39,10 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
         return connections.size() == numPlayers;
     }
 
+    public int getOccupiedSlots() {
+        return getClients().size();
+    }
+
     public boolean connect(IF_GameView view, String nickname) throws IOException {
         connections.put(new Player(nickname), view);
         view.setController(this);

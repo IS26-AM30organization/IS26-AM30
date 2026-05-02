@@ -7,15 +7,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Map;
 
 /**
  * Socket communication handler View-side.
  * <br>This Class works as the communication logic for the VirtualView Class, handling all the View commands and sending them to the Controller.
  * <br>It implements the communication protocol via Socket.
- *
- * @author LoreDN - Lorenzo Di Napoli
- * @version 1.0
- * @since 1.0
  */
 public class SocketView extends VirtualView {
     private Socket socket = null;
@@ -83,8 +80,24 @@ public class SocketView extends VirtualView {
                     try {
                         Message message = (Message) inputStream.readObject();
                         switch (message.getType()) {
+                            // server confirms connection established
+                            case CONFIRM_CONNECTION -> confirmConnection();
+                            // server asks lobby code to create a lobby
+                            case ASK_LOBBY_CODE -> askLobbyCode();
+                            // server asks lobby code to join a game
+                            case ASK_JOIN_LOBBY -> joinLobby();
+                            // server sends available lobby
+                            case SHOW_LOBBIES -> {
+                                ClientChoiceMessage m = (ClientChoiceMessage) message;
+                                showLobbies((Map<String, Integer>) m.getParameter());
+                            }
+                            // server confirms lobby joined to Client
+                            case CONFIRM_LOBBY_JOINED -> {
+                                ClientChoiceMessage m = (ClientChoiceMessage) message;
+                                confirmLobbyJoined((String) m.getParameter());
+                            }
                             // give the number of Players for the lobby
-                            case FIRST_PLAYER -> askPlayersNumber();
+                            case FIRST_PLAYER -> createLobby();
                             // give the Client nickname
                             case NICKNAME -> askNickname();
                             // notification of turn action
@@ -128,7 +141,8 @@ public class SocketView extends VirtualView {
     // invoke Controller methods
     @Override
     protected synchronized void toController(Choice choice, Object parameter) throws IOException {
-        outputStream.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, choice, nickname, parameter));
+        String word = (choice == Choice.CREATE_LOBBY) ? lobbyCode : nickname;
+        outputStream.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, choice, word, parameter));
         outputStream.flush();
     }
 

@@ -8,6 +8,7 @@ import mesos.am30.server.IF_GameController;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Views's Interface for ModelViewController pattern.
@@ -16,20 +17,54 @@ import java.util.List;
 public interface IF_GameView extends Remote {
 
     /**
-     * Ask the Client the number of players.
-     * <br>This method asks the first Client connecting to a lobby how many players will participate.
-     *
-     * @throws IOException The connection cannot be established correctly
-     */
-    void askPlayersNumber() throws IOException;
-
-    /**
      * Ask the Client for its nickname.
      * <br>This method asks the Client which nickname he wants to use.
      *
      * @throws IOException The connection cannot be established correctly
      */
     void askNickname() throws IOException;
+
+    /**
+     * Asks the Client which game to join
+     * @throws IOException
+     */
+    void askLobbyCode() throws IOException;
+
+    /**
+     * Asks the server to create a lobby
+     *
+     * @throws IOException
+     */
+
+    void createLobby() throws IOException;
+
+    void joinLobby() throws IOException;
+
+    /**
+     * Request the available lobbies to the Server
+     * @throws IOException
+     */
+    void requestAvailableLobbies() throws IOException;
+
+    /**
+     * Shows the lobbies you can connect to
+     * @param availableLobbies
+     * @throws IOException
+     */
+    void showLobbies(Map<String, Integer> availableLobbies) throws IOException;
+
+    /**
+     * Confirm the instauration of connection
+     * @throws IOException
+     */
+    void confirmConnection() throws IOException;
+
+    /**
+     * Confirm that the User joined the Lobby
+     * @param code
+     * @throws IOException
+     */
+    void confirmLobbyJoined(String code) throws IOException;
 
     /**
      * Set the controller.
