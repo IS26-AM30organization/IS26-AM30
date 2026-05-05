@@ -125,18 +125,6 @@ class SocketViewTest {
     }
 
     @Test
-    void startListeningThread_FIRST_PLAYER() throws IOException, InterruptedException {
-        // Act
-        view.startListeningThread();
-        proxyOut.writeObject(new Message(MessageType.FIRST_PLAYER));
-        proxyOut.flush();
-
-        // Assert
-        Thread.sleep(200);
-        verify(mockUI).askPlayersNumber();
-    }
-
-    @Test
     void startListeningThread_NICKNAME() throws IOException, InterruptedException {
         // Act
         view.startListeningThread();

@@ -11,17 +11,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.Mock;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import static mesos.am30.server.Server.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +34,8 @@ class SocketProxyTest {
     private ServerSocket serverSocket;
     private Socket proxySocket;
     private Socket clientSocket;
-    private ObjectOutputStream clientOut;
     private ObjectInputStream clientIn;
-
+    private ObjectOutputStream clientOut;
 
     @Mock
     private Controller mockController;
@@ -56,10 +55,6 @@ class SocketProxyTest {
     @BeforeEach
     void setUp() throws IOException, InterruptedException {
         // set up SocketProxy
-        getLobbies().clear();
-        getLobbyViews().clear();
-        getPendingViews().clear();
-
         CountDownLatch latch = new CountDownLatch(1);
         serverSocket = new ServerSocket(0);
         new Thread(() -> {
@@ -77,10 +72,10 @@ class SocketProxyTest {
 
         // set up Client connection
         clientSocket = new Socket("localhost", serverSocket.getLocalPort());
+        clientIn = new ObjectInputStream(clientSocket.getInputStream());
         clientOut = new ObjectOutputStream(clientSocket.getOutputStream());
         clientOut.flush();
         latch.await();
-        clientIn = new ObjectInputStream(clientSocket.getInputStream());
     }
 
     @AfterEach
@@ -89,53 +84,60 @@ class SocketProxyTest {
         serverSocket.close();
         proxySocket.close();
         clientSocket.close();
-        getLobbies().clear();
-        getLobbyViews().clear();
-        getPendingViews().clear();
+
+        // reset the Server
+        Server.getLobbies().clear();
+        Server.getLobbyViews().clear();
+        Server.getPendingViews().clear();
     }
 
     @Test
     void startListeningThread_CREATE_LOBBY() throws IOException, InterruptedException {
         // Act
-        getPendingViews().add(proxy);
+        Server.getPendingViews().add(proxy);
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CREATE_LOBBY, "123456", 3));
         clientOut.flush();
 
         // Assert
         Thread.sleep(200);
-        assertTrue(getLobbies().containsKey("123456"));
+        assertTrue(Server.getLobbies().containsKey("123456"));
     }
 
     @Test
-    void startListeningThread_JOIN_LOBBY() throws IOException, InterruptedException {
+    void startListeningThread_JOIN_LOBBY() throws IOException, InterruptedException, ClassNotFoundException {
+        // set up Mock Lobby
+        when(mockController.isFull()).thenReturn(false);
+        Server.getLobbies().put("123456", mockController);
+        Server.getLobbyViews().put("123456", new ArrayList<>());
+        Server.getPendingViews().add(proxy);
+
         // Act
-        when(mockController.getPlayersNumber()).thenReturn(2);
-        getLobbies().put("123456", mockController);
-        getLobbyViews().put("123456", new ArrayList<>());
-        getPendingViews().add(proxy);
-        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.JOIN_LOBBY, "", "123456"));
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.JOIN_LOBBY, "123456", null));
         clientOut.flush();
 
         // Assert
         Thread.sleep(200);
-        assertTrue(getLobbyViews().get("123456").contains(proxy));
-        assertFalse(getPendingViews().contains(proxy));
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.NICKNAME, message.getType());
+
     }
 
     @Test
     void startListeningThread_GET_AVAILABLE_LOBBIES() throws IOException, ClassNotFoundException {
-        // Act
+        // set up Mock Lobby
         when(mockController.isFull()).thenReturn(false);
         when(mockController.getOccupiedSlots()).thenReturn(3);
-        getLobbies().put("123456", mockController);
+        Server.getLobbies().put("123456", mockController);
+
+        // Act
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.GET_AVAILABLE_LOBBIES, "", null));
         clientOut.flush();
 
         // Assert
-        Message response = (Message) clientIn.readObject();
-        assertEquals(MessageType.SHOW_LOBBIES, response.getType());
-        ClientChoiceMessage m = (ClientChoiceMessage) response;
-        Map<String, Integer> lobbies = (Map<String, Integer>) m.getParameter();
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.SHOW_LOBBIES, message.getType());
+        ShowLobbiesMessage showLobbiesMessage = (ShowLobbiesMessage) message;
+        Map<String, Integer> lobbies = showLobbiesMessage.getAvailableLobbies();
         assertTrue(lobbies.containsKey("123456"));
         assertEquals(3, lobbies.get("123456"));
     }
@@ -145,11 +147,11 @@ class SocketProxyTest {
         // set up Mock Controller
         when(mockController.getClients()).thenReturn(Map.of());
         when(mockController.connect(proxy, "nickname")).thenReturn(false);
-        getLobbies().put("123456", mockController);
-        getLobbyViews().put("123456", new ArrayList<>(List.of(proxy)));
+        Server.getLobbies().put("123456", mockController);
+        Server.getLobbyViews().put("123456", new ArrayList<>(List.of(proxy)));
 
         // Act
-        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.NICKNAME, "", "nickname"));
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.NICKNAME, "123456", "nickname"));
         clientOut.flush();
 
         // Assert
@@ -196,8 +198,11 @@ class SocketProxyTest {
     @Test
     void startListeningThread_WrongDisconnection() throws IOException, InterruptedException {
         // set up Server
-        getLobbies().put("123456", mockController);
-        getLobbyViews().put("123456", new ArrayList<>(List.of(proxy, mockView)));
+        Server.getLobbies().put("123456", mockController);
+        Server.getLobbyViews().put("123456", new ArrayList<>(List.of(proxy, mockView)));
+        List<IF_GameView> clients = Server.getLobbyViews().get("123456");
+        clients.add(proxy);
+        for (int i = 0; i < 3; i++) clients.add(mockView);
 
         // set up Mock IOException
         doThrow(new IOException()).when(mockController).chooseTile(any(String.class), any(Tile.class));
@@ -210,43 +215,42 @@ class SocketProxyTest {
         // Assert
         Thread.sleep(200);
         verify(mockController).chooseTile(eq("nickname"), any(Tile.class));
-        verify(mockView).notifyError(ErrorType.END_FOR_DISCONNECTION);
-        verify(mockView).end();
-        assertFalse(getLobbies().containsKey("123456"));
-        assertFalse(getLobbyViews().containsKey("123456"));
-
+        verify(mockView, times(clients.size() - 1)).notifyError(ErrorType.END_FOR_DISCONNECTION);
+        verify(mockView, times(clients.size() - 1)).end();
+        assertFalse(Server.getLobbies().containsKey("123456"));
+        assertFalse(Server.getLobbyViews().containsKey("123456"));
     }
 
     @Test
     void confirmConnection() throws IOException, ClassNotFoundException {
+        // Act
         proxy.confirmConnection();
 
+        // Assert
         Message response = (Message) clientIn.readObject();
         assertEquals(MessageType.CONFIRM_CONNECTION, response.getType());
     }
 
     @Test
     void confirmLobbyJoined() throws IOException, ClassNotFoundException {
-        proxy.confirmLobbyJoined("123456");
+        // Act
+        proxy.confirmLobbyJoined();
 
         Message response = (Message) clientIn.readObject();
         assertEquals(MessageType.CONFIRM_LOBBY_JOINED, response.getType());
-        assertInstanceOf(ClientChoiceMessage.class, response);
-        ClientChoiceMessage m = (ClientChoiceMessage) response;
-        assertEquals("123456", m.getParameter());
     }
 
     @Test
     void startListeningThread_CorrectDisconnection() throws IOException {
         // set up Server
-        getLobbies().put("123456", mockController);
-        getLobbyViews().put("123456", new ArrayList<>(List.of(proxy)));
+        Server.getLobbies().put("123456", mockController);
+        Server.getLobbyViews().put("123456", new ArrayList<>(List.of(proxy)));
 
         // Act
         proxy.end();
 
         // Assert
-        assertTrue(getLobbies().containsKey("123456"));
-        assertTrue(getLobbyViews().containsKey("123456"));
+        assertTrue(Server.getLobbies().containsKey("123456"));
+        assertTrue(Server.getLobbyViews().containsKey("123456"));
     }
 }

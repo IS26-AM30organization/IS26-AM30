@@ -57,6 +57,9 @@ class VirtualViewTest {
             public void findServer(String path, int port) {}
 
             @Override
+            protected void toServer(Choice choice, String lobbyCode, Object parameter) {}
+
+            @Override
             protected void toController(Choice choice, Object parameter) {}
 
             @Override
@@ -75,8 +78,7 @@ class VirtualViewTest {
 
     @Test
     void confirmLobbyJoined() throws IOException {
-        virtualView.confirmLobbyJoined("123456");
-        assertEquals("123456", virtualView.lobbyCode);
+        virtualView.confirmLobbyJoined();
         verify(mockUI).confirmLobbyJoined();
     }
 

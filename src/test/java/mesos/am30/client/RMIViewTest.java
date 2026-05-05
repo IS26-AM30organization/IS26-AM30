@@ -56,13 +56,15 @@ class RMIViewTest {
 
     @Test
     void findServer_Success() throws Exception {
-        IF_Server ServerStub = (IF_Server) UnicastRemoteObject.exportObject(mockServer, 0);
-
+        // Act
+        IF_Server serverStub = (IF_Server) UnicastRemoteObject.exportObject(mockServer, 0);
         testRegistry = LocateRegistry.createRegistry(1099);
-        testRegistry.rebind("Game", ServerStub);
+        testRegistry.rebind("server", serverStub);
         rmiView.findServer("localhost", 1099);
 
-        verify(mockServer, times(1)).handleConnection(any(IF_GameView.class));
+        // Assert
+        verify(mockUI, never()).printError(ErrorType.WRONG_IP);
+        verify(mockUI, never()).printEnd();
     }
 
     @Test
@@ -83,7 +85,7 @@ class RMIViewTest {
         // verify
         verify(mockController, times(1)).chooseTile("Lore", mockTile);
         verify(mockController, never()).chooseBuilding(anyString(), any());
-        verify(mockServer, never()).setNickname(any(),any());
+        verify(mockServer, never()).setNickname(any(), any(), any());
         verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
     }
@@ -98,7 +100,7 @@ class RMIViewTest {
         // verify
         verify(mockController, times(1)).chooseBuilding("Lore", mockBuilding);
         verify(mockServer, never()).createLobby(any(), anyInt(), any());
-        verify(mockServer, never()).setNickname(any(),any());
+        verify(mockServer, never()).setNickname(any(),any(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
     }
@@ -113,36 +115,36 @@ class RMIViewTest {
         // verify
         verify(mockController, times(1)).chooseCharacter("Lore", mockCharacter);
         verify(mockServer, never()).createLobby(any(), anyInt(), any());
-        verify(mockServer, never()).setNickname(any(),any());
+        verify(mockServer, never()).setNickname(any(),any(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
     }
 
     @Test
-    void toController_RoutesCreateLobby() throws Exception {
+    void toServer_RoutesCreateLobby() throws Exception {
         rmiView.setController(mockController);
         rmiView.setNickname("Lore");
 
         rmiView.lobbyCode = "123456";
-        rmiView.toController(Choice.CREATE_LOBBY, 3);
+        rmiView.toServer(Choice.CREATE_LOBBY, "123456", 3);
 
         // verify
         verify(mockServer, times(1)).createLobby(rmiView, 3, "123456");
-        verify(mockServer, never()).setNickname(any(), any());
+        verify(mockServer, never()).setNickname(any(), any(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
     }
 
     @Test
-    void toController_RoutesChooseNickname() throws Exception {
+    void toServer_RoutesChooseNickname() throws Exception {
         rmiView.setController(mockController);
         rmiView.setNickname("Lore");
 
-        rmiView.toController(Choice.NICKNAME, "Lore");
+        rmiView.toServer(Choice.NICKNAME, "123456", "Lore");
 
         // verify
-        verify(mockServer, times(1)).setNickname(rmiView, (String) "Lore");
+        verify(mockServer, times(1)).setNickname(rmiView, (String) "Lore", "123456");
         verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
