@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Map;
 
 /**
  * Socket communication handler View-side.
@@ -80,26 +79,23 @@ public class SocketView extends VirtualView {
                     try {
                         Message message = (Message) inputStream.readObject();
                         switch (message.getType()) {
+
+                            // ----- Connection phase -----
+
                             // server confirms connection established
                             case CONFIRM_CONNECTION -> confirmConnection();
-                            // server asks lobby code to create a lobby
-                            case ASK_LOBBY_CODE -> askLobbyCode();
-                            // server asks lobby code to join a game
-                            case ASK_JOIN_LOBBY -> joinLobby();
                             // server sends available lobby
                             case SHOW_LOBBIES -> {
-                                ClientChoiceMessage m = (ClientChoiceMessage) message;
-                                showLobbies((Map<String, Integer>) m.getParameter());
+                                ShowLobbiesMessage showLobbiesMessage = (ShowLobbiesMessage) message;
+                                showLobbies(showLobbiesMessage.getAvailableLobbies());
                             }
-                            // server confirms lobby joined to Client
-                            case CONFIRM_LOBBY_JOINED -> {
-                                ClientChoiceMessage m = (ClientChoiceMessage) message;
-                                confirmLobbyJoined((String) m.getParameter());
-                            }
-                            // give the number of Players for the lobby
-                            case FIRST_PLAYER -> createLobby();
                             // give the Client nickname
                             case NICKNAME -> askNickname();
+                            // server confirms lobby joined to Client
+                            case CONFIRM_LOBBY_JOINED -> confirmLobbyJoined();
+
+                            // ----- Game Phase -----
+
                             // notification of turn action
                             case NOTIFY -> {
                                 ClienTurnMessage turnMessage = (ClienTurnMessage) message;
@@ -138,16 +134,22 @@ public class SocketView extends VirtualView {
     @Override
     public void setController(IF_GameController controller) { /* never called on SocketView */ }
 
+    // invoke Server methods
+    @Override
+    protected synchronized void toServer(Choice choice, String lobbyCode, Object parameter) throws IOException {
+        outputStream.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, choice, lobbyCode, parameter));
+        outputStream.flush();
+    }
+
     // invoke Controller methods
     @Override
     protected synchronized void toController(Choice choice, Object parameter) throws IOException {
-        String word = (choice == Choice.CREATE_LOBBY) ? lobbyCode : nickname;
-        outputStream.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, choice, word, parameter));
+        outputStream.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, choice, nickname, parameter));
         outputStream.flush();
     }
 
     /**
-     * @see IF_GameView Implementation Client-Side via Socket of the end method
+     * @see IF_GameView Implementation Client-Side via Socket of the end method.
      */
     @Override
     public synchronized void end() throws IOException {

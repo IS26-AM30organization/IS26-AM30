@@ -6,9 +6,7 @@ import mesos.am30.common.Move;
 import java.util.Map;
 
 public interface IF_GameUI {
-    int askPlayersNumber();
-    String askNickname();
-    String askLobbyCode();
+    void askNickname();
 
     /**
      * Shows the available lobbies the User can join

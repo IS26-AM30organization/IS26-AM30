@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.rmi.RemoteException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +41,13 @@ class SocketProxy implements IF_GameView {
      *      socket.getInputStream().equals(inputStream)
      * <br><strong>Post:</strong> this.socket = socket && this.outputStream = outputStream && this.inputStream = inputStream
      *
-     * @param socket The socket used for connection with the real SocketView
-     * @param outputStream The output stream of the socket
-     * @param inputStream The input stream of the socket
+     * @param socket The socket used for connection with the real SocketView.
+     * @param outputStream The output stream of the socket.
+     * @param inputStream The input stream of the socket.
+     *
+     * @throws IOException Server instance error.
      */
-    public SocketProxy(Socket socket, ObjectOutputStream outputStream, ObjectInputStream inputStream) throws RemoteException {
+    public SocketProxy(Socket socket, ObjectOutputStream outputStream, ObjectInputStream inputStream) throws IOException {
         this.socket = socket;
         this.outputStream = outputStream;
         this.inputStream = inputStream;
@@ -81,12 +83,12 @@ class SocketProxy implements IF_GameView {
                                 switch (choiceMessage.getChoice()) {
                                     case CREATE_LOBBY ->
                                             server.createLobby(this, (Integer) choiceMessage.getParameter(), choiceMessage.getIdentifier());
-                                    case NICKNAME ->
-                                            server.setNickname(this, (String) choiceMessage.getParameter(), choiceMessage.getIdentifier());
-                                    case JOIN_LOBBY ->
-                                            server.joinLobby(this, (String) choiceMessage.getParameter());
                                     case GET_AVAILABLE_LOBBIES ->
                                             server.showAvailableLobbies(this);
+                                    case JOIN_LOBBY ->
+                                            server.joinLobby(this, (String) choiceMessage.getIdentifier());
+                                    case NICKNAME ->
+                                            server.setNickname(this, (String) choiceMessage.getParameter(), choiceMessage.getIdentifier());
                                 }
                             }
                         }
@@ -100,71 +102,7 @@ class SocketProxy implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Server-side via Socket Proxy of the askNickname method
-     */
-    @Override
-    public void askNickname() throws IOException {
-        outputStream.writeObject(new Message(MessageType.NICKNAME));
-        outputStream.flush();
-    }
-
-    /**
-     * Asks the Client which game to join
-     *
-     * @throws IOException
-     */
-    @Override
-    public void askLobbyCode() throws IOException {
-        outputStream.writeObject(new Message(MessageType.ASK_LOBBY_CODE));
-        outputStream.flush();
-    }
-
-    /**
-     * Request the available lobbies to the Server
-     *
-     * @throws IOException
-     */
-    @Override
-    public void requestAvailableLobbies() throws IOException {
-
-    }
-
-    /**
-     * Shows the lobbies you can connect to
-     *
-     * @param availableLobbies
-     * @throws IOException
-     */
-    @Override
-    public void showLobbies(Map<String, Integer> availableLobbies) throws IOException {
-        outputStream.writeObject(new ClientChoiceMessage(MessageType.SHOW_LOBBIES, null, null, availableLobbies));
-        outputStream.flush();
-    }
-
-    /**
-     * @see IF_GameView Implementation Server-side via Socket Proxy of the createLobby method
-     */
-    @Override
-    public void createLobby() throws IOException {
-        outputStream.writeObject(new Message(MessageType.FIRST_PLAYER));
-        outputStream.flush();
-    }
-
-    /**
-     * Asks the server to join a lobby
-     *
-     * @throws IOException
-     */
-    @Override
-    public void joinLobby() throws IOException {
-        outputStream.writeObject(new Message(MessageType.ASK_JOIN_LOBBY));
-        outputStream.flush();
-    }
-
-    /**
-     * Confirm the instauration of connection to the Client
-     *
-     * @throws IOException
+     * @see IF_GameView Implementation Server-side via Socket Proxy of the confirmConnection method.
      */
     @Override
     public void confirmConnection() throws IOException {
@@ -173,19 +111,34 @@ class SocketProxy implements IF_GameView {
     }
 
     /**
-     * Confirm that the Client joined the Lobby
-     *
-     * @param code the lobby code the Client joined
-     * @throws IOException
+     * @see IF_GameView Implementation Server-side via Socket Proxy of the showLobbies method.
      */
     @Override
-    public void confirmLobbyJoined(String code) throws IOException {
-        outputStream.writeObject(new ClientChoiceMessage(MessageType.CONFIRM_LOBBY_JOINED, null, null, code));
+    public void showLobbies(Map<String, Integer> availableLobbies) throws IOException {
+        outputStream.writeObject(new ShowLobbiesMessage(MessageType.SHOW_LOBBIES, availableLobbies));
         outputStream.flush();
     }
 
     /**
-     * @see IF_GameView Implementation Server-Side via Socket Proxy of the setController method
+     * @see IF_GameView Implementation Server-side via Socket Proxy of the askNickname method.
+     */
+    @Override
+    public void askNickname() throws IOException {
+        outputStream.writeObject(new Message(MessageType.NICKNAME));
+        outputStream.flush();
+    }
+
+    /**
+     * @see IF_GameView Implementation Server-side via Socket Proxy of the confirmLobbyJoined method.
+     */
+    @Override
+    public void confirmLobbyJoined() throws IOException {
+        outputStream.writeObject(new Message(MessageType.CONFIRM_LOBBY_JOINED));
+        outputStream.flush();
+    }
+
+    /**
+     * @see IF_GameView Implementation Server-Side via Socket Proxy of the setController method.
      */
     @Override
     public void setController(IF_GameController controller) {
@@ -194,7 +147,7 @@ class SocketProxy implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Server-Side via Socket Proxy of the notifyTurn method
+     * @see IF_GameView Implementation Server-Side via Socket Proxy of the notifyTurn method.
      */
     @Override
     public void notifyTurn(String nickname, Move move) throws IOException {
@@ -203,7 +156,7 @@ class SocketProxy implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Server-Side via Socket Proxy of the notifyError method
+     * @see IF_GameView Implementation Server-Side via Socket Proxy of the notifyError method.
      */
     @Override
     public void notifyError(ErrorType errorType) throws IOException {
@@ -212,7 +165,7 @@ class SocketProxy implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Server-Side via Socket Proxy of the update method
+     * @see IF_GameView Implementation Server-Side via Socket Proxy of the update method.
      */
     @Override
     public void update(ViewParameter toUpdate, List<Object> parameters) throws IOException {
@@ -222,7 +175,7 @@ class SocketProxy implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Server-Side via Socket Proxy of the end method
+     * @see IF_GameView Implementation Server-Side via Socket Proxy of the end method.
      */
     @Override
     public void end() throws IOException {
@@ -233,7 +186,7 @@ class SocketProxy implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Server-Side via Socket Proxy of the ping method
+     * @see IF_GameView Implementation Server-Side via Socket Proxy of the ping method.
      */
     @Override
     public void ping() throws IOException {

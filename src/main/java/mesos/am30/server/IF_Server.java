@@ -18,10 +18,48 @@ public interface IF_Server extends Remote {
      * asks directly for its nickname.
      * <br><strong>Pre:</strong> view != null
      *
-     * @param view The Client instance of the IF_GameView
-     * @throws IOException The connection cannot be established correctly
+     * @param view The Client instance of the IF_GameView.
+     *
+     * @throws IOException The connection cannot be established correctly.
      */
     void handleConnection(IF_GameView view) throws IOException;
+
+    /**
+     * Request to create a Lobby.
+     * <br>This method is called by the Client in order to create a Lobby.
+     * <br>the Server check if the number of Players and the Lobby Code are valid.
+     * <br><strong>Pre:</strong> view != null && lobbyCode != null
+     *
+     * @param view The Client instance of the IF_GameView.
+     * @param playersNumber Number of Players for the Lobby.
+     * @param lobbyCode Requested Lobby Code.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    void createLobby(IF_GameView view, int playersNumber, String lobbyCode) throws IOException;
+
+    /**
+     * Request to show the available Lobbies.
+     * <br>This method is called by the Client in order to get the available Lobbies to join.
+     * <br><strong>Pre:</strong> view != null
+     *
+     * @param view The Client instance of the IF_GameView.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    void showAvailableLobbies(IF_GameView view) throws IOException;
+
+    /**
+     * Request to join a Lobby.
+     * <br>This method is called by the Client in order to join a Lobby.
+     * <br><strong>Pre:</strong> view != null && lobbyCode != null
+     *
+     * @param view The Client instance of the IF_GameView.
+     * @param lobbyCode Code of the Lobby to join.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    void joinLobby(IF_GameView view, String lobbyCode) throws IOException;
 
     /**
      * Check the nickname of a Client.
@@ -31,44 +69,18 @@ public interface IF_Server extends Remote {
      * <br><strong>Pre:</strong> view != null && nickname != null
      * <br><strong>Post:</strong> !\old(lobby.getClients().keySet().contains(nickname)) ==> lobby.getClients().keySet().contains(nickname)
      *
-     * @param view The Client instance of the IF_GameView
-     * @param nickname Nickname of the Client
-     * @throws IOException The connection cannot be established correctly
+     * @param view The Client instance of the IF_GameView.
+     * @param nickname Nickname of the Client.
+     *
+     * @throws IOException The connection cannot be established correctly.
      */
     void setNickname(IF_GameView view, String nickname, String code) throws IOException;
 
     /**
-     * Create a lobby with a unique identification code.
-     * <br>The Client is responsible for validating playersNumber (2-6) and lobbyCode format (6 digits) before calling this.
-     * <br>The Server only checks that the lobbyCode is not already in use.
-     *
-     * @param view The Client instance of the IF_GameView
-     * @param playersNumber Number of Players for the lobby
-     * @param lobbyCode Requested lobby code
-     * @throws IOException The connection cannot be established correctly
-     */
-    void createLobby(IF_GameView view, int playersNumber, String lobbyCode) throws IOException;
-
-    /**
      * Heartbeat for the Server.
-     * <br>This method is called in order to verify if the Server is still connected.
+     * <br>This method is called by the Client in order to verify if the Server is still connected.
      *
-     * @throws IOException The connection is no more established
+     * @throws IOException The connection is no more established.
      */
     void ping () throws IOException;
-
-    /**
-     * Responds to the client's request by sending the list of available lobbies with occupied seats.
-     * @param view
-     * @throws IOException
-     */
-    void showAvailableLobbies(IF_GameView view) throws IOException;
-
-    /**
-     * Makes the player enter the lobby
-     * @param view
-     * @param lobbyCode
-     * @throws IOException
-     */
-    void joinLobby(IF_GameView view, String lobbyCode) throws IOException;
 }

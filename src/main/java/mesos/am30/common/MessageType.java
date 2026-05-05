@@ -1,13 +1,13 @@
 package mesos.am30.common;
 
 public enum MessageType {
-    ASK_LOBBY_CODE,
-    ASK_JOIN_LOBBY,
+    // connection phase
     CONFIRM_CONNECTION,
     SHOW_LOBBIES,
     CONFIRM_LOBBY_JOINED,
-    FIRST_PLAYER,
     NICKNAME,
+
+    // game phase
     NOTIFY,
     CHOOSE,
     ERROR,
