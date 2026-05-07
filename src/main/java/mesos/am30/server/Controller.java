@@ -8,18 +8,20 @@ import mesos.am30.common.MessageType;
 import mesos.am30.common.Move;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 
-public class Controller implements IF_GameController {
+public class Controller extends UnicastRemoteObject implements IF_GameController {
     private IF_GameModel board;
     private Map<Player, IF_GameView> connections;
     private int numPlayers;
 
-    public Controller(int numPlayers) {
+    public Controller(int numPlayers) throws IOException {
         this.numPlayers = numPlayers;
         this.connections = new HashMap<>(numPlayers);
     }
