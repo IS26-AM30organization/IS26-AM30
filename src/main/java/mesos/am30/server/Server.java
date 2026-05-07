@@ -1,6 +1,6 @@
 package mesos.am30.server;
 
-import mesos.am30.GameModel.Player;
+import mesos.am30.gameModel.Player;
 import mesos.am30.common.ErrorType;
 import mesos.am30.client.IF_GameView;
 

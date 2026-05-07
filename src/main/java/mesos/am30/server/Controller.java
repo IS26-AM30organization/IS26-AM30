@@ -1,14 +1,17 @@
 package mesos.am30.server;
 
-import mesos.am30.GameModel.*;
+import mesos.am30.gameModel.*;
+import mesos.am30.gameModel.board.Board;
+import mesos.am30.gameModel.IF_GameModel;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
+import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.ErrorType;
 import mesos.am30.client.IF_GameView;
-import mesos.am30.common.Message;
-import mesos.am30.common.MessageType;
 import mesos.am30.common.Move;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Map;
 import java.util.HashMap;

@@ -1,8 +1,8 @@
 package mesos.am30.server;
 
-import mesos.am30.GameModel.BuildingCard;
-import mesos.am30.GameModel.CharacterCard;
-import mesos.am30.GameModel.Tile;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 
 import java.io.IOException;
 import java.rmi.Remote;

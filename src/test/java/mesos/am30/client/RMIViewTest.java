@@ -1,8 +1,8 @@
 package mesos.am30.client;
 
-import mesos.am30.GameModel.BuildingCard;
-import mesos.am30.GameModel.CharacterCard;
-import mesos.am30.GameModel.Tile;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.Choice;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

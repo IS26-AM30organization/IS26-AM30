@@ -1,9 +1,9 @@
 package mesos.am30.client;
 
-import mesos.am30.GameModel.BuildingCard;
-import mesos.am30.GameModel.Card;
-import mesos.am30.GameModel.Player;
-import mesos.am30.GameModel.Tile;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
+import mesos.am30.gameModel.Player;
+import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.Move;
 
 import java.util.List;

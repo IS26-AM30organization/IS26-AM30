@@ -1,8 +1,8 @@
 package mesos.am30.client;
 
-import mesos.am30.GameModel.CharacterCard;
-import mesos.am30.GameModel.EventCard;
-import mesos.am30.GameModel.Player;
+import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.EventCard;
+import mesos.am30.gameModel.Player;
 import mesos.am30.common.*;
 
 import org.junit.jupiter.api.AfterEach;

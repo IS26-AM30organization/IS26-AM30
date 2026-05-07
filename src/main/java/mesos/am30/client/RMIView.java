@@ -1,10 +1,10 @@
 package mesos.am30.client;
 
-import mesos.am30.GameModel.BuildingCard;
-import mesos.am30.GameModel.CharacterCard;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.common.Choice;
 import mesos.am30.common.ErrorType;
-import mesos.am30.GameModel.Tile;
+import mesos.am30.gameModel.card.Tile;
 
 import mesos.am30.server.IF_GameController;
 import mesos.am30.server.IF_Server;

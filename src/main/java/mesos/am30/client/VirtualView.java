@@ -1,6 +1,10 @@
 package mesos.am30.client;
 
-import mesos.am30.GameModel.*;
+import mesos.am30.gameModel.*;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
+import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.Choice;
 import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
@@ -118,21 +122,21 @@ public abstract class VirtualView implements IF_GameView {
             // picked Character from upper/lower row
             case PICK_ANY_CARD -> {
                 List<Card> upperRow = model.getUpperRow().stream()
-                        .filter(card -> card instanceof CharacterCard)
+                        .filter(Card::isPickable)
                         .toList();
                 List<Card> lowerRow = model.getLowerRow().stream()
-                        .filter(card -> card instanceof CharacterCard)
+                        .filter(Card::isPickable)
                         .toList();
                 row = new ArrayList<>(upperRow);
                 row.addAll(lowerRow);
             }
             // picked Character from upper row
             case PICK_FROM_UP -> row = model.getUpperRow().stream()
-                    .filter(card -> card instanceof CharacterCard)
+                    .filter(Card::isPickable)
                     .toList();
             // picked Character from lower row
             case PICK_FROM_DOWN -> row = model.getLowerRow().stream()
-                    .filter(card -> card instanceof CharacterCard)
+                    .filter(Card::isPickable)
                     .toList();
         }
         return row;
