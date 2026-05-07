@@ -1,5 +1,7 @@
 package mesos.am30.GameModel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class CharacterCard extends Card {
@@ -27,15 +29,8 @@ public class CharacterCard extends Card {
     }
 
     @Override
-    public boolean isPickacble() {
+    public boolean isPickable() {
         return true;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        CharacterCard that = (CharacterCard) o;
-        return role == that.role && Objects.equals(value, that.value) && Objects.equals(prestigePoints, that.prestigePoints) && this.id == that.getId();
     }
 
     @Override
@@ -54,4 +49,44 @@ public class CharacterCard extends Card {
     protected void discard(Board board){
         board.discard(this);
     }
+
+    @Override
+    public void displayCard() {
+        List<String> str = new ArrayList<>();
+
+        str.add("[" + role + "]");
+        if (value != 0) str.add("ITEM: " + value);
+        if (prestigePoints != 0) str.add("PP: " + prestigePoints);
+
+        System.out.print(String.join(" ", str) + "\n");
+    }
+    @Override
+    public void createRow(StringBuilder rowRoles, StringBuilder rowValue, StringBuilder rowPP) {
+        String r = "[" + role + "]";
+        String i = "";
+        if (value != 0) i = "ITEM: " + value;
+        String pp = "";
+        if (prestigePoints != 0) pp = "PP: " + prestigePoints;
+
+        //need to take longest word
+        int maxWidth = r.length();
+        if (i.length() > maxWidth) {
+            maxWidth = i.length();
+        }
+        if (pp.length() > maxWidth) {
+            maxWidth = pp.length();
+        }
+        maxWidth += 3;
+
+        rowRoles.append(r);
+        for (int x = r.length(); x < maxWidth; x++) rowRoles.append(" ");
+
+        rowValue.append(i);
+        for (int x = i.length(); x < maxWidth; x++) rowValue.append(" ");
+
+        rowPP.append(pp);
+        for (int x = pp.length(); x < maxWidth; x++) rowPP.append(" ");
+    }
+
+
 }

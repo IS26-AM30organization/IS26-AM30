@@ -2,17 +2,16 @@ package mesos.am30.GameModel;
 
 import java.util.List;
 import java.util.Optional;
-//If schamanic boost of checking player with most stars is supposed to be defined here, it is not!
 public class StatsBoost implements IF_Event {
     private final EventType type;
     private final int food;
-    private final Integer prestigePoints;
+    private final Integer prestigePoints = 0;
     private Parameter tribeType;
     private int alreadyDiscounted = 0;
 
     public StatsBoost(int food, int prestigePoints, Parameter role, EventType type) {
         this.food = food;
-        this.prestigePoints = prestigePoints;
+        //this.prestigePoints = prestigePoints;
         this.tribeType= role;
         this.type = type;
     }

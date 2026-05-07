@@ -114,6 +114,7 @@ public class SocketView extends VirtualView {
                 try {
                     if (!connectionOpen) return;
                     notifyError(ErrorType.CONNECTION_CRASHED);
+                    exception.printStackTrace();
                     end();
                 } catch (IOException ignored) { /* userInterface error */ }
             }

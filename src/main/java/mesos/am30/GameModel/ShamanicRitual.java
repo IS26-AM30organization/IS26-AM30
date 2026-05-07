@@ -14,7 +14,7 @@ import java.util.HashMap;
  * @since 1.0
  */
 public class ShamanicRitual implements IF_Event {
-    private final Map<Player, Integer> starsPool;
+    private Map<Player, Integer> starsPool = new HashMap<>();
     private final int playersNumber;
     private final int lostPrestigePoints;
     private final int gainedPrestigePoints;
@@ -30,7 +30,7 @@ public class ShamanicRitual implements IF_Event {
      * @param gainedPrestigePoints Number of Prestige Points to add (positive)
      */
     public ShamanicRitual(int playersNumber, int lostPrestigePoints, int gainedPrestigePoints) {
-        this.starsPool = new HashMap<>(playersNumber);
+        //this.starsPool = new HashMap<>(playersNumber);
         this.playersNumber = playersNumber;
         this.lostPrestigePoints = lostPrestigePoints;
         this.gainedPrestigePoints = gainedPrestigePoints;
@@ -67,6 +67,9 @@ public class ShamanicRitual implements IF_Event {
      */
     @Override
     public void handleEvent(Player player) {
+        if (starsPool == null) {
+            starsPool = new HashMap<>(playersNumber);
+        }
         starsPool.put(player, player.getParameters().get(Parameter.SHAMAN));
         if (starsPool.size() == playersNumber) {
             // last Player --> check the Stars

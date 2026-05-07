@@ -1,6 +1,7 @@
 package mesos.am30.GameModel;
 
 import mesos.am30.client.IF_GameView;
+import mesos.am30.common.Move;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,4 +56,8 @@ public interface IF_GameModel {
      * it returns currentPlayer for Controller checks
      */
     Player getCurrentPlayer();
+    /**
+     * it returns currentMove for Controller checks
+     */
+    Move getCurrentMove();
 }

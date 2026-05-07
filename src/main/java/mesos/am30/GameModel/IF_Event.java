@@ -1,5 +1,7 @@
 package mesos.am30.GameModel;
 
-public interface IF_Event {
+import java.io.Serializable;
+
+public interface IF_Event extends Serializable {
     void handleEvent(Player player);
 }

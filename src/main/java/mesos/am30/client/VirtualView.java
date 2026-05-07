@@ -100,7 +100,7 @@ public abstract class VirtualView implements IF_GameView {
         // check if right turn
         Move currentMove = model.getCurrentMove();
         if (model.getCurrentUser().getNickname().equals(nickname) && (
-                currentMove == Move.PICK_CARD || currentMove == Move.PICK_FROM_UP || currentMove == Move.PICK_FROM_DOWN
+                currentMove == Move.PICK_ANY_CARD || currentMove == Move.PICK_FROM_UP || currentMove == Move.PICK_FROM_DOWN
         )) {
             // check if valid Character
             List<Card> row = getCharacterCards(currentMove);
@@ -116,7 +116,7 @@ public abstract class VirtualView implements IF_GameView {
         List<Card> row = null;
         switch (currentMove) {
             // picked Character from upper/lower row
-            case PICK_CARD -> {
+            case PICK_ANY_CARD -> {
                 List<Card> upperRow = model.getUpperRow().stream()
                         .filter(card -> card instanceof CharacterCard)
                         .toList();
@@ -151,7 +151,7 @@ public abstract class VirtualView implements IF_GameView {
         // check if right turn
         Move currentMove = model.getCurrentMove();
         if (model.getCurrentUser().getNickname().equals(nickname) && (
-                currentMove == Move.PICK_CARD || currentMove == Move.PICK_FROM_UP || currentMove == Move.PICK_FROM_DOWN
+                currentMove == Move.PICK_ANY_CARD || currentMove == Move.PICK_FROM_UP || currentMove == Move.PICK_FROM_DOWN
         )) {
             // check if valid Building
             List<BuildingCard> row = getBuildingCards(currentMove);
@@ -169,7 +169,7 @@ public abstract class VirtualView implements IF_GameView {
         List<BuildingCard> row = null;
         switch (currentMove) {
             // picked Building from upper/lower row
-            case PICK_CARD -> {
+            case PICK_ANY_CARD -> {
                 List<BuildingCard> upperBuildings = model.getUpperBuildings();
                 List<BuildingCard> lowerBuildings = model.getLowerBuildings();
                 row = new ArrayList<>(upperBuildings);

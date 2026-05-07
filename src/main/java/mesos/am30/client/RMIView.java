@@ -8,6 +8,7 @@ import mesos.am30.GameModel.Tile;
 
 import mesos.am30.server.IF_GameController;
 import mesos.am30.server.IF_Server;
+import mesos.am30.server.IORunnable;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -19,10 +20,12 @@ import java.rmi.server.UnicastRemoteObject;
 public class RMIView extends VirtualView {
     private IF_Server remoteServer;
     private IF_GameController controller;
+    private Registry registry;
 
     public RMIView(IF_GameUI userInterface) throws RemoteException {
         super(userInterface);
         UnicastRemoteObject.exportObject(this, 0);
+        this.registry = null;
     }
 
     void setRemoteServer(IF_Server remoteServer) {
@@ -38,8 +41,8 @@ public class RMIView extends VirtualView {
     @Override
     public void findServer(String path, int port) throws IOException {
         try {
-            Registry registry = LocateRegistry.getRegistry(path, port);
-            remoteServer = (IF_Server) registry.lookup("Game");
+            registry = LocateRegistry.getRegistry(path, port);
+            remoteServer = (IF_Server) registry.lookup("server");
             remoteServer.handleConnection(this);
             startHeartbeat(remoteServer);
         }
@@ -72,21 +75,35 @@ public class RMIView extends VirtualView {
     @Override
     protected void toController(Choice choice, Object parameter) throws IOException {
         switch (choice) {
-            case PLAYERS_NUMBER -> remoteServer.setPlayersNumber(this, (int) parameter);
+            case PLAYERS_NUMBER -> asynchronousServerCall(() -> remoteServer.setPlayersNumber(this, (int) parameter));
 
-            case NICKNAME -> remoteServer.setNickname(this, (String) parameter);
+            case NICKNAME -> asynchronousServerCall(() -> remoteServer.setNickname(this, (String) parameter));
 
-            case CHOOSE_TILE -> controller.chooseTile(nickname,(Tile) parameter);
+            case CHOOSE_TILE -> asynchronousServerCall(() -> controller.chooseTile(nickname,(Tile) parameter));
 
-            case CHOOSE_BUILDING -> controller.chooseBuilding(nickname, (BuildingCard) parameter);
+            case CHOOSE_BUILDING -> asynchronousServerCall(() -> controller.chooseBuilding(nickname, (BuildingCard) parameter));
 
-            case CHOOSE_CHARACTER -> controller.chooseCharacter(nickname, (CharacterCard) parameter);
+            case CHOOSE_CHARACTER -> asynchronousServerCall(() -> controller.chooseCharacter(nickname, (CharacterCard) parameter));
         }
+    }
+
+    // handle an asynchronous view method call
+    private void asynchronousServerCall(IORunnable method) throws IOException {
+        new Thread(() -> {
+            try {
+                method.run();
+            } catch (IOException ignored) { /* handled by heartbeat */ }
+        }).start();
     }
 
     @Override
     public void setController(IF_GameController controller) throws IOException {
-        this.controller = controller;
+        try {
+            this.controller = (IF_GameController) registry.lookup("lobby");
+        } catch (IOException | NotBoundException e){
+            notifyError(ErrorType.WRONG_IP);
+            end();
+        }
     }
 
     @Override

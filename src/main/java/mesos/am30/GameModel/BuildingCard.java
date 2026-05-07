@@ -61,4 +61,38 @@ public class BuildingCard extends Card {
     public int hashCode() {
         return Objects.hash(event, eventType, foodCost, ppGainEnd);
     }
+
+    @Override
+    public void displayCard() {
+        System.out.println(String.format("%-10s | %-5d | %-5d",
+                eventType, foodCost, ppGainEnd));
+    }
+
+    @Override
+    public void createRow(StringBuilder eventRole, StringBuilder ln2, StringBuilder ln3) {
+        String r = "[ build ]";
+        String i = "";
+        if (foodCost != 0) i = "fCost: " + foodCost;
+        String pp = "";
+        if (ppGainEnd != 0) pp = "ppGainEnd: " + ppGainEnd;
+
+        //need to take longest word
+        int maxWidth = r.length();
+        if (i.length() > maxWidth) {
+            maxWidth = i.length();
+        }
+        if (pp.length() > maxWidth) {
+            maxWidth = pp.length();
+        }
+        maxWidth += 3;
+
+        eventRole.append(r);
+        for (int x = r.length(); x < maxWidth; x++) eventRole.append(" ");
+
+        ln2.append(i);
+        for (int x = i.length(); x < maxWidth; x++) ln2.append(" ");
+
+        ln3.append(pp);
+        for (int x = pp.length(); x < maxWidth; x++) ln3.append(" ");
+    }
 }

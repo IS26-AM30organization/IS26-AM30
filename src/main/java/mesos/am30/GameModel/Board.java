@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import com.google.gson.reflect.TypeToken;
+import mesos.am30.common.Move;
 import mesos.am30.common.ViewParameter;
 import mesos.am30.server.IF_GameController;
 import mesos.am30.client.IF_GameView;
@@ -32,7 +33,8 @@ public class Board implements IF_GameModel {
     //constructor
     public Board(List<Player> players, List<IF_GameView> views) {
         this.players = players;
-        playersOrder = new ArrayList<>();
+
+        this.playersOrder = new ArrayList<>(players);
         this.views = views;
 
         decks = new ArrayList<>();
@@ -79,7 +81,7 @@ public class Board implements IF_GameModel {
 
         //Creating Deck + Shuffling
         List<List<Card>> createDecks = new ArrayList<>();
-        for (int i = 0; i <= 4; i++) {
+        for (int i = 0; i < 4; i++) {
             int era = i +1;
             List<Card> deck = new ArrayList<>(fullDeck.stream()
                     .filter(x -> x.getEra() == era)
@@ -110,6 +112,9 @@ public class Board implements IF_GameModel {
             createBuildingDecks.add(buildings);
         }
         buildingDecks = createBuildingDecks;
+
+        Collections.shuffle(playersOrder);
+
     }
 
     //first round
@@ -140,6 +145,13 @@ public class Board implements IF_GameModel {
         if (toMoveLast!=null){
             upperRow.remove(toMoveLast);
             upperRow.add(toMoveLast);
+        }
+
+        try {
+            game.iChangedTurn();
+        } catch (IOException e) {
+            System.err.println(("[ERROR]: error on fist update" + e.getMessage()));
+            e.printStackTrace();
         }
     }
 
@@ -184,7 +196,7 @@ public class Board implements IF_GameModel {
                 playersOrder.add(x);
 
                 //boost based on new playersOrder
-                x.updateStats(Parameter.FOOD,tileBoost[playersOrder.size()]);
+                x.updateStats(Parameter.FOOD,tileBoost[playersOrder.size()-1]);
                 if (tileBoost[playersOrder.size()-1]>0 && x.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_FOOD_TILE)) {
                     x.updateStats(Parameter.FOOD, 1);
                     x.removeBuff(SpecialBuff.ADDITIONAL_FOOD_TILE);
@@ -240,12 +252,15 @@ public class Board implements IF_GameModel {
 
         if (upperRow.size() < players.size()+4) {
             nextEra();
+            System.out.println("[GAME LOG] changed era");
             if(decks.isEmpty()) {
+                System.out.println("[GAME LOG] deck is empty");
                 end();
+                game.sendClientEnd();
                 return true;
             }
-                else {
-                    drawUpperRow();
+            else {
+                drawUpperRow();
             }
         }
 
@@ -288,9 +303,10 @@ public class Board implements IF_GameModel {
             lowerRow.remove(card);
             game.updateEveryone(ViewParameter.LOWER_ROW, lowerRow);
         } else return false;
-            player.addCharacter(card);
-            handleBuildings(player, EventType.ROUND);
-            return game.iPickedCard(player);
+
+        player.addCharacter(card);
+        handleBuildings(player, EventType.ROUND);
+        return game.iPickedCard(player);
     }
 
     /**
@@ -342,4 +358,8 @@ public class Board implements IF_GameModel {
     public List<BuildingCard> getLowerBuildings() { return lowerBuildings; }
 
     public List<Player> getPlayersOrder() { return playersOrder; }
+
+    public Move getCurrentMove() {
+        return game.getCurrentMove();
+    }
 }

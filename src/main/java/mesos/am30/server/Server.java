@@ -37,6 +37,7 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     private static Controller lobby = null;
     private static List<IF_GameView> connectedViews;
     private static ThreadPoolExecutor executor;
+    private static Registry registry;
 
     // constructor of the instance
     Server() throws RemoteException {
@@ -93,7 +94,7 @@ public class Server extends UnicastRemoteObject implements IF_Server {
 
         // open RMI connection (RMI - Thread)
         try {
-            Registry registry = LocateRegistry.createRegistry(1099);
+            registry = LocateRegistry.createRegistry(1099);
             registry.bind("server", server);
             System.out.println("Server RMI Registry open at port 1099");
         } catch (AlreadyBoundException exception) {
@@ -161,6 +162,7 @@ public class Server extends UnicastRemoteObject implements IF_Server {
         else if (playersNumber < 2 || playersNumber > 5) asynchronousViewCall(() -> view.notifyError(ErrorType.WRONG_PLAYERS_NUMBER));
         else {
             lobby = new Controller(playersNumber);
+            registry.rebind("lobby", lobby);
             asynchronousViewCall(view::askNickname);
         }
     }
