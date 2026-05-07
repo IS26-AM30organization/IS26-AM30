@@ -24,5 +24,11 @@ public class FinalBuilderBoost implements IF_Event {
         // considerando che avviene già un conteggio
         player.updateStats(Parameter.PRESTIGE_POINTS,tot * (multiplier - 1));
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("fnlBuilder");
+        str3.append("x" + multiplier);
+    }
 }
 

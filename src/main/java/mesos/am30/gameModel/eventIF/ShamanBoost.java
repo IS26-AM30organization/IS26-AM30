@@ -55,4 +55,10 @@ public class ShamanBoost implements IF_Event {
     public void handleEvent(Player player) {
         player.updateStats(Parameter.PRESTIGE_POINTS, (firstOrLast) ? eventPrestigePoints : -eventPrestigePoints);
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("shmnBoost");
+        str3.append("pP: " + eventPrestigePoints);
+    }
 }

@@ -83,13 +83,13 @@ public class Tile implements Serializable {
         int maxWidth = Math.max(real1, Math.max(real2, real3)) + 3;
 
         ln1.append(r);
-        for (int x = real1; x < maxWidth; x++) ln1.append(" ");
+        for (int x = real1; x < maxWidth+2; x++) ln1.append(" ");
 
         ln2.append(i);
-        for (int x = real2; x < maxWidth; x++) ln2.append(" ");
+        for (int x = real2; x < maxWidth+2; x++) ln2.append(" ");
 
         ln3.append(pp);
-        for (int x = real3; x < maxWidth; x++) ln3.append(" ");
+        for (int x = real3; x < maxWidth+2; x++) ln3.append(" ");
     }
 
 }

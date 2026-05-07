@@ -25,4 +25,10 @@ public class OneTimeBoost implements IF_Event {
     public void handleEvent(Player player) {
         player.updateStats(target, gain);
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("oneTBoost");
+        str3.append("Role: " + target).append("+" + gain);
+    }
 }

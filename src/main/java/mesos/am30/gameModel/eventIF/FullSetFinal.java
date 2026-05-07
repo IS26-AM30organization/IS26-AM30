@@ -41,4 +41,10 @@ public class FullSetFinal implements IF_Event {
              .min()
              .orElse(0);
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("fnlSet");
+        str3.append("pP+" + ppGain);
+    }
 }

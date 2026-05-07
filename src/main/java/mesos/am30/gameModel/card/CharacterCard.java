@@ -54,20 +54,13 @@ public class CharacterCard extends Card {
     }
 
     @Override
-    public void displayCard() {
-        List<String> str = new ArrayList<>();
-
-        str.add("[" + role + "]");
-        if (value != 0) str.add("ITEM: " + value);
-        if (prestigePoints != 0) str.add("PP: " + prestigePoints);
-
-        System.out.print(String.join(" ", str) + "\n");
-    }
-    @Override
     public void createRow(StringBuilder rowRoles, StringBuilder rowValue, StringBuilder rowPP) {
-        String r = "[" + role + "]";
-        String i = "";
-        if (value != 0) i = "ITEM: " + value;
+        String r = role + "";
+        StringBuilder i = new StringBuilder();
+        if (value != 0) {
+            valueToItem(i);
+            i.append(value);
+        }
         String pp = "";
         if (prestigePoints != 0) pp = "PP: " + prestigePoints;
 
@@ -81,8 +74,8 @@ public class CharacterCard extends Card {
         }
         maxWidth += 3;
 
-        rowRoles.append(r);
-        for (int x = r.length(); x < maxWidth; x++) rowRoles.append(" ");
+        rowRoles.append(r).append("\uD83D\uDC64");
+        for (int x = r.length(); x < maxWidth-1; x++) rowRoles.append(" ");
 
         rowValue.append(i);
         for (int x = i.length(); x < maxWidth; x++) rowValue.append(" ");
@@ -91,5 +84,15 @@ public class CharacterCard extends Card {
         for (int x = pp.length(); x < maxWidth; x++) rowPP.append(" ");
     }
 
-
+    private void valueToItem(StringBuilder str1) {
+        switch (role) {
+            case INVENTOR -> str1.append("inv: ");
+            case BUILDER -> str1.append("food: ");
+            case GATHERER -> str1.append("food: ");
+            case ARTIST -> str1.append("");
+            case SHAMAN -> str1.append("starts: ");
+            case HUNTER -> str1.append("food");
+            default -> str1.append("ITEM: ");
+        }
+    }
 }

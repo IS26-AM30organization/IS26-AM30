@@ -89,12 +89,11 @@ public class Tui implements IF_GameUI {
 	}
 
 	/**
-	 * Invoked by views, once called, it updates the TUI
+	 * Invoked by virtualView, used to set vBoard
 	 */
 	public void refresh(ViewModel vBoard) {
 		this.vBoard = vBoard; //check if needed
-
-		boardRender();
+		//boardRender();
 	}
 
 	/**
@@ -102,6 +101,7 @@ public class Tui implements IF_GameUI {
 	 * On first call it starts the terminal executor.
 	 */
 	public void printMove(String nickname, Move move) {
+		boardRender();
 		printMessage("\033[1;36m" + "[System]: Player " + "\033[1;33m" + nickname + "\033[0m" + " has " + move + "\033[0m");
 
 		if (isMatchRunning) return;
@@ -136,6 +136,9 @@ public class Tui implements IF_GameUI {
 
 	//PRIVATE METHODS
 
+	/**
+	 * if server replies that playerNickname was entered incorrectly, this method re-promts the user to insert it
+	 */
 	private void promptPlayerNickname() {
 		clientExecutor.submit(() -> {
 					try {
@@ -146,7 +149,9 @@ public class Tui implements IF_GameUI {
 				}
 		);
 	}
-
+	/**
+	 * if server replies that playerNum was entered incorrectly, this method re-promts the user to insert it
+	 */
 	private void promptPlayerNumber() {
 		clientExecutor.submit(() -> {
 					try {
@@ -160,7 +165,6 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Returns the wanted Tile, if existing
-	 *
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
 	private Tile wantedTile(int tileIndex) throws IndexOutOfBoundsException {
@@ -169,7 +173,6 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Returns the wanted Card, if existing
-	 *
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
 	private CharacterCard wantedCCard(Move move, int cIndex) throws IndexOutOfBoundsException {
@@ -194,7 +197,6 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Returns the wanted BuildingCard, if existing
-	 *
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
 	private BuildingCard wantedBuild(Move move, int cIndex) throws IndexOutOfBoundsException {
@@ -229,7 +231,6 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Defines which are the correct commands for game phase
-	 *
 	 * @param plAction contains terminal player's input
 	 */
 	private void matchCMDs(String[] plAction) {
@@ -298,10 +299,9 @@ public class Tui implements IF_GameUI {
 	 */
 	private void clearTUI() {
 		try {
-			new ProcessBuilder("clear").inheritIO().start().waitFor();
-			for (int i = 0; i < 50; ++i) System.out.println("\n");
+			for (int i = 0; i < 20; ++i) System.out.println("\n");
 		} catch (Exception e) {
-			for (int i = 0; i < 50; ++i) System.out.println("\n");
+			for (int i = 0; i < 20; ++i) System.out.println("\n");
 			System.out.print("\033[H\033[2J");
 			System.out.flush();
 		}
@@ -318,6 +318,10 @@ public class Tui implements IF_GameUI {
 		List<Tile> tiles = vBoard.getTiles();
 		List<Player> players = vBoard.getPlayers();
 
+		for (Player p : players) {
+			displayPlayer(p);
+		}
+
 		System.out.println("\033[1;32m" + "\nUPPER-ROW" + "\033[0m");
 		displayRows(upRow);
 
@@ -333,11 +337,9 @@ public class Tui implements IF_GameUI {
 		System.out.println("\033[1;33m" + "\nLOWER-BUILDS" + "\033[0m");
 		displayBuilds(loBuild);
 
-		for (Player p : players) {
-			System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
-			p.displayTribe();
-			p.displayStats();
-		}
+		Player crntPlayer = vBoard.getCurrentUser();
+		if (crntPlayer != null) displayPlayer(crntPlayer);
+
 		System.out.println("\n");
 	}
 
@@ -362,6 +364,9 @@ public class Tui implements IF_GameUI {
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Card card : row) {
+			ln1.append(j).append(".");
+			ln2.append("  ");
+			ln3.append("  ");
 			card.createRow(ln1, ln2, ln3);
 			j++;
 			if (j == maxCardsXRow) {
@@ -375,12 +380,15 @@ public class Tui implements IF_GameUI {
 	private void displayBuilds(List<BuildingCard> builds) {
 		if (builds.isEmpty()) return;
 
+		int j = 0;
 		StringBuilder ln1 = new StringBuilder();
 		StringBuilder ln2 = new StringBuilder();
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Card card : builds) {
+			ln1.append(j).append(".");
 			card.createRow(ln1, ln2, ln3);
+			j++;
 		}
 		displayRows(ln1, ln2, ln3);
 	}
@@ -388,15 +396,24 @@ public class Tui implements IF_GameUI {
 	private void displayTiles(List<Tile> tiles) {
 		if (tiles.isEmpty()) return;
 
+		int j = 0;
 		StringBuilder ln1 = new StringBuilder();
 		StringBuilder ln2 = new StringBuilder();
 		StringBuilder ln3 = new StringBuilder();
 
-
 		for (Tile tile : tiles) {
+			ln1.append(j).append(".");
+			ln2.append(j).append(".");
 			tile.createRow(ln1, ln2, ln3);
+			j++;
 		}
 		displayRows(ln1, ln2, ln3);
+	}
+
+	private void displayPlayer(Player p) {
+		System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
+		p.displayTribe();
+		p.displayStats();
 	}
 }
 

@@ -40,4 +40,11 @@ public class StatsBoost implements IF_Event {
 
         return;
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("statsBoost");
+        str2.append("Event: " + type);
+        str3.append("food: "+ food).append("tribeRole: " + tribeType);
+    }
 }

@@ -64,5 +64,11 @@ public class FullSet implements IF_Event {
                                                 //values() returns a Collection of the values of each key
         return count >= Parameter.values().length - 2; //-2 as there are 2parameter!=Characters in Parameters
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("fullSet");
+        str3.append("food+" + foodGain);
+    }
 }
 
