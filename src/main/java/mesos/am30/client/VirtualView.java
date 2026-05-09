@@ -218,8 +218,8 @@ public abstract class VirtualView implements IF_GameView {
      */
     public void createLobby(int playersNumber, String lobbyCode) throws IOException {
         this.playersNumber = playersNumber;
-        this.lobbyCode = lobbyCode;
-        toServer(Choice.CREATE_LOBBY, lobbyCode, playersNumber);
+        this.lobbyCode = (lobbyCode == null) ? "" : lobbyCode;
+        toServer(Choice.CREATE_LOBBY, this.lobbyCode, playersNumber);
     }
 
     /**

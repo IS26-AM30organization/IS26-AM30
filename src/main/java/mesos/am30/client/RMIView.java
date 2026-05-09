@@ -103,12 +103,7 @@ public class RMIView extends VirtualView {
 
     @Override
     public void setController(IF_GameController controller) throws IOException {
-        try {
-            this.controller = (IF_GameController) registry.lookup("lobby");
-        } catch (IOException | NotBoundException e){
-            notifyError(ErrorType.WRONG_IP);
-            end();
-        }
+        this.controller = controller;
     }
 
     @Override
