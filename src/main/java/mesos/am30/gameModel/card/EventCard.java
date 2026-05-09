@@ -24,6 +24,9 @@ public class EventCard extends Card {
         drawUp(board);
     }
 
+    /**
+     * Removes the event card from the row once it's event has been handled
+     */
     public void discard(Board board){
         for (Player player : board.getPlayersOrder()) {
             event.handleEvent(player);

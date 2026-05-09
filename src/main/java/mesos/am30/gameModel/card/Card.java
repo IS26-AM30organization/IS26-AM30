@@ -31,7 +31,6 @@ public abstract class Card implements Serializable {
         return num;
     }
 
-
     public int getEra() {
         return this.era;
     }
@@ -48,5 +47,9 @@ public abstract class Card implements Serializable {
 
     public void reorder (Board board){}
 
+    /**
+     * Each card type adds its info to the stringBuilders to then be displayed on terminal
+     * Each parameter holds a different kind of info based on the card type.
+     */
     public void createRow(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {}
 }

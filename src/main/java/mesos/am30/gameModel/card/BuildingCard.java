@@ -43,6 +43,11 @@ public class BuildingCard extends Card {
         return true;
     }
 
+    /**
+     * Checks whether a player has enough food to buy the building card
+     * @param player
+     * @return T if he can, F if he cannot
+     */
     public boolean canBeBought(Player player) {
         return player.getParameters().get(Parameter.FOOD)
                 + player.getParameters().get(Parameter.BUILDER) >= foodCost;

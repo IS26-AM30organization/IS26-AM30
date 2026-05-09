@@ -64,7 +64,7 @@ public class CharacterCard extends Card {
         String pp = "";
         if (prestigePoints != 0) pp = "PP: " + prestigePoints;
 
-        //need to take longest word
+        //need to take the longest word
         int maxWidth = r.length();
         if (i.length() > maxWidth) {
             maxWidth = i.length();
@@ -84,6 +84,9 @@ public class CharacterCard extends Card {
         for (int x = pp.length(); x < maxWidth; x++) rowPP.append(" ");
     }
 
+    /**
+     * Based on the card's role, the item must be specified to be displayed on terminal
+     */
     private void valueToItem(StringBuilder str1) {
         switch (role) {
             case INVENTOR -> str1.append("inv: ");

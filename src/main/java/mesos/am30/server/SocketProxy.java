@@ -97,7 +97,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-side via Socket Proxy of the askPlayersNumber method
      */
     @Override
-    public void askPlayersNumber() throws IOException {
+    synchronized public void askPlayersNumber() throws IOException {
         outputStream.writeObject(new Message(MessageType.FIRST_PLAYER));
         outputStream.flush();
     }
@@ -106,7 +106,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-side via Socket Proxy of the askNickname method
      */
     @Override
-    public void askNickname() throws IOException {
+    synchronized public void askNickname() throws IOException {
         outputStream.writeObject(new Message(MessageType.NICKNAME));
         outputStream.flush();
     }
@@ -124,7 +124,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the notifyTurn method
      */
     @Override
-    public void notifyTurn(String nickname, Move move) throws IOException {
+    synchronized public void notifyTurn(String nickname, Move move) throws IOException {
         outputStream.writeObject(new ClienTurnMessage(MessageType.NOTIFY, nickname, move));
         outputStream.flush();
     }
@@ -133,7 +133,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the notifyError method
      */
     @Override
-    public void notifyError(ErrorType errorType) throws IOException {
+    synchronized public void notifyError(ErrorType errorType) throws IOException {
         outputStream.writeObject(new ErrorMessage(MessageType.ERROR, errorType));
         outputStream.flush();
     }
@@ -142,7 +142,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the update method
      */
     @Override
-    public void update(ViewParameter toUpdate, List<Object> parameters) throws IOException {
+    synchronized public void update(ViewParameter toUpdate, List<Object> parameters) throws IOException {
         outputStream.writeObject(new ModelUpdateMessage(MessageType.UPDATE, toUpdate, parameters));
         outputStream.flush();
         outputStream.reset();
@@ -152,7 +152,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the end method
      */
     @Override
-    public void end() throws IOException {
+    synchronized public void end() throws IOException {
         outputStream.writeObject(new Message(MessageType.END));
         outputStream.flush();
         connectionOpen = false;
@@ -163,7 +163,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the ping method
      */
     @Override
-    public void ping() throws IOException {
+    synchronized public void ping() throws IOException {
         outputStream.writeObject(new Message(MessageType.PING));
         outputStream.flush();
     }
