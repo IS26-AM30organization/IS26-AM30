@@ -31,21 +31,23 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class Server extends UnicastRemoteObject implements IF_Server {
     private static Server instance = null;
     private static ThreadPoolExecutor executor;
-    private static final Map<String, Controller> lobbies = new ConcurrentHashMap<>();
     private static Registry registry;
+    private static final Map<String, Controller> lobbies = new ConcurrentHashMap<>();
     private static final Map<String, List<IF_GameView>> lobbyViews = new ConcurrentHashMap<>();
     private static final List<IF_GameView> pendingViews = new ArrayList<>();
-    private static final Random random = new Random();
+    private static Random random = new Random();
 
     // constructor of the instance
     Server() throws RemoteException {
         executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     }
 
-    // Package-private getter used by test
+    // Package-private getters/setters used by test
     static Map<String, Controller> getLobbies() { return lobbies; }
     static Map<String, List<IF_GameView>> getLobbyViews() { return lobbyViews; }
     static List<IF_GameView> getPendingViews() { return pendingViews; }
+    static void setRegistry(Registry r) { registry = r; }
+    static void setRandom(Random r) { random = r; }
 
     /**
      * Static Getter for the Server.
@@ -96,22 +98,28 @@ public class Server extends UnicastRemoteObject implements IF_Server {
      */
     static void main() throws IOException {
         Server server = Server.getInstance();
+        if (startRmiServer(server, 1099)) startSocketServer(server, 12345);
+    }
 
-        // open RMI connection (RMI - Thread)
+    // package-private for testing
+    static boolean startRmiServer(Server server, int port) throws IOException {
         try {
-            registry = LocateRegistry.createRegistry(1099);
+            registry = LocateRegistry.createRegistry(port);
             registry.bind("server", server);
-            System.out.println("Server RMI Registry open at port 1099");
+            System.out.println("Server RMI Registry open at port " + port);
+            return true;
         } catch (AlreadyBoundException exception) {
             // already running Server
             System.err.println("[Server RMI Registry Error]: " + exception.getMessage());
-            return;
+            return false;
         }
+    }
 
-        // open Socket connection (Thread)
+    // package-private for testing
+    static void startSocketServer(Server server, int port) {
         new Thread( () -> {
-            try (ServerSocket socket = new ServerSocket(12345)) {
-                System.out.println("Server Socket open at port 12345");
+            try (ServerSocket socket = new ServerSocket(port)) {
+                System.out.println("Server Socket open at port " + port);
                 while (true) {
                     Socket client = socket.accept();
 
@@ -162,7 +170,12 @@ public class Server extends UnicastRemoteObject implements IF_Server {
      */
     @Override
     public synchronized void createLobby(IF_GameView view, int playersNumber, String lobbyCode) throws IOException {
-        if (lobbyCode == null || lobbyCode.isBlank()) lobbyCode = generateLobbyCode();
+        if (lobbyCode.isBlank()) {
+            lobbyCode = generateLobbyCode();
+        } else if (!lobbyCode.matches("\\d{6}")) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.INVALID_LOBBY_CODE));
+            return;
+        }
         if (lobbies.containsKey(lobbyCode)) {
             asynchronousViewCall(() -> view.notifyError(ErrorType.ALREADY_EXISTING_LOBBY));
             return;
@@ -189,7 +202,7 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     public synchronized void showAvailableLobbies(IF_GameView view) throws IOException {
         Map<String, Integer> available = new HashMap<>();
         lobbies.forEach((code, controller) -> {
-            if (!controller.isFull()) available.put(code, controller.getOccupiedSlots());
+            if (!controller.isFull() && controller.getOccupiedSlots() > 0) available.put(code, controller.getOccupiedSlots());
         });
         asynchronousViewCall(() -> view.showLobbies(available));
     }
@@ -228,6 +241,11 @@ public class Server extends UnicastRemoteObject implements IF_Server {
                 .toList();
         if (existingNicknames.contains(nickname)) {
             asynchronousViewCall(() -> view.notifyError(ErrorType.WRONG_NICKNAME));
+            return;
+        }
+
+        if (target.isFull()) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.FULL_LOBBY));
             return;
         }
 
