@@ -54,16 +54,6 @@ public class Tile implements Serializable {
         return Objects.hash(currentPlayer, upArrows, downArrows, food);
     }
 
-    public void displayTile() {
-        List<String> str = new ArrayList<>();
-
-        if (upArrows != null) str.add("\033[34m" + "UP: " + "\033[0m" + upArrows);
-        if (downArrows != null) str.add("\033[31m" + "DOWN: "+ "\033[0m" + downArrows);
-        if (currentPlayer != null) str.add("\033[32m" + "PL: " + currentPlayer.getNickname() + "\033[0m");
-
-        System.out.print(String.join(" ", str) + "      ");
-    }
-
     public void createRow(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {
         String r = "";
         if (food != null) r = "\033[31m" + "Up: " + "\033[0m" + food;

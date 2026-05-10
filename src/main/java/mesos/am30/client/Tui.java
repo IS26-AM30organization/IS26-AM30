@@ -142,7 +142,7 @@ public class Tui implements IF_GameUI {
 	/**
 	 * if server replies that playerNickname was entered incorrectly, this method re-promts the user to insert it
 	 */
-	private void promptPlayerNickname() {
+    void promptPlayerNickname() {
 		clientExecutor.submit(() -> {
 					try {
 						if (vView != null) vView.askNickname();
@@ -156,7 +156,7 @@ public class Tui implements IF_GameUI {
 	/**
 	 * if server replies that playerNum was entered incorrectly, this method re-promts the user to insert it
 	 */
-	private void promptPlayerNumber() {
+    void promptPlayerNumber() {
 		clientExecutor.submit(() -> {
 					try {
 						if (vView != null) vView.askPlayersNumber();
@@ -250,7 +250,7 @@ public class Tui implements IF_GameUI {
 					default -> printMessage("Invalid Command, type -h or -help to show all available commands.");
 				}
 			} catch (NumberFormatException | IndexOutOfBoundsException e) {
-				printMessage("Invalid number: either outOfBound or an Event was picked.");
+				printMessage("Invalid number: outOfBound/WrongRow/Event was picked");
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

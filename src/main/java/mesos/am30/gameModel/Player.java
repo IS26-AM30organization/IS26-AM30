@@ -84,7 +84,7 @@ public class Player implements Serializable {
      * @param stat type of stat to be updated
      * @param sum update amount
      */
-    public void updateStats(Parameter stat,int sum) {
+    public void updateStats(Parameter stat, int sum) {
         //using getOrDefault default method of HashMap -> if no value is present, returns defaultValue.
         int currentValue = this.parameters.getOrDefault(stat, 0);
 
@@ -109,7 +109,7 @@ public class Player implements Serializable {
         this.parameters.put(stat, updatedValue);
     }
 
-    public void lastRoundPoints(){
+    public void lastRoundPoints() {
         updateStats(Parameter.PRESTIGE_POINTS,(tribe.get(Parameter.ARTIST).size()/2)*10);
         for(CharacterCard card : tribe.get(Parameter.BUILDER))
             updateStats(Parameter.PRESTIGE_POINTS, card.getPrestigePoints());
