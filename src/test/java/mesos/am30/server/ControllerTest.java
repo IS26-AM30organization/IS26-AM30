@@ -3,6 +3,7 @@ package mesos.am30.server;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.board.Board;
 import mesos.am30.gameModel.IF_GameModel;
+import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.ErrorType;
@@ -10,13 +11,11 @@ import mesos.am30.client.IF_GameView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -24,7 +23,9 @@ import static org.mockito.Mockito.*;
 class ControllerTest {
 
     private Controller controller;
+    @Mock
     private Player player1;
+    @Mock
     private Player player2;
     private IF_GameView mockView1;
     private IF_GameView mockView2;
@@ -32,8 +33,6 @@ class ControllerTest {
 
     @BeforeEach
     void setUp() throws IOException, NoSuchFieldException, IllegalAccessException {
-        player1 = mock(Player.class);
-        player2 = mock(Player.class);
         List<Player> players = Arrays.asList(player1, player2);
 
         when(player1.getNickname()).thenReturn("Alice");
@@ -58,15 +57,16 @@ class ControllerTest {
         java.lang.reflect.Field boardField = Controller.class.getDeclaredField("board");
         boardField.setAccessible(true);
         boardField.set(controller, mockBoard);
-
-        lenient().when(mockBoard.getCurrentPlayer()).thenReturn(player1);
     }
 
     @Test
     void chooseTile_RightPlayer() throws IOException {
         Tile myTile = new Tile(5, 2, 1);
 
-        controller.chooseTile("Alice", myTile);
+        when(mockBoard.getCurrentPlayer()).thenReturn(player1);
+        lenient().when(player1.hasNoMoves()).thenReturn(true);
+        when(mockBoard.getTiles()).thenReturn(Collections.singletonList(myTile));
+        controller.chooseTile(player1.getNickname(), myTile);
 
         verify(mockView1, never()).notifyError(any());
         verify(mockView2, never()).notifyError(any());
@@ -76,7 +76,8 @@ class ControllerTest {
     void chooseTile_WrongPlayer() throws IOException {
         Tile myTile = new Tile(5, 2, 1);
 
-        controller.chooseTile("Bob", myTile);
+        when(mockBoard.getCurrentPlayer()).thenReturn(player1);
+        controller.chooseTile(player2.getNickname(), myTile);
 
         verify(mockView2, times(1)).notifyError(ErrorType.NOT_YOUR_TURN);
         verify(mockView1, never()).notifyError(any());
@@ -86,8 +87,12 @@ class ControllerTest {
     void chooseCharacter_CorrectPlayer_HasMoves() throws IOException {
         CharacterCard targetCard = new CharacterCard(1, Parameter.SHAMAN, 3, 3, 100);
 
-        when(mockBoard.getUpperRow()).thenReturn(Arrays.asList(targetCard));
+        when(mockBoard.getCurrentPlayer()).thenReturn(player1);
+        when(player1.hasNoMoves()).thenReturn(false);
+
         when(player1.hasEnoughUpMoves()).thenReturn(true);
+        when(mockBoard.getUpperRow()).thenReturn(Collections.singletonList(targetCard));
+
         controller.chooseCharacter("Alice", targetCard);
 
         verify(mockView1, never()).notifyError(any());
@@ -97,32 +102,71 @@ class ControllerTest {
     void chooseCharacter_CorrectPlayer_NoMoves() throws IOException {
         CharacterCard targetCard = new CharacterCard(1, Parameter.SHAMAN, 5, 3, 101);
 
-        when(player1.hasEnoughUpMoves()).thenReturn(false);
-        when(player1.hasEnoughDownMoves()).thenReturn(false);
+        when(mockBoard.getCurrentPlayer()).thenReturn(player1);
+        when(player1.hasNoMoves()).thenReturn(true);
+
         controller.chooseCharacter("Alice", targetCard);
 
-        verify(mockView1, times(1)).notifyError(ErrorType.WRONG_CARD);
+        verify(mockView1, times(1)).notifyError(ErrorType.NOT_YOUR_TURN);
     }
 
     @Test
     void chooseCharacter_IncorrectPlayer() throws IOException {
         CharacterCard targetCard = new CharacterCard(1, Parameter.SHAMAN, 3, 3, 102);
 
-        controller.chooseCharacter("Bob", targetCard);
+        controller.chooseCharacter(player2.getNickname(), targetCard);
 
         verify(mockView2, times(1)).notifyError(ErrorType.NOT_YOUR_TURN);
         verify(mockView1, never()).notifyError(any());
     }
 
     @Test
-    void chooseCharacter_CardNotInBoard() throws IOException {
-        CharacterCard cardInBoard = new CharacterCard(1, Parameter.SHAMAN, 3, 3, 103);
-        CharacterCard cardRequested = new CharacterCard(2, Parameter.HUNTER, 2, 2, 104);
+    void chooseBuilding_CorrectPlayer_NoMoves() throws IOException {
+        BuildingCard card = mock(BuildingCard.class);
 
-        controller.chooseCharacter("Alice", cardRequested);
+        when(mockBoard.getCurrentPlayer()).thenReturn(player1);
+        when(player1.hasNoMoves()).thenReturn(true);
 
-        verify(mockView1, times(1)).notifyError(ErrorType.WRONG_CARD);
+        controller.chooseBuilding("Alice", card);
+
+        verify(mockView1, times(1)).notifyError(ErrorType.NOT_YOUR_TURN);
+        verify(mockBoard, never()).pickCard(player1, card);
     }
+
+    @Test
+    void chooseBuilding_CorrectPlayer_NotEnoughFood() throws IOException {
+        BuildingCard card = mock(BuildingCard.class);
+
+        when(mockBoard.getCurrentPlayer()).thenReturn(player1);
+        when(player1.hasNoMoves()).thenReturn(false);
+
+        when(mockBoard.getUpperBuildings()).thenReturn(Collections.singletonList(card));
+        when(player1.hasEnoughUpMoves()).thenReturn(true);
+        when(card.canBeBought(player1)).thenReturn(false);
+
+        controller.chooseBuilding("Alice", card);
+
+        verify(mockView1, times(1)).notifyError(ErrorType.NOT_ENOUGH_FOOD);
+        verify(mockBoard, never()).pickCard(player1, card);
+    }
+
+    @Test
+    void chooseBuilding_CorrectPlayer() throws IOException {
+        BuildingCard card = mock(BuildingCard.class);
+
+        when(mockBoard.getCurrentPlayer()).thenReturn(player1);
+        when(player1.hasNoMoves()).thenReturn(false);
+
+        when(mockBoard.getUpperBuildings()).thenReturn(Collections.singletonList(card));
+        when(player1.hasEnoughUpMoves()).thenReturn(true);
+        when(card.canBeBought(player1)).thenReturn(true);
+
+        controller.chooseBuilding("Alice", card);
+
+        verify(mockBoard).pickCard(player1, card);
+        verify(mockView1, never()).notifyError(any());
+    }
+
+
 }
 
- 

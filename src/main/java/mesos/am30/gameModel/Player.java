@@ -39,6 +39,9 @@ public class Player implements Serializable {
         return nickname;
     }
 
+    /**
+     * Adds a building to the player's tribe
+     */
     public void addBuilding(BuildingCard card){
         buildings.add(card);
         updateStats(
@@ -47,6 +50,9 @@ public class Player implements Serializable {
                         : 0);
     }
 
+    /**
+     * Adds a character to the player's tribe, based on the character role
+     */
     public void addCharacter (CharacterCard card){
         List<CharacterCard> currentTribe = tribe.computeIfAbsent(card.getRole(), k -> new ArrayList<>());
         tribe.get(card.getRole()).add(card);
@@ -73,7 +79,12 @@ public class Player implements Serializable {
         return specialBuffs;
     }
 
-    public void updateStats(Parameter stat,int sum){
+    /**
+     * Method used to update player's stats when needed; mostly used when events are triggered and stats updates are due
+     * @param stat type of stat to be updated
+     * @param sum update amount
+     */
+    public void updateStats(Parameter stat, int sum) {
         //using getOrDefault default method of HashMap -> if no value is present, returns defaultValue.
         int currentValue = this.parameters.getOrDefault(stat, 0);
 
@@ -95,12 +106,10 @@ public class Player implements Serializable {
             if (stat != Parameter.PRESTIGE_POINTS) updatedValue = 0;
         }
 
-
-
         this.parameters.put(stat, updatedValue);
     }
 
-    public void lastRoundPoints(){
+    public void lastRoundPoints() {
         updateStats(Parameter.PRESTIGE_POINTS,(tribe.get(Parameter.ARTIST).size()/2)*10);
         for(CharacterCard card : tribe.get(Parameter.BUILDER))
             updateStats(Parameter.PRESTIGE_POINTS, card.getPrestigePoints());
@@ -210,7 +219,7 @@ public class Player implements Serializable {
     public void displayStats() {
         int food = parameters.get(Parameter.FOOD);
         int prestigePoints = parameters.get(Parameter.PRESTIGE_POINTS);
-        System.out.printf("\033[31m" + "\nFood: %d, " + "\033[0m" + "\033[33m" + "pPoints: %d\n" + "\033[0m", food, prestigePoints);
-        if (inventions != null) System.out.printf("Inventions: %s%n", inventions.toString());
+        System.out.printf("\033[31m" + "Food: %d, " + "\033[0m" + "\033[33m" + "pPoints: %d\n" + "\033[0m", food, prestigePoints);
+        if (inventions != null) System.out.printf("Inventions: %s", inventions.toString());
     }
 }

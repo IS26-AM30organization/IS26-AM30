@@ -109,4 +109,11 @@ public class ShamanicRitual implements IF_Event {
             }
         }
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("Shamanic");
+        str2.append("Lost:" + lostPrestigePoints);
+        str3.append("Gained: " + gainedPrestigePoints);
+    }
 }

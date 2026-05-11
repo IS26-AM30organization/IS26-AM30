@@ -69,7 +69,7 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
         Player requestingPlayer = getPlayerByNickname(nickname);
         Player currentPlayer = board.getCurrentPlayer();
 
-        if (!isPlayerTurn(requestingPlayer, currentPlayer) && !requestingPlayer.hasNoMoves()) {
+        if (!isPlayerTurn(requestingPlayer, currentPlayer) || !requestingPlayer.hasNoMoves()) {
             handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
@@ -90,18 +90,15 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
         Player requestingPlayer = getPlayerByNickname(nickname);
 
         Player currentPlayer = board.getCurrentPlayer();
-        if (!isPlayerTurn(requestingPlayer, currentPlayer) && requestingPlayer.hasNoMoves()) {
+        if (!isPlayerTurn(requestingPlayer, currentPlayer) || requestingPlayer.hasNoMoves()) {
             handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
 
         if (tryPickedCard(currentPlayer, card)) {
             if (board.pickCard(requestingPlayer, card)) {
-                System.out.println("[DEBUG - CONTROLLER]: pickCard() returns true");
                 if (board.nextRound()) {
-                    System.out.println("[DEBUG - CONTROLLER]: nextRound() returns true");
                     sendEnd();
-                    return; //HERE LOGIC TO END GAME
                 }
             }
         }
@@ -111,7 +108,7 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
         Player requestingPlayer = getPlayerByNickname(nickname);
         Player currentPlayer = board.getCurrentPlayer();
         
-        if (!isPlayerTurn(requestingPlayer, currentPlayer) && requestingPlayer.hasNoMoves()) {
+        if (!isPlayerTurn(requestingPlayer, currentPlayer) || requestingPlayer.hasNoMoves()) {
             handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
@@ -124,7 +121,6 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
             if (board.pickCard(requestingPlayer, card))
                 if (board.nextRound())
                     sendEnd();
-                    return; //HERE LOGIC TO END GAME
         }
     }
 
@@ -133,7 +129,6 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
     private boolean isPlayerTurn(Player requestingPlayer, Player currentPlayer) throws IOException {
         if(currentPlayer == null) return false;
         if(requestingPlayer.equals(currentPlayer)) return true;
-        handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
         return false;
     }
 

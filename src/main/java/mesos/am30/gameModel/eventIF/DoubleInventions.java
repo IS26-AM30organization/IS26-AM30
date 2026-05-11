@@ -39,4 +39,10 @@ public class DoubleInventions implements IF_Event {
         List<CharacterCard> inventors = player.getCharacterType(Parameter.INVENTOR);
         return inventors.get(inventors.size() - 1).getValue(); //inventors.size()!=0 always, as this class is called as an Inventor is chosen.
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("dblInv");
+        str2.append("food:" + foodGain);
+    }
 }

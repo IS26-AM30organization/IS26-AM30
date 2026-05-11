@@ -53,4 +53,10 @@ public class Hunt implements IF_Event {
         player.updateStats(Parameter.FOOD, 1);
         player.updateStats(Parameter.PRESTIGE_POINTS, hunters * prestigePoints);
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("Hunt");
+        str2.append("pP:" + prestigePoints);
+    }
 }

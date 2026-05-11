@@ -17,8 +17,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static java.lang.Integer.parseInt;
-import static mesos.am30.common.GamePhase.END;
+import static mesos.am30.common.GamePhase.*;
 
+/**
+ * This class represents the Terminal Interface
+ */
 public class Tui implements IF_GameUI {
 	ViewModel vBoard;
 	VirtualView vView;
@@ -89,12 +92,11 @@ public class Tui implements IF_GameUI {
 	}
 
 	/**
-	 * Invoked by views, once called, it updates the TUI
+	 * Invoked by virtualView, used to set vBoard
 	 */
 	public void refresh(ViewModel vBoard) {
 		this.vBoard = vBoard; //check if needed
-
-		boardRender();
+		//boardRender();
 	}
 
 	/**
@@ -102,12 +104,13 @@ public class Tui implements IF_GameUI {
 	 * On first call it starts the terminal executor.
 	 */
 	public void printMove(String nickname, Move move) {
+		boardRender();
 		printMessage("\033[1;36m" + "[System]: Player " + "\033[1;33m" + nickname + "\033[0m" + " has " + move + "\033[0m");
 
 		if (isMatchRunning) return;
 		isMatchRunning = true;
 		gPhase = GamePhase.GAME;
-		printMessage("[System]: game is starting - type -h or -help to show available commands.");
+		printMessage("[System]: game is starting: type -h or -help to show available commands.");
 		startCLient();
 	}
 
@@ -134,9 +137,12 @@ public class Tui implements IF_GameUI {
 		else if (errorMessage == ErrorType.FULL_LOBBY) printEnd();
 	}
 
-	//PRIVATE METHODS
+	//PRIVATE LOGIC METHODS
 
-	private void promptPlayerNickname() {
+	/**
+	 * if server replies that playerNickname was entered incorrectly, this method re-promts the user to insert it
+	 */
+    void promptPlayerNickname() {
 		clientExecutor.submit(() -> {
 					try {
 						if (vView != null) vView.askNickname();
@@ -147,7 +153,10 @@ public class Tui implements IF_GameUI {
 		);
 	}
 
-	private void promptPlayerNumber() {
+	/**
+	 * if server replies that playerNum was entered incorrectly, this method re-promts the user to insert it
+	 */
+    void promptPlayerNumber() {
 		clientExecutor.submit(() -> {
 					try {
 						if (vView != null) vView.askPlayersNumber();
@@ -160,7 +169,6 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Returns the wanted Tile, if existing
-	 *
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
 	private Tile wantedTile(int tileIndex) throws IndexOutOfBoundsException {
@@ -169,7 +177,6 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Returns the wanted Card, if existing
-	 *
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
 	private CharacterCard wantedCCard(Move move, int cIndex) throws IndexOutOfBoundsException {
@@ -194,7 +201,6 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Returns the wanted BuildingCard, if existing
-	 *
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
 	private BuildingCard wantedBuild(Move move, int cIndex) throws IndexOutOfBoundsException {
@@ -212,24 +218,7 @@ public class Tui implements IF_GameUI {
 	}
 
 	/**
-	 * Prints a list of all available commands
-	 */
-	private void showAvailableCommands() {
-		printMessage("""
-				tile #num -> chose a Tile 
-				draw up #num -> draw a Card 
-				draw down #num-> draw a Card 
-				buy up #num -> buy a Building 
-				buy down #num -> chose a Building 
-				-h or -help #num -> to show available commands 
-				""");
-	}
-
-	//AVAILABLE COMMANDS
-
-	/**
-	 * Defines which are the correct commands for game phase
-	 *
+	 * Defines which are the correct commands for the ongoing game phase
 	 * @param plAction contains terminal player's input
 	 */
 	private void matchCMDs(String[] plAction) {
@@ -242,32 +231,33 @@ public class Tui implements IF_GameUI {
 		if (cmdSize > 0 && cmdSize <= 3) {
 			try {
 				switch (cmdSize) {
+					case 1 -> {}
 					case 2 -> cIndex = parseInt(plAction[1]);
 					case 3 -> {
 						action += " " + plAction[1];
 						cIndex = parseInt(plAction[2]);
 					}
-					default -> printMessage("Invalid Command.");
+					default -> printMessage("Invalid Command, type -h or -help to show all available commands.");
 				}
 
 				switch (action) {
 					case "-h", "-help" -> showAvailableCommands();
-					case "tile" -> {
-						vView.checkTile(wantedTile(cIndex));
-					}
+					case "tile" -> vView.checkTile(wantedTile(cIndex));
 					case "draw up" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_UP, cIndex));
 					case "draw down" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_DOWN, cIndex));
 					case "buy up" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_UP, cIndex));
 					case "buy down" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_DOWN, cIndex));
-					default -> printMessage("Invalid Command.");
+					default -> printMessage("Invalid Command, type -h or -help to show all available commands.");
 				}
 			} catch (NumberFormatException | IndexOutOfBoundsException e) {
-				printMessage("Invalid number.");
+				printMessage("Invalid number: outOfBound/WrongRow/Event was picked");
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-		} else printMessage("Invalid Command.");
+		} else printMessage("Invalid Command, type -h or -help to show all available commands.");
 	}
+
+	//PRIVATE METHODS USED TO DISPLAY CARDS/MESSAGES
 
 	/**
 	 * Method to print on TUI - Holds a lock on tuiLock to prevent other methods to change
@@ -283,6 +273,20 @@ public class Tui implements IF_GameUI {
 	}
 
 	/**
+	 * Prints a list of all available commands
+	 */
+	private void showAvailableCommands() {
+		printMessage("""
+				tile #num -> chose a Tile 
+				draw up #num -> draw a Card 
+				draw down #num-> draw a Card 
+				buy up #num -> buy a Building 
+				buy down #num -> chose a Building 
+				-h or -help #num -> to show available commands 
+				""");
+	}
+
+	/**
 	 * clears terminal and calls methods to print cards for current state
 	 */
 	private void boardRender() {
@@ -294,21 +298,21 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Method clears the TUI
-	 * takes a lock on tuiLock
 	 */
 	private void clearTUI() {
 		try {
-			new ProcessBuilder("clear").inheritIO().start().waitFor();
-			for (int i = 0; i < 50; ++i) System.out.println("\n");
+			for (int i = 0; i < 20; ++i) System.out.println("\n");
 		} catch (Exception e) {
-			for (int i = 0; i < 50; ++i) System.out.println("\n");
+			for (int i = 0; i < 20; ++i) System.out.println("\n");
 			System.out.print("\033[H\033[2J");
 			System.out.flush();
 		}
 	}
 
+	// METHODS TO PRINT CARDS ON TERMINAL
+
 	/**
-	 * prints cards on TUI
+	 * prints all cards and players on the terminal
 	 */
 	private void printCards() {
 		List<Card> upRow = vBoard.getUpperRow();
@@ -318,29 +322,35 @@ public class Tui implements IF_GameUI {
 		List<Tile> tiles = vBoard.getTiles();
 		List<Player> players = vBoard.getPlayers();
 
-		System.out.println("\033[1;32m" + "\nUPPER-ROW" + "\033[0m");
+		for (Player p : players) {
+			displayPlayer(p);
+		}
+
+		System.out.println("\033[1;32m" + "\n\n--- UPPER-ROW --------------" + "\033[0m");
 		displayRows(upRow);
 
-		System.out.println("\033[1;33m" + "\nUPPER-BUILDS" + "\033[0m");
+		System.out.println("\033[1;33m" + "--- UPPER-BUILDS -----------" + "\033[0m");
 		displayBuilds(upBuild);
 
-		System.out.println("\033[1;34m" + "\nTILES" + "\033[0m");
+		System.out.println("\033[1;34m" + "\n--- TILES ------------------" + "\033[0m");
 		displayTiles(tiles);
 
-		System.out.println("\033[1;32m" + "\nLOWER-ROW" + "\033[0m");
+		System.out.println("\033[1;32m" + "\n--- LOWER-ROW --------------" + "\033[0m");
 		displayRows(loRow);
 
-		System.out.println("\033[1;33m" + "\nLOWER-BUILDS" + "\033[0m");
+		System.out.println("\033[1;33m" + "--- LOWER-BUILDS -----------" + "\033[0m");
 		displayBuilds(loBuild);
 
-		for (Player p : players) {
-			System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
-			p.displayTribe();
-			p.displayStats();
-		}
+		Player crntPlayer = vBoard.getCurrentUser();
+		if (crntPlayer != null) displayPlayer(crntPlayer);
+
 		System.out.println("\n");
 	}
 
+	/**
+	 * Used to print each line
+	 * @param ln1 @param ln2 @param ln3: each represents a line on the terminal
+	 */
 	private void displayRows(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {
 		System.out.println(ln1);
 		System.out.println(ln2);
@@ -351,6 +361,10 @@ public class Tui implements IF_GameUI {
 		ln3.setLength(0);
 	}
 
+	/**
+	 * Used to print Upper and Lower Row cards' info
+	 * @param row is either upper or lower row of vBoard
+	 */
 	private void displayRows(List<Card> row) {
 		if (row.isEmpty()) return;
 
@@ -362,6 +376,9 @@ public class Tui implements IF_GameUI {
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Card card : row) {
+			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
+			ln2.append("  ");
+			ln3.append("  ");
 			card.createRow(ln1, ln2, ln3);
 			j++;
 			if (j == maxCardsXRow) {
@@ -372,32 +389,54 @@ public class Tui implements IF_GameUI {
 		if (j > 0) displayRows(ln1, ln2, ln3);
 	}
 
+	/**
+	 * Displays buildings info
+	 */
 	private void displayBuilds(List<BuildingCard> builds) {
 		if (builds.isEmpty()) return;
 
+		int j = 0;
 		StringBuilder ln1 = new StringBuilder();
 		StringBuilder ln2 = new StringBuilder();
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Card card : builds) {
+			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
 			card.createRow(ln1, ln2, ln3);
+			j++;
 		}
 		displayRows(ln1, ln2, ln3);
 	}
 
+	/**
+	 * Displays tiles info
+	 */
 	private void displayTiles(List<Tile> tiles) {
 		if (tiles.isEmpty()) return;
 
+		int j = 0;
 		StringBuilder ln1 = new StringBuilder();
 		StringBuilder ln2 = new StringBuilder();
 		StringBuilder ln3 = new StringBuilder();
 
-
 		for (Tile tile : tiles) {
+			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
+			ln2.append("\033[1;35m").append(j).append(".").append("\033[0m");
 			tile.createRow(ln1, ln2, ln3);
+			j++;
 		}
 		displayRows(ln1, ln2, ln3);
 	}
+
+	/**
+	 * Displays player's info
+	 */
+	private void displayPlayer(Player p) {
+		System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
+		p.displayTribe();
+		p.displayStats();
+	}
+
 }
 
 

@@ -43,6 +43,11 @@ public class BuildingCard extends Card {
         return true;
     }
 
+    /**
+     * Checks whether a player has enough food to buy the building card
+     * @param player
+     * @return T if he can, F if he cannot
+     */
     public boolean canBeBought(Player player) {
         return player.getParameters().get(Parameter.FOOD)
                 + player.getParameters().get(Parameter.BUILDER) >= foodCost;
@@ -69,36 +74,34 @@ public class BuildingCard extends Card {
     }
 
     @Override
-    public void displayCard() {
-        System.out.println(String.format("%-10s | %-5d | %-5d",
-                eventType, foodCost, ppGainEnd));
-    }
-
-    @Override
     public void createRow(StringBuilder eventRole, StringBuilder ln2, StringBuilder ln3) {
-        String r = "[ build ]";
-        String i = "";
-        if (foodCost != 0) i = "fCost: " + foodCost;
-        String pp = "";
-        if (ppGainEnd != 0) pp = "ppGainEnd: " + ppGainEnd;
+        StringBuilder str1 = new StringBuilder();
+        StringBuilder str2 = new StringBuilder();
+        StringBuilder str3 = new StringBuilder();
+
+        if (foodCost != 0) str2.append("fCost: " + foodCost);
+        if (ppGainEnd != 0) str2.append("ppGainEnd: " + ppGainEnd);
+
+        event.getAttributes(str1, str2, str3);
 
         //need to take longest word
-        int maxWidth = r.length();
-        if (i.length() > maxWidth) {
-            maxWidth = i.length();
+        int maxWidth = str1.length();
+        if (str2.length() > maxWidth) {
+            maxWidth = str2.length();
         }
-        if (pp.length() > maxWidth) {
-            maxWidth = pp.length();
+        if (str3.length() > maxWidth) {
+            maxWidth = str3.length();
         }
         maxWidth += 3;
 
-        eventRole.append(r);
-        for (int x = r.length(); x < maxWidth; x++) eventRole.append(" ");
+        eventRole.append(str1).append("\uD83C\uDFE0");;
+        for (int x = str1.length(); x < maxWidth-2; x++) eventRole.append(" ");
 
-        ln2.append(i);
-        for (int x = i.length(); x < maxWidth; x++) ln2.append(" ");
+        ln2.append(str2);
+        for (int x = str2.length(); x < maxWidth; x++) ln2.append(" ");
 
-        ln3.append(pp);
-        for (int x = pp.length(); x < maxWidth; x++) ln3.append(" ");
+        ln3.append(str3);
+        for (int x = str3.length(); x < maxWidth; x++) ln3.append(" ");
     }
+
 }

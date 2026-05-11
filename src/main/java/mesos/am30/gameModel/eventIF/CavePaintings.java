@@ -67,4 +67,12 @@ public class CavePaintings implements IF_Event {
         int artists = player.getTribe().get(Parameter.ARTIST).size();
         player.updateStats(Parameter.PRESTIGE_POINTS, (artists < artistMinimum) ? lostPrestigePoints : gainedPrestigePoints * artists);
     }
+
+    @Override
+    public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
+        str1.append("Paint");
+        str2.append("artMin:" + artistMinimum);
+        str3.append("Lost: "+ lostPrestigePoints + " Gained: " + gainedPrestigePoints);
+
+    }
 }

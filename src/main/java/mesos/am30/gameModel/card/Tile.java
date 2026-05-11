@@ -54,16 +54,6 @@ public class Tile implements Serializable {
         return Objects.hash(currentPlayer, upArrows, downArrows, food);
     }
 
-    public void displayTile() {
-        List<String> str = new ArrayList<>();
-
-        if (upArrows != null) str.add("\033[34m" + "UP: " + "\033[0m" + upArrows);
-        if (downArrows != null) str.add("\033[31m" + "DOWN: "+ "\033[0m" + downArrows);
-        if (currentPlayer != null) str.add("\033[32m" + "PL: " + currentPlayer.getNickname() + "\033[0m");
-
-        System.out.print(String.join(" ", str) + "      ");
-    }
-
     public void createRow(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {
         String r = "";
         if (food != null) r = "\033[31m" + "Up: " + "\033[0m" + food;
@@ -83,13 +73,13 @@ public class Tile implements Serializable {
         int maxWidth = Math.max(real1, Math.max(real2, real3)) + 3;
 
         ln1.append(r);
-        for (int x = real1; x < maxWidth; x++) ln1.append(" ");
+        for (int x = real1; x < maxWidth+2; x++) ln1.append(" ");
 
         ln2.append(i);
-        for (int x = real2; x < maxWidth; x++) ln2.append(" ");
+        for (int x = real2; x < maxWidth+2; x++) ln2.append(" ");
 
         ln3.append(pp);
-        for (int x = real3; x < maxWidth; x++) ln3.append(" ");
+        for (int x = real3; x < maxWidth+2; x++) ln3.append(" ");
     }
 
 }
