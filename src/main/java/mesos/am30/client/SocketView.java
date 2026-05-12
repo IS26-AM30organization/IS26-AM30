@@ -26,7 +26,12 @@ public class SocketView extends VirtualView {
      */
     public SocketView(IF_GameUI userInterface) {
         super(userInterface);
-        connectionOpen = true;
+        connectionOpen = false;
+    }
+
+    // Test getter for the flag connectionOpen
+    public boolean isConnectionOpen() {
+        return connectionOpen;
     }
 
     // Test setter for the attribute socket
@@ -48,8 +53,7 @@ public class SocketView extends VirtualView {
      * Open the connection to the Server.
      * <br>This method manages the Socket connection between this View and the Server.
      * <br><strong>Pre:</strong> path != null
-     * <br><strong>Post:</strong> socket = Socket(path, port) && outputStream = socket.getOutputStream && inputStream = socket.getInputStream &&
-     *                  this.nickname = (* unique nickname for each player in the lobby, chosen by the View *)
+     * <br><strong>Post:</strong> socket = Socket(path, port) && outputStream = socket.getOutputStream && inputStream = socket.getInputStream
      *
      * @see VirtualView Deeper description of this method in the VirtualView abstract Class.
      */
@@ -75,6 +79,7 @@ public class SocketView extends VirtualView {
         // start listening Thread (SocketProxy -> SocketView)
         new Thread(() -> {
             try {
+                connectionOpen = true;
                 while (connectionOpen) {
                     try {
                         Message message = (Message) inputStream.readObject();
@@ -90,7 +95,10 @@ public class SocketView extends VirtualView {
                                 showLobbies(showLobbiesMessage.getAvailableLobbies());
                             }
                             // give the Client nickname
-                            case NICKNAME -> askNickname();
+                            case NICKNAME -> {
+                                AskNicknameMessage askNicknameMessage = (AskNicknameMessage) message;
+                                askNickname(askNicknameMessage.getLobbyCode());
+                            }
                             // server confirms lobby joined to Client
                             case CONFIRM_LOBBY_JOINED -> confirmLobbyJoined();
 
@@ -121,9 +129,7 @@ public class SocketView extends VirtualView {
             } catch (IOException exception) {
                 try { socket.close(); } catch (IOException ignored) { /* connection closed Server-Side */ }
                 try {
-                    if (!connectionOpen) return;
                     notifyError(ErrorType.CONNECTION_CRASHED);
-                    exception.printStackTrace();
                     end();
                 } catch (IOException ignored) { /* userInterface error */ }
             }

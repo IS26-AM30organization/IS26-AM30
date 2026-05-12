@@ -106,7 +106,7 @@ class ServerTest {
         // Assert
         Thread.sleep(200);
         assertTrue(Server.getLobbies().containsKey("123456"));
-        verify(mockView).askNickname();
+        verify(mockView).askNickname("123456");
     }
 
     @Test
@@ -139,7 +139,7 @@ class ServerTest {
 
         // Assert
         Thread.sleep(200);
-        verify(mockView).askNickname();
+        verify(mockView).askNickname("123456");
     }
 
     @Test
@@ -441,7 +441,7 @@ class ServerTest {
         // Assert
         Thread.sleep(200);
         assertEquals(1, Server.getLobbies().size());
-        verify(mockView).askNickname();
+        verify(mockView).askNickname(any());
     }
 
     @Test
@@ -481,7 +481,7 @@ class ServerTest {
         // Assert: second generated code was used after the collision
         Thread.sleep(200);
         assertTrue(Server.getLobbies().containsKey("654321"));
-        verify(mockView).askNickname();
+        verify(mockView).askNickname("654321");
 
         // Restore default random
         Server.setRandom(new Random());

@@ -29,7 +29,7 @@ class SocketProxy implements IF_GameView {
     private final Socket socket;
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
-    private final Server server;
+    private Server server;
     private IF_GameController controller = null;
     private volatile boolean connectedToController;
     private volatile boolean connectionOpen;
@@ -52,18 +52,28 @@ class SocketProxy implements IF_GameView {
         this.outputStream = outputStream;
         this.inputStream = inputStream;
         server = Server.getInstance();
-        connectedToController = false;
-        connectionOpen = true;
 
         // start listening Thread (SocketView -> SocketProxy)
         startListeningThread();
+    }
+
+    // Test setter for the attribute Server
+    void setServer(Server server) {
+        this.server = server;
+    }
+
+    // Test getter for the attribute connectionOpen
+    boolean isConnectionOpen() {
+        return connectionOpen;
     }
 
     // start listening for messages from SocketView and deploy them to Server/Controller
     private void startListeningThread() {
         new Thread(() -> {
             try {
-                while (connectionOpen) {
+                connectedToController = false;
+                connectionOpen = true;
+                while (true) {
                     try {
                         Message message = (Message) inputStream.readObject();
                         if (message.getType() == MessageType.CHOOSE) {
@@ -105,7 +115,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-side via Socket Proxy of the confirmConnection method.
      */
     @Override
-    public void confirmConnection() throws IOException {
+    public synchronized void confirmConnection() throws IOException {
         outputStream.writeObject(new Message(MessageType.CONFIRM_CONNECTION));
         outputStream.flush();
     }
@@ -114,7 +124,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-side via Socket Proxy of the showLobbies method.
      */
     @Override
-    public void showLobbies(Map<String, Integer> availableLobbies) throws IOException {
+    public synchronized void showLobbies(Map<String, Integer> availableLobbies) throws IOException {
         outputStream.writeObject(new ShowLobbiesMessage(MessageType.SHOW_LOBBIES, availableLobbies));
         outputStream.flush();
     }
@@ -123,8 +133,8 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-side via Socket Proxy of the askNickname method.
      */
     @Override
-    public void askNickname() throws IOException {
-        outputStream.writeObject(new Message(MessageType.NICKNAME));
+    public synchronized void askNickname(String lobbyCode) throws IOException {
+        outputStream.writeObject(new AskNicknameMessage(MessageType.NICKNAME, lobbyCode));
         outputStream.flush();
     }
 
@@ -132,7 +142,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-side via Socket Proxy of the confirmLobbyJoined method.
      */
     @Override
-    public void confirmLobbyJoined() throws IOException {
+    public synchronized void confirmLobbyJoined() throws IOException {
         outputStream.writeObject(new Message(MessageType.CONFIRM_LOBBY_JOINED));
         outputStream.flush();
     }
@@ -141,7 +151,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the setController method.
      */
     @Override
-    public void setController(IF_GameController controller) {
+    public synchronized void setController(IF_GameController controller) {
         this.controller = controller;
         connectedToController = true;
     }
@@ -150,7 +160,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the notifyTurn method.
      */
     @Override
-    public void notifyTurn(String nickname, Move move) throws IOException {
+    public synchronized void notifyTurn(String nickname, Move move) throws IOException {
         outputStream.writeObject(new ClienTurnMessage(MessageType.NOTIFY, nickname, move));
         outputStream.flush();
     }
@@ -159,7 +169,7 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the notifyError method.
      */
     @Override
-    public void notifyError(ErrorType errorType) throws IOException {
+    public synchronized void notifyError(ErrorType errorType) throws IOException {
         outputStream.writeObject(new ErrorMessage(MessageType.ERROR, errorType));
         outputStream.flush();
     }
@@ -168,28 +178,26 @@ class SocketProxy implements IF_GameView {
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the update method.
      */
     @Override
-    public void update(ViewParameter toUpdate, List<Object> parameters) throws IOException {
+    public synchronized void update(ViewParameter toUpdate, List<Object> parameters) throws IOException {
         outputStream.writeObject(new ModelUpdateMessage(MessageType.UPDATE, toUpdate, parameters));
         outputStream.flush();
-        outputStream.reset();
     }
 
     /**
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the end method.
      */
     @Override
-    public void end() throws IOException {
+    public synchronized void end() throws IOException {
         outputStream.writeObject(new Message(MessageType.END));
         outputStream.flush();
         connectionOpen = false;
-        socket.close();
     }
 
     /**
      * @see IF_GameView Implementation Server-Side via Socket Proxy of the ping method.
      */
     @Override
-    public void ping() throws IOException {
+    public synchronized void ping() throws IOException {
         outputStream.writeObject(new Message(MessageType.PING));
         outputStream.flush();
     }

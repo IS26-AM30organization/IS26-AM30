@@ -192,7 +192,8 @@ public class Server extends UnicastRemoteObject implements IF_Server {
         lobbyViews.put(lobbyCode, new ArrayList<>());
 
         // ask for the Nickname
-        asynchronousViewCall(view::askNickname);
+        String finalLobbyCode = lobbyCode;
+        asynchronousViewCall(() -> view.askNickname(finalLobbyCode));
     }
 
     /**
@@ -221,7 +222,7 @@ public class Server extends UnicastRemoteObject implements IF_Server {
             asynchronousViewCall(() -> view.notifyError(ErrorType.FULL_LOBBY));
             return;
         }
-        asynchronousViewCall(view::askNickname);
+        asynchronousViewCall(() -> view.askNickname(lobbyCode));
     }
 
     /**

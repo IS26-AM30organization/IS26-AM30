@@ -35,9 +35,11 @@ public interface IF_GameView extends Remote {
      * Ask the Client for its nickname.
      * <br>This method asks the Client which nickname he wants to use.
      *
+     * @param lobbyCode Code of the lobby.
+     *
      * @throws IOException The connection cannot be established correctly.
      */
-    void askNickname() throws IOException;
+    void askNickname(String lobbyCode) throws IOException;
 
     /**
      * Notify the Client about the successfully join to the Lobby.
