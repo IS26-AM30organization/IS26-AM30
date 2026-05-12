@@ -388,7 +388,7 @@ class VirtualViewTest {
     @Test
     void askNickname() throws IOException {
         // Act
-        virtualView.askNickname();
+        virtualView.askNickname("123456");
 
         // Assert
         verify(mockUI).askNickname();

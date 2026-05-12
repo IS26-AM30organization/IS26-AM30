@@ -258,7 +258,8 @@ public abstract class VirtualView implements IF_GameView {
      * @see IF_GameView Implementation Client-side of the askNickname method.
      */
     @Override
-    public synchronized void askNickname() throws IOException {
+    public synchronized void askNickname(String lobbyCode) throws IOException {
+        this.lobbyCode = lobbyCode;
         userInterface.askNickname();
     }
 
