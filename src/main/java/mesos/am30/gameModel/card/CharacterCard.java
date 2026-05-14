@@ -4,50 +4,98 @@ import mesos.am30.common.TColors;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.board.Board;
 
+/**
+ * Representation of a Character Card.
+ * <br/>This Class works as the representation for a Character Card, independently of the role of the Character.
+ */
 public class CharacterCard extends Card {
     private final Parameter role;
     private final Integer value;
     private final Integer prestigePoints;
 
-    public CharacterCard(int era, Parameter role, Integer value, Integer prestigePoints, int id) {
+    /**
+     * Constructor of a Character Card.
+     * <br/><strong>Pre:</strong> 1 <= era <= 4 && id > 1 && role != null && value != null && prestigePoints != null
+     * <br/><strong>Post:</strong> this.era = era && this.id = id && this.role = role && this.value = value && this.prestigePoints = prestigePoints
+     *
+     * @param era            Era when the Card is draw.
+     * @param id             Unique ID of the Card.
+     * @param role           Role of the Character.
+     * @param value          Value of the Character attribute (if existing).
+     * @param prestigePoints Value of the Character in prestige points (if existing).
+     */
+    public CharacterCard(int era, int id, Parameter role, Integer value, Integer prestigePoints) {
         super(era, id);
         this.role = role;
         this.value = value;
         this.prestigePoints = prestigePoints;
     }
 
+    /**
+     * Getter for the attribute "role".
+     *
+     * @return Role of the Character.
+     */
     public Parameter getRole() {
         return role;
     }
 
+    /**
+     * Getter for the attribute "value".
+     *
+     * @return Value of the Character attribute (if existing).
+     */
     public Integer getValue() {
         return value;
     }
 
+    /**
+     * Getter for the attribute "role".
+     *
+     * @return Value of the Character in prestige points (if existing).
+     */
     public Integer getPrestigePoints() {
         return prestigePoints;
     }
 
+    /**
+     * @see Card Character Card implementation of the isPickable method.
+     */
     @Override
     public boolean isPickable() {
         return true;
     }
 
-    public void drawUp(Board board){
+    /**
+     * @see Card Character Card implementation of the drawUp method.
+     */
+    @Override
+    public void drawUp(Board board) {
         board.drawUp(this);
     }
 
-    public void drawDown(Board board){
+    /**
+     * @see Card Character Card implementation of the drawDown method.
+     */
+    @Override
+    public void drawDown(Board board) {
         board.drawDown(this);
     }
 
-    public void discard(Board board){
+    /**
+     * @see Card Character Card implementation of the discard method.
+     */
+    @Override
+    public void discard(Board board) {
         board.discard(this);
     }
 
+    /**
+     * @see Card Character Card implementation of the createRow method.
+     */
     @Override
     public void createRow(StringBuilder rowRoles, StringBuilder rowValue, StringBuilder rowPP) {
-        String r = role + " " + "\u265F";
+        String r = role + " " + "♟";
         StringBuilder i = new StringBuilder();
 
         if (value != 0) {
@@ -68,41 +116,47 @@ public class CharacterCard extends Card {
         maxWidth += 5;
 
         rowRoles.append(TColors.SILVER_B).append(r).append(TColors.RESET);
-        for (int x = TColors.getVisibleLength(r); x < maxWidth; x++) rowRoles.append(" ");
+        rowRoles.repeat(" ", Math.max(0, maxWidth - TColors.getVisibleLength(r)));
 
         rowValue.append(i);
-        for (int x = TColors.getVisibleLength(i); x < maxWidth; x++) rowValue.append(" ");
+        rowValue.repeat(" ", Math.max(0, maxWidth - TColors.getVisibleLength(i)));
 
         rowPP.append(pp);
-        for (int x = TColors.getVisibleLength(pp); x < maxWidth; x++) rowPP.append(" ");
+        rowPP.repeat(" ", Math.max(0, maxWidth - TColors.getVisibleLength(pp)));
     }
 
-    @Override
-    public String getArt(){
-        return new String(role.name().toLowerCase().charAt(0) + (id % 2 == 0 ? "f" : "m"));
-    }
-
-    @Override
-    public String getFrame(){
-        return new String(prestigePoints+""+role.name().toLowerCase().charAt(0)+""+(value<0 ? value*(-1) : value));
-    }
-
-    /**
-     * Based on the card's role, the item must be specified to be displayed on terminal
-     */
-    private void valueToItem(StringBuilder str1) {
+    // Display the correct value to the Terminal
+    private void valueToItem(StringBuilder stringBuilder) {
         switch (role) {
-            case INVENTOR -> str1.append(TColors.DARK_GRAY).append("Invention:").append(TColors.RESET);
-            case BUILDER, GATHERER, HUNTER -> str1.append(TColors.PINK).append("Food:").append(TColors.RESET);
-            case SHAMAN -> str1.append(TColors.GOLD).append("Stars:").append(TColors.RESET);
-            case ARTIST -> {}
-            default -> str1.append("ITEM:");
+            case INVENTOR -> stringBuilder.append(TColors.DARK_GRAY).append("Invention:").append(TColors.RESET);
+            case BUILDER, GATHERER, HUNTER -> stringBuilder.append(TColors.PINK).append("Food:").append(TColors.RESET);
+            case SHAMAN -> stringBuilder.append(TColors.GOLD).append("Stars:").append(TColors.RESET);
+            default -> stringBuilder.append("ITEM:");
         }
     }
 
+    /**
+     * @see Card Character Card implementation of the getCardInfo method.
+     */
     @Override
     public String getCardInfo(StringBuilder info) {
         return info.append("Character")
                 .toString();
+    }
+
+    /**
+     * @see Card Character Card implementation of the getArt method.
+     */
+    @Override
+    public String getArt() {
+        return role.name().toLowerCase().charAt(0) + (id % 2 == 0 ? "f" : "m");
+    }
+
+    /**
+     * @see Card Character Card implementation of the getFrame method.
+     */
+    @Override
+    public String getFrame() {
+        return prestigePoints + "" + role.name().toLowerCase().charAt(0) + (value < 0 ? value * (-1) : value);
     }
 }
