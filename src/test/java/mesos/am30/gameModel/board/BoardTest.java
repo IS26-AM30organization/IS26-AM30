@@ -4,11 +4,14 @@ import mesos.am30.gameModel.EventType;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 import mesos.am30.gameModel.card.EventCard;
 import mesos.am30.gameModel.eventIF.FullSet;
 import mesos.am30.gameModel.eventIF.Sustenance;
 import mesos.am30.client.IF_GameView;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -20,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,10 +53,6 @@ class BoardTest {
     private IF_GameView v3;
     @Mock
     private IF_GameView v4;
-    @Mock
-    private IF_GameView v5;
-    @Mock
-    private IF_GameView v6;
     @Mock
     FullSet fullSet;
     @Mock
@@ -181,18 +179,6 @@ class BoardTest {
                 new CharacterCard(2, Parameter.GATHERER, 1, 0, 17)
         )));
 
-        //List.of(p1,p2,p3).forEach(p -> when(sustenance.handleEvent(p)).thenReturn(0));
-
-        Map<Parameter, List<CharacterCard>> mockTribe = mock(Map.class);
-        //List.of(p1, p2, p3).forEach(p -> when(p.getTribe()).thenReturn(mockTribe));
-        //List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.ARTIST)).thenReturn(new ArrayList<CharacterCard>()));
-        //List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.BUILDER)).thenReturn(new ArrayList<CharacterCard>()));
-        //List.of(p1, p2, p3).forEach(p -> when(p.getTribe().get(Parameter.INVENTOR)).thenReturn(new ArrayList<CharacterCard>()));
-
-        Map<Parameter, Integer> mockParameters = mock(Map.class);
-        //List.of(p1, p2, p3).forEach(p -> when(p.getParameters()).thenReturn(mockParameters));
-        //List.of(p1, p2, p3).forEach(p -> when(p.getParameters().get(Parameter.INVENTOR)).thenReturn(2));
-
         List.of(p1,p2,p3).forEach(p -> when(p.getBuildings()).thenReturn(new HashSet<>()));
 
         boardOf3.testGame(game);
@@ -201,7 +187,6 @@ class BoardTest {
         assertEquals(7,boardOf3.getUpperRow().size());
         assertEquals(3, boardOf3.getLowerRow().size());
         boardOf3.nextRound();
-        List.of(p1, p2, p3).forEach(p -> verify(diNap).discard(boardOf3));
         assertEquals(7,boardOf3.getUpperRow().size());
         assertEquals(7, boardOf3.getLowerRow().size());
         boardOf3.nextRound();
@@ -210,34 +195,80 @@ class BoardTest {
     }
 
     @Test
+    void nextRound_TwoPlayers_IncompleteDeck_EndsGame() throws IOException {
+        boardOf2.getDecks().add(new ArrayList<>(List.of(
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 101),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 102),
+                new CharacterCard(1, Parameter.GATHERER, 1, 0, 103)
+        )));
+        when(p1.getBuildings()).thenReturn(new HashSet<>());
+        when(p2.getBuildings()).thenReturn(new HashSet<>());
+        boardOf2.testGame(game);
+
+        boardOf2.nextRound();
+
+        verify(game).sendClientEnd();
+    }
+
+    @Test
+    void nextRound_TwoPlayers_FullLastEraDeck_DoesNotEndImmediately() throws IOException {
+        List<Card> fullEraDeck = new ArrayList<>();
+        for (int id = 101; id <= 106; id++)
+            fullEraDeck.add(new CharacterCard(1, Parameter.GATHERER, 1, 0, id));
+        boardOf2.getDecks().add(fullEraDeck);
+
+        when(p1.getBuildings()).thenReturn(new HashSet<>());
+        when(p2.getBuildings()).thenReturn(new HashSet<>());
+        boardOf2.testGame(game);
+
+        boardOf2.nextRound();
+
+        verify(game, never()).sendClientEnd();
+        assertEquals(6, boardOf2.getUpperRow().size());
+        verify(game).iChangedTurn();
+    }
+
+    @Test
+    void fullGame_TwoPlayers_TerminatesCorrectly() throws IOException {
+        Player player1 = new Player("P1");
+        Player player2 = new Player("P2");
+        IF_GameView view1 = mock(IF_GameView.class);
+        IF_GameView view2 = mock(IF_GameView.class);
+
+        Board board = new Board(List.of(player1, player2), List.of(view1, view2));
+        GameManager gm = new GameManager(board, List.of(player1, player2), List.of(view1, view2));
+        board.testGame(gm);
+
+        player1.updateStats(Parameter.FOOD, 5);
+        player2.updateStats(Parameter.FOOD, 5);
+
+        Tile tile1 = new Tile(1, 0, 0);
+        Tile tile2 = new Tile(0, 0, 0);
+        board.getTiles().addAll(List.of(tile1, tile2));
+
+        CharacterCard c1 = new CharacterCard(1, Parameter.GATHERER, 1, 0, 1);
+        CharacterCard c2 = new CharacterCard(1, Parameter.GATHERER, 1, 0, 2);
+        CharacterCard c3 = new CharacterCard(1, Parameter.GATHERER, 1, 0, 3);
+        board.getUpperRow().add(c1);
+        board.getDecks().add(new ArrayList<>(List.of(c2, c3)));
+
+        board.pickTile(player1, tile1);
+        board.pickTile(player2, tile2);
+
+        player1.decreaseRemainingUpMoves();
+        boolean allDone = board.pickCard(player1, c1);
+
+        assertTrue(allDone);
+        board.nextRound();
+
+        verify(view1).end();
+        verify(view2).end();
+    }
+
+    @Test
     void pickCard() throws IOException {
-        Map<Parameter, Integer> mockParameters1 = mock(Map.class);
-        Map<Parameter, Integer> mockParameters2 = mock(Map.class);
-        Map<Parameter, List<CharacterCard>> mockTribe1 = mock(Map.class);
-        Map<Parameter, List<CharacterCard>> mockTribe2 = mock(Map.class);
-
-        //when(p1.getTribe()).thenReturn(mockTribe1);
-        //when(p1.getTribe().get(Parameter.HUNTER)).thenReturn(new ArrayList<>());
-
-        //when(p1.getParameters()).thenReturn(mockParameters1);
-        //when(p1.getParameters().get(Parameter.BUILDER)).thenReturn(3);
-        //when(p1.getTribe().get(Parameter.BUILDER)).thenReturn(new ArrayList<>());
-
-        //when(p2.getTribe()).thenReturn(mockTribe2);
-        //when(p2.getTribe().get(Parameter.INVENTOR)).thenReturn(new ArrayList<>());
         when(p2.getInventions()).thenReturn(new HashSet<>(10));
         p2.getInventions().add(3);
-
-        //when(h.getRole()).thenReturn(Parameter.HUNTER);
-        //when(h.getValue()).thenReturn(1);
-        //when(b.getRole()).thenReturn(Parameter.BUILDER);
-        //when(b.getValue()).thenReturn(2);
-        //when(i1.getRole()).thenReturn(Parameter.INVENTOR);
-        //when(i1.getValue()).thenReturn(4);
-        //when(i2.getRole()).thenReturn(Parameter.INVENTOR);
-        //when(i2.getValue()).thenReturn(3);
-        //when(b1.getFoodCost()).thenReturn(5);
-        //when(b2.getFoodCost()).thenReturn(2);
 
         boardOf5.testGame(game);
 

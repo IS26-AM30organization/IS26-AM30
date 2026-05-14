@@ -44,7 +44,7 @@ public class GameManager {
                     player.setMoves(1,0);
                     player.removeBuff(SpecialBuff.ADDITIONAL_UP_TILE);
                     playersOrder.add(player);
-                    List<Player> tempPlayers = playersOrder;
+                    List<Player> tempPlayers = new ArrayList<>(playersOrder);
                     for (Player p : tempPlayers){
                         if (p.hasNoMoves()){
                             playersOrder.remove(p);
@@ -103,6 +103,14 @@ public class GameManager {
         }
         if (player.hasEnoughDownMoves() &&
                 anyCharacterLeft(board.getLowerRow())) {
+            return true;
+        }
+        if (player.hasEnoughUpMoves() &&
+                board.getUpperBuildings().stream().anyMatch(b -> b.canBeBought(player))) {
+            return true;
+        }
+        if (player.hasEnoughDownMoves() &&
+                board.getLowerBuildings().stream().anyMatch(b -> b.canBeBought(player))) {
             return true;
         }
 

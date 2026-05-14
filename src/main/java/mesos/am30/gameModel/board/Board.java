@@ -199,13 +199,6 @@ public class Board implements IF_GameModel {
             t.getCurrentPlayer().ifPresent(x -> {
                 playersOrder.add(x);
 
-                //boost based on new playersOrder
-                x.updateStats(Parameter.FOOD,tileBoost[playersOrder.size()-1]);
-                if (tileBoost[playersOrder.size()-1]>0 && x.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_FOOD_TILE)) {
-                    x.updateStats(Parameter.FOOD, 1);
-                    x.removeBuff(SpecialBuff.ADDITIONAL_FOOD_TILE);
-                }
-
                 //player's moves update
                 x.setMoves(t.getUpArrows(), t.getDownArrows());
             });
@@ -266,6 +259,16 @@ public class Board implements IF_GameModel {
             else {
                 drawUpperRow();
             }
+        }
+        int i=0;
+        for(Player p : playersOrder){
+            //boost based on new playersOrder
+            p.updateStats(Parameter.FOOD,tileBoost[i]);
+            if (tileBoost[i]>0 && p.getSpecialBuffs().contains(SpecialBuff.ADDITIONAL_FOOD_TILE)) {
+                p.updateStats(Parameter.FOOD, 1);
+                p.removeBuff(SpecialBuff.ADDITIONAL_FOOD_TILE);
+            }
+            i++;
         }
 
         game.iChangedTurn();
@@ -338,10 +341,10 @@ public class Board implements IF_GameModel {
     public boolean pickCard(Player player, BuildingCard card) throws IOException {
         if (upperBuildings.contains(card)) {
             upperBuildings.remove(card);
-            game.updateEveryone(ViewParameter.UPPER_ROW, upperRow);
+            game.updateEveryone(ViewParameter.UPPER_BUILDINGS, upperBuildings);
         } else if ((lowerBuildings.contains(card))) {
             lowerBuildings.remove(card);
-            game.updateEveryone(ViewParameter.LOWER_ROW, lowerRow);
+            game.updateEveryone(ViewParameter.LOWER_BUILDINGS, lowerBuildings);
         } else return false;
         player.addBuilding(card);
         return game.iPickedCard(player);
