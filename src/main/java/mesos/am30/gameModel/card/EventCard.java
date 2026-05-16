@@ -48,7 +48,7 @@ public class EventCard extends Card {
         event.getAttributes(str1, str2, str3);
 
         //need to take longest word
-        int maxWidth = str1.length();
+        int maxWidth = str1.length()+2;
         if (str2.length() > maxWidth) {
             maxWidth = str2.length();
         }
@@ -58,7 +58,7 @@ public class EventCard extends Card {
         maxWidth += 3;
 
         eventRole.append(str1).append("\uD83D\uDDD3\uFE0F");;
-        for (int x = str1.length(); x < maxWidth-2; x++) eventRole.append(" ");
+        for (int x = str1.length()+2; x < maxWidth; x++) eventRole.append(" ");
 
         ln2.append(str2);
         for (int x = str2.length(); x < maxWidth; x++) ln2.append(" ");

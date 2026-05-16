@@ -3,10 +3,11 @@ package mesos.am30.client;
 import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
 
+import java.io.IOException;
 import java.util.Map;
 
 public interface IF_GameUI {
-    void askNickname();
+    void askNickname() throws IOException;
 
     /**
      * Shows the available lobbies the User can join
@@ -25,7 +26,7 @@ public interface IF_GameUI {
     void confirmLobbyJoined();
 
     void printMove(String nickname, Move move);
-    void printError(ErrorType errorType);
+    void printError(ErrorType errorType) throws IOException;
     void refresh(ViewModel viewModel);
     void printEnd();
 }

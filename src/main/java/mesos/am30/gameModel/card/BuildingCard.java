@@ -90,7 +90,7 @@ public class BuildingCard extends Card {
         maxWidth += 3;
 
         eventRole.append(str1).append("\uD83C\uDFE0");;
-        for (int x = str1.length(); x < maxWidth-2; x++) eventRole.append(" ");
+        for (int x = str1.length()+2; x < maxWidth; x++) eventRole.append(" ");
 
         ln2.append(str2);
         for (int x = str2.length(); x < maxWidth; x++) ln2.append(" ");
