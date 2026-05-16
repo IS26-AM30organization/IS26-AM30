@@ -54,6 +54,10 @@ public abstract class VirtualView implements IF_GameView {
         return nickname;
     }
 
+    String getLobbyCode() {
+        return lobbyCode;
+    }
+
     // Test setter for the attribute nickname
     void setNickname(String nickname) {
         this.nickname = nickname;
@@ -273,6 +277,7 @@ public abstract class VirtualView implements IF_GameView {
      * @throws IOException The connection cannot be established correctly.
      */
     public synchronized void answerNickname(String nickname) throws IOException {
+        this.nickname = nickname;
         toServer(Choice.NICKNAME, lobbyCode, nickname);
     }
 

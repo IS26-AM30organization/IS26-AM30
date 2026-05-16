@@ -250,10 +250,10 @@ public class Server extends UnicastRemoteObject implements IF_Server {
             return;
         }
 
-        // Last player to full the lobby, game starts
+        // Send the connecting Client a confirmation that he has joined the lobby.
+        asynchronousViewCall(view::confirmLobbyJoined);
+        // Last player to fill the lobby, game starts
         if (target.connect(view, nickname)) new Thread(target::startGame).start();
-        // Other players are needed to start the game. Just send the Client a confirmation that he has joined the lobby.
-        else asynchronousViewCall(view::confirmLobbyJoined);
         pendingViews.remove(view);
         lobbyViews.get(code).add(view);
     }

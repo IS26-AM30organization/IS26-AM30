@@ -57,6 +57,7 @@ public class CharacterCard extends Card {
     public void createRow(StringBuilder rowRoles, StringBuilder rowValue, StringBuilder rowPP) {
         String r = role + "";
         StringBuilder i = new StringBuilder();
+
         if (value != 0) {
             valueToItem(i);
             i.append(value);
@@ -75,7 +76,7 @@ public class CharacterCard extends Card {
         maxWidth += 3;
 
         rowRoles.append(r).append("\uD83D\uDC64");
-        for (int x = r.length(); x < maxWidth-1; x++) rowRoles.append(" ");
+        for (int x = r.length()+2; x < maxWidth; x++) rowRoles.append(" ");
 
         rowValue.append(i);
         for (int x = i.length(); x < maxWidth; x++) rowValue.append(" ");

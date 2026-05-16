@@ -181,6 +181,7 @@ class SocketProxy implements IF_GameView {
     public synchronized void update(ViewParameter toUpdate, List<Object> parameters) throws IOException {
         outputStream.writeObject(new ModelUpdateMessage(MessageType.UPDATE, toUpdate, parameters));
         outputStream.flush();
+        outputStream.reset();
     }
 
     /**
