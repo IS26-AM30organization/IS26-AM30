@@ -5,12 +5,8 @@ import mesos.am30.gameModel.card.BuildingCard;
 
 /**
  * Event "Cave Paintings" from the Event Cards.
- * This Class Represents the Event "Cave Paintings", which is a type of Event Card.
- * If the Player has fewer Artists than the required number, he looses Prestige Points, otherwise he gains some.
- *
- * @author LoreDN - Lorenzo Di Napoli
- * @version 1.0
- * @since 1.0
+ * <br/>This Class Represents the Event "Cave Paintings", which is a type of Event Card.
+ * <br/>If the Player has fewer Artists than the required number, he looses Prestige Points, otherwise he gains some.
  */
 public class CavePaintings implements IF_Event {
     private final int artistMinimum;
@@ -19,12 +15,12 @@ public class CavePaintings implements IF_Event {
 
     /**
      * Constructor for the Event "Cave Paintings".
-     * Pre: artistMinimum > 0 && lostPrestigePoints < 0 && gainedPrestigePoints > 0
-     * Post: this.artistMinimum = artistMinimum && this.lostPrestigePoints = lostPrestigePoints && this.gainedPrestigePoints = gainedPrestigePoints
+     * <br/><strong>Pre:</strong> artistMinimum > 0 && lostPrestigePoints < 0 && gainedPrestigePoints > 0
+     * <br/><strong>Post:</strong> this.artistMinimum = artistMinimum && this.lostPrestigePoints = lostPrestigePoints && this.gainedPrestigePoints = gainedPrestigePoints
      *
-     * @param artistMinimum Minimum number of Artists required to gain Prestige Points
-     * @param lostPrestigePoints Number of Prestige Points to remove (negative)
-     * @param gainedPrestigePoints Number of Prestige Points to add (positive)
+     * @param artistMinimum         Minimum number of Artists required to gain Prestige Points.
+     * @param lostPrestigePoints    Number of Prestige Points to remove (negative).
+     * @param gainedPrestigePoints  Number of Prestige Points to add (positive).
      */
     public CavePaintings(int artistMinimum, int lostPrestigePoints, int gainedPrestigePoints) {
         this.artistMinimum = artistMinimum;
@@ -32,32 +28,29 @@ public class CavePaintings implements IF_Event {
         this.gainedPrestigePoints = gainedPrestigePoints;
     }
 
-    /**
-     * Getter for the attribute "lostPrestigePoints".
-     *
-     * @return this.lostPrestigePoints
-     */
-    public int getLostPrestigePoints() {
+    // Test getter for the attribute "artistMinimum"
+    int getArtistMinimum() {
+        return artistMinimum;
+    }
+
+    // Test getter for the attribute "lostPrestigePoints"
+    int getLostPrestigePoints() {
         return lostPrestigePoints;
     }
 
-    /**
-     * Getter for the attribute "gainedPrestigePoints".
-     *
-     * @return this.gainedPrestigePoints
-     */
-    public int getGainedPrestigePoints() {
+    // Test getter for the attribute "gainedPrestigePoints"
+    int getGainedPrestigePoints() {
         return gainedPrestigePoints;
     }
 
     /**
      * Handles the Event "Cave Paintings".
-     * This method handles the Event "Cave Paintings" for the given Player, updating its parameters.
-     * Pre: player != NULL && board.players.contains(player)
-     * Post: (player.tribe(ARTIST).size() < artistMinimum ==> player.parameters(PRESTIGE_POINTS) = \old(player.parameters(PRESTIGE_POINTS) + lostPrestigePoints) &&
+     * <br/>This method handles the Event "Cave Paintings" for the given Player, updating its parameters.
+     * <br/><strong>Pre:</strong> player != null && board.players.contains(player)
+     * <br/><strong>Post:</strong> (player.tribe(ARTIST).size() < artistMinimum ==> player.parameters(PRESTIGE_POINTS) = \old(player.parameters(PRESTIGE_POINTS) + lostPrestigePoints) &&
      *       (player.tribe(ARTIST).size() > artistMinimum ==> player.parameters(PRESTIGE_POINTS) = \old(player.parameters(PRESTIGE_POINTS) + gainedPrestigePoints)
      *
-     * @param player Player to update due to the Event
+     * @param player Player to update due to the Event.
      */
     @Override
     public void handleEvent(Player player) {
@@ -68,6 +61,9 @@ public class CavePaintings implements IF_Event {
         player.updateStats(Parameter.PRESTIGE_POINTS, (artists < artistMinimum) ? lostPrestigePoints : gainedPrestigePoints * artists);
     }
 
+    /**
+     * @see IF_Event Cave Paintings implementation of the getAttributes method.
+     */
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("Paint");
@@ -75,16 +71,22 @@ public class CavePaintings implements IF_Event {
         str3.append("pP.Lost:").append(lostPrestigePoints).append(" Gained:").append(gainedPrestigePoints);
     }
 
+    /**
+     * @see IF_Event Cave Paintings implementation of the getInfo method.
+     */
     @Override
-    public String getCardInfo(StringBuilder info) {
+    public String getInfo(StringBuilder info) {
         return info.append("This is a Painting Event Card: when resolved, if the player has at least ")
                 .append(artistMinimum).append(" he gains ").append(gainedPrestigePoints)
-                .append(" pP, otherwise player loses ").append(lostPrestigePoints).append(" pP")
+                .append(" pP, otherwise player loses ").append(lostPrestigePoints).append(" pP.")
                 .toString();
     }
 
+    /**
+     * @see IF_Event Cave Paintings implementation of the getArt method.
+     */
     @Override
     public String getArt(){
-        return new String(gainedPrestigePoints+"c"+(lostPrestigePoints<0 ? lostPrestigePoints*(-1) : lostPrestigePoints)+"c"+artistMinimum);
+        return gainedPrestigePoints + "c" + lostPrestigePoints * (-1) + "c" + artistMinimum;
     }
 }

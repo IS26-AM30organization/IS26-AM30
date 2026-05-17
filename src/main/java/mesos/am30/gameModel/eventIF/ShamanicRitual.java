@@ -9,70 +9,55 @@ import java.util.HashMap;
 
 /**
  * Event "Shamanic Ritual" from the Event Cards.
- * This Class Represents the Event "Shamanic Ritual", which is a type of Event Card.
- * The Players who have the fewer amount of Stars loses Prestige Points, meanwhile the ones with the most Stars gain Prestige Points.
- *
- * @author LoreDN - Lorenzo Di Napoli
- * @version 1.0
- * @since 1.0
+ * <br/>This Class Represents the Event "Shamanic Ritual", which is a type of Event Card.
+ * <br/>The Players who have the fewer amount of Stars loses Prestige Points, meanwhile the ones with the most Stars gain Prestige Points.
  */
 public class ShamanicRitual implements IF_Event {
-    private Map<Player, Integer> starsPool = new HashMap<>();
+    private Map<Player, Integer> starsPool;
     private final int playersNumber;
     private final int lostPrestigePoints;
     private final int gainedPrestigePoints;
 
     /**
      * Constructor for the Event "Shamanic Ritual".
-     * Pre: playersNumber > 0 && lostPrestigePoints < 0 && gainedPrestigePoints > 0
-     * Post: this.playersNumber = playersNumber && this.lostPrestigePoints = lostPrestigePoints &&
-     *       this.gainedPrestigePoints = gainedPrestigePoints && this.starsPool != NULL && this.starsPool.size() = 0
+     * <br/><strong>Pre:</strong> playersNumber > 0 && lostPrestigePoints < 0 && gainedPrestigePoints > 0
+     * <br/><strong>Post:</strong> this.playersNumber = playersNumber && this.lostPrestigePoints = lostPrestigePoints &&
+     *       this.gainedPrestigePoints = gainedPrestigePoints
      *
-     * @param playersNumber Number of Player to Analyze
-     * @param lostPrestigePoints Number of Prestige Points to remove (negative)
-     * @param gainedPrestigePoints Number of Prestige Points to add (positive)
+     * @param playersNumber         Number of Player to Analyze.
+     * @param lostPrestigePoints    Number of Prestige Points to remove (negative).
+     * @param gainedPrestigePoints  Number of Prestige Points to add (positive).
      */
     public ShamanicRitual(int playersNumber, int lostPrestigePoints, int gainedPrestigePoints) {
-        //this.starsPool = new HashMap<>(playersNumber);
         this.playersNumber = playersNumber;
         this.lostPrestigePoints = lostPrestigePoints;
         this.gainedPrestigePoints = gainedPrestigePoints;
     }
 
-    /**
-     * Getter for the attribute "lostPrestigePoints".
-     *
-     * @return this.lostPrestigePoints
-     */
-    public int getLostPrestigePoints() {
+    // Test getter for the attribute "lostPrestigePoints".
+    int getLostPrestigePoints() {
         return lostPrestigePoints;
     }
 
-    /**
-     * Getter for the attribute "gainedPrestigePoints".
-     *
-     * @return this.gainedPrestigePoints
-     */
-    public int getGainedPrestigePoints() {
+    // Test getter for the attribute "gainedPrestigePoints".
+    int getGainedPrestigePoints() {
         return gainedPrestigePoints;
     }
 
     /**
      * Handles the Event "Shamanic Ritual".
-     * This method handles the Event "Shamanic Ritual" for the given Player, updating its parameters.
-     * Pre: player != NULL && board.players.contains(player)
-     * Post: ((\forall Player p; board.players.contains(p); player.parameters(SHAMAN) <= p.parameters(SHAMAN)) ==>
+     * <br/>This method handles the Event "Shamanic Ritual" for the given Player, updating its parameters.
+     * <br/><strong>Pre:</strong> player != NULL && board.players.contains(player)
+     * <br/><strong>Post:</strong> ((\forall Player p; board.players.contains(p); player.parameters(SHAMAN) <= p.parameters(SHAMAN)) ==>
      *          player.parameters(PRESTIGE_POINTS) = \old(player.parameters(PRESTIGE_POINTS) + lostPrestigePoints) &&
      *       ((\forall Player p; board.players.contains(p); player.parameters(SHAMAN) >= p.parameters(SHAMAN)) ==>
      *          player.parameters(PRESTIGE_POINTS) = \old(player.parameters(PRESTIGE_POINTS) + gainedPrestigePoints)
      *
-     * @param player Player to update due to the Event
+     * @param player Player to update due to the Event.
      */
     @Override
     public void handleEvent(Player player) {
-        if (starsPool == null) {
-            starsPool = new HashMap<>(playersNumber);
-        }
+        if (starsPool == null) starsPool = new HashMap<>(playersNumber);
         starsPool.put(player, player.getParameters().get(Parameter.SHAMAN));
         if (starsPool.size() == playersNumber) {
             // last Player --> check the Stars
@@ -110,11 +95,9 @@ public class ShamanicRitual implements IF_Event {
         }
     }
 
-    @Override
-    public String getArt(){
-        return new String(gainedPrestigePoints+"r"+(lostPrestigePoints<0 ? lostPrestigePoints*(-1) : lostPrestigePoints)+"r0");
-    }
-
+    /**
+     * @see IF_Event Shamanic Ritual implementation of the getAttributes method.
+     */
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("ShamanicRite");
@@ -123,10 +106,21 @@ public class ShamanicRitual implements IF_Event {
 
     }
 
+    /**
+     * @see IF_Event Shamanic Ritual implementation of the getInfo method.
+     */
     @Override
-    public String getCardInfo(StringBuilder info) {
-        return info.append("This is a ShamanicRitual Event Card: when resolved, the player with the most amount of starts gains")
+    public String getInfo(StringBuilder info) {
+        return info.append("This is a ShamanicRitual Event Card: when resolved, the player with the most amount of starts gains ")
                 .append(gainedPrestigePoints).append(" pP, the one with the least amount loses ")
-                .append(lostPrestigePoints).append("pP").toString();
+                .append(lostPrestigePoints).append(" pP.").toString();
+    }
+
+    /**
+     * @see IF_Event Shamanic Ritual implementation of the getArt method.
+     */
+    @Override
+    public String getArt(){
+        return gainedPrestigePoints + "r" + lostPrestigePoints * (-1) + "r0";
     }
 }

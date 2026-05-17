@@ -1,12 +1,14 @@
-package mesos.am30.gameModel.event;
+package mesos.am30.gameModel.eventIF;
 
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.CharacterCard;
-import mesos.am30.gameModel.eventIF.FinalBuilderBoost;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,5 +55,34 @@ class FinalBuilderBoostTest {
         testingCard.handleEvent(mockPlayer);
 
         verify(mockPlayer).updateStats(Parameter.PRESTIGE_POINTS, 0);
+    }
+
+    @Test
+    void getAttributes() {
+        // set up the StingBuilders
+        StringBuilder ln1 = new StringBuilder();
+        StringBuilder ln2 = new StringBuilder();
+        StringBuilder ln3 = new StringBuilder();
+
+        // Act
+        testingCard.getAttributes(ln1, ln2, ln3);
+
+        // assert
+        assertFalse(ln1.toString().isEmpty());
+        assertTrue(ln2.toString().isEmpty());
+        assertFalse(ln3.toString().isEmpty());
+    }
+
+    @Test
+    void getInfo() {
+        assertEquals("This Building gives " + testingCard.getMultiplier() +
+                        " x pP showed on owner's Builders once the game has ended.",
+                testingCard.getInfo(new StringBuilder())
+        );
+    }
+
+    @Test
+    void getArt() {
+        assertEquals("fb", testingCard.getArt());
     }
 }

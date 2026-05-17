@@ -9,24 +9,50 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Event "Double Inventions" from the Building Cards.
+ * <br/>This Class Represents the Event "Double Inventions", which is a type of Building Card.
+ * <br/>If the Player get two identical inventions, he gains food.
+ */
 public class DoubleInventions implements IF_Event {
     private final Set<Integer> uniqueInventions = new HashSet<>(10);
     private final int foodGain;
 
+    /**
+     * Constructor for the Building Event "Double Inventions".
+     * <br/><strong>Pre:</strong> foodGain > 0
+     * <br/><strong>Post:</strong> this.foodGain = foodGain
+     *
+     * @param foodGain Food to add if the Event condition is resolved.
+     */
     public DoubleInventions(int foodGain) {
-        //this.uniqueInventions = new HashSet<>(10);
         this.foodGain = foodGain;
     }
 
-    public Set<Integer> getUniqueInventions() {
+    // Test getter for the attribute "foodGain"
+    int getFoodGain() {
+        return foodGain;
+    }
+
+    // Test getter for the attribute "uniqueInventions"
+    Set<Integer> getUniqueInventions() {
         return uniqueInventions;
     }
 
+    /**
+     * Handles the Building Event "Double Inventions".
+     * <br/>This method handles the Building Event "Double Inventions" for the given Player, updating its parameters.
+     * <br/><strong>Pre:</strong> player != null && board.players.contains(player)
+     * <br/><strong>Post:</strong> (uniqueInventions.contains(latestInvention) ==> player.parameters(FOOD) = \old(player.parameters(FOOD) + foodGain) &&
+     *       (!uniqueInventions.contains(latestInvention) ==> uniqueInventions.add(latestInvention))
+     *
+     * @param player Player to update due to the Event.
+     */
     @Override
     public void handleEvent(Player player) {
         Integer latestInvention = getLatestInvention(player);
 
-        if(uniqueInventions.contains(latestInvention)){ //reminder: Optional<Integer>.get() returns the Integer if present
+        if(uniqueInventions.contains(latestInvention)){
             player.updateStats(Parameter.FOOD, foodGain);
             uniqueInventions.remove(latestInvention);
             return;
@@ -35,26 +61,36 @@ public class DoubleInventions implements IF_Event {
 
     }
 
+    // get the latest added invention
     private Integer getLatestInvention(Player player){
         List<CharacterCard> inventors = player.getCharacterType(Parameter.INVENTOR);
-        return inventors.get(inventors.size() - 1).getValue(); //inventors.size()!=0 always, as this class is called as an Inventor is chosen.
+        return inventors.getLast().getValue(); //inventors.size()!=0 always, as this class is called as an Inventor is chosen.
     }
 
-    @Override
-    public String getArt(){
-        return new String("di");
-    }
-
+    /**
+     * @see IF_Event Double Inventions implementation of the getAttributes method.
+     */
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("2Inventions");
         str2.append("food:").append(foodGain);
     }
 
+    /**
+     * @see IF_Event Double Inventions implementation of the getInfo method.
+     */
     @Override
-    public String getCardInfo(StringBuilder info) {
+    public String getInfo(StringBuilder info) {
         return info.append("This Building gives ").append(foodGain)
                 .append(" food to its owner whe he acquires two inventions of the same type.")
                 .toString();
+    }
+
+    /**
+     * @see IF_Event Double Inventions implementation of the getArt method.
+     */
+    @Override
+    public String getArt(){
+        return "di";
     }
 }

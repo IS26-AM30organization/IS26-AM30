@@ -1,9 +1,8 @@
-package mesos.am30.gameModel.event;
+package mesos.am30.gameModel.eventIF;
 
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.CharacterCard;
-import mesos.am30.gameModel.eventIF.FullSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,16 +14,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FullSetTest {
     private FullSet testerFullSet;
+    Parameter[] roles = {
+            Parameter.INVENTOR, Parameter.ARTIST, Parameter.BUILDER,
+            Parameter.GATHERER, Parameter.HUNTER, Parameter.SHAMAN
+    };
+    private Map<Parameter, List<CharacterCard>> tribeMap;
 
     @Mock
     private Player player;
-
-    private Map<Parameter, List<CharacterCard>> tribeMap;
 
     @BeforeEach
     void setUp() {
@@ -41,16 +45,18 @@ class FullSetTest {
             tribeMap.put(p, list);
             lenient().when(player.getCharacterType(p)).thenReturn(list);
         }
-        when(player.getTribe()).thenReturn(tribeMap);
+    }
+
+    @Test
+    void handleEvent_NoPickedCards() {
+        when(player.getTribe()).thenReturn(Map.of());
+        testerFullSet.handleEvent(player);
+        verify(player, never()).updateStats(any(), anyInt());
     }
 
     @Test
     void handleEvent_BasicTest() {
-        Parameter[] roles = {
-                Parameter.INVENTOR, Parameter.ARTIST, Parameter.BUILDER,
-                Parameter.GATHERER, Parameter.HUNTER, Parameter.SHAMAN
-        };
-
+        when(player.getTribe()).thenReturn(tribeMap);
         for (Parameter role : roles) {
             CharacterCard card = mock(CharacterCard.class);
             when(card.getRole()).thenReturn(role);
@@ -64,11 +70,7 @@ class FullSetTest {
 
     @Test
     void handleEvent_IncompleteSet() {
-        Parameter[] roles = {
-                Parameter.INVENTOR, Parameter.ARTIST, Parameter.BUILDER,
-                Parameter.GATHERER, Parameter.HUNTER, Parameter.SHAMAN
-        };
-
+        when(player.getTribe()).thenReturn(tribeMap);
         for (Parameter role : roles) {
             if(!(role.equals(Parameter.INVENTOR))) {
                 CharacterCard card = mock(CharacterCard.class);
@@ -83,9 +85,6 @@ class FullSetTest {
 
     @Test
     void handleEvent_TwoCompleteSets() {
-        Parameter[] roles = {Parameter.INVENTOR, Parameter.ARTIST, Parameter.BUILDER,
-                Parameter.GATHERER, Parameter.HUNTER, Parameter.SHAMAN};
-
         for (Parameter p : roles) {
             List<CharacterCard> list = new ArrayList<>();
             tribeMap.put(p, list);
@@ -110,5 +109,34 @@ class FullSetTest {
         }
 
         verify(player, times(2)).updateStats(Parameter.FOOD, 6);
+    }
+
+    @Test
+    void getAttributes() {
+        // set up the StingBuilders
+        StringBuilder ln1 = new StringBuilder();
+        StringBuilder ln2 = new StringBuilder();
+        StringBuilder ln3 = new StringBuilder();
+
+        // Act
+        testerFullSet.getAttributes(ln1, ln2, ln3);
+
+        // assert
+        assertFalse(ln1.toString().isEmpty());
+        assertTrue(ln2.toString().isEmpty());
+        assertFalse(ln3.toString().isEmpty());
+    }
+
+    @Test
+    void getInfo() {
+        assertEquals("This Building gives " + testerFullSet.getFoodGain() +
+                        " food to its owner, once he collects a set of 6 unique Characters.",
+                testerFullSet.getInfo(new StringBuilder())
+        );
+    }
+
+    @Test
+    void getArt() {
+        assertEquals("fs", testerFullSet.getArt());
     }
 }

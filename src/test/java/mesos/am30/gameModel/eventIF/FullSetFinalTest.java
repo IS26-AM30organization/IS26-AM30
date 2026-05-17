@@ -1,9 +1,8 @@
-package mesos.am30.gameModel.event;
+package mesos.am30.gameModel.eventIF;
 
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.CharacterCard;
-import mesos.am30.gameModel.eventIF.FullSetFinal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,5 +86,34 @@ class FullSetFinalTest {
         testingCard.handleEvent(mockPlayer);
 
         verify(mockPlayer, times(1)).updateStats(Parameter.PRESTIGE_POINTS, 6);
+    }
+
+    @Test
+    void getAttributes() {
+        // set up the StingBuilders
+        StringBuilder ln1 = new StringBuilder();
+        StringBuilder ln2 = new StringBuilder();
+        StringBuilder ln3 = new StringBuilder();
+
+        // Act
+        testingCard.getAttributes(ln1, ln2, ln3);
+
+        // assert
+        assertFalse(ln1.toString().isEmpty());
+        assertTrue(ln2.toString().isEmpty());
+        assertFalse(ln3.toString().isEmpty());
+    }
+
+    @Test
+    void getInfo() {
+        assertEquals("This Building gives " + testingCard.getPpGain() +
+                        " pP to its owner, for each set of 6 unique Characters he has collected during the game.",
+                testingCard.getInfo(new StringBuilder())
+        );
+    }
+
+    @Test
+    void getArt() {
+        assertEquals("sf", testingCard.getArt());
     }
 }
