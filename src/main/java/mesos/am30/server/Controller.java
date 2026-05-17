@@ -62,7 +62,7 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
         try {
             sendMove(currentPlayer, Move.PICK_TILE);
         } catch (IOException e) {
-        System.err.println("[Error]: error on start-up" + e.getMessage());
+            System.err.println("[Error]: error on start-up" + e.getMessage());
         }
     }
     synchronized public void chooseTile(String nickname, Tile requestingTile) throws IOException {

@@ -4,8 +4,8 @@ import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
 
 public interface IF_GameUI {
-    int askPlayersNumber();
-    String askNickname();
+    void askPlayersNumber();
+    void askNickname();
 
     void printMove(String nickname, Move move);
     void printError(ErrorType errorType);
