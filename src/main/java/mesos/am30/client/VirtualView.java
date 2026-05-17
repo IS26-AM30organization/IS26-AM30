@@ -222,10 +222,25 @@ public abstract class VirtualView implements IF_GameView {
      */
     public void createLobby(int playersNumber, String lobbyCode) throws IOException {
         this.playersNumber = playersNumber;
-        this.lobbyCode = (lobbyCode == null) ? "" : lobbyCode;
+
+        if (lobbyCode == null || lobbyCode.isEmpty()) {
+            this.lobbyCode = "";
+        }
+        else {
+            String code = lobbyCode;
+
+            if (code.length() > 6) {
+                code = code.substring(0, 6);
+            }
+            else if (code.length() < 6) {
+                code = code + "0".repeat(6 - code.length());
+            }
+
+            this.lobbyCode = code;
+        }
+
         toServer(Choice.CREATE_LOBBY, this.lobbyCode, playersNumber);
     }
-
     /**
      * Send a request to get the available Lobbies.
      * <br>This method is called by the Client in order to request the Server to show the available Lobbies to join.

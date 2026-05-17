@@ -76,7 +76,7 @@ public class Tui implements IF_GameUI {
 	 */
     public void askNickname() throws IOException {
             gPhase = GamePhase.LOBBY;
-            printMessage("Insert nickname > ");
+            printMessage("Insert nickname: ");
     }
 
 	/**
@@ -93,7 +93,10 @@ public class Tui implements IF_GameUI {
 	 */
 	public void printMove(String nickname, Move move) {
 		boardRender();
-		printMessage("\033[1;36m" + "[System]: Player " + "\033[1;33m" + nickname + "\033[0m" + " has " + move + "\033[0m");
+		printSysMessage("\033[1;36m" + "[System]: Player " + "\033[1;33m" + nickname + "\033[0m" + " has " + move + "\033[0m");
+
+		if (isMatchRunning) return;
+		isMatchRunning = true;
 	}
 
 	/**
@@ -115,7 +118,7 @@ public class Tui implements IF_GameUI {
         printMessage("\033[1;31m" + "[Error]: " + errorMessage + "\033[0m");
 
         switch (errorMessage) {
-            case WRONG_PLAYERS_NUMBER -> printMessage("Type: create plNum, to create a lobby > ");
+            case WRONG_PLAYERS_NUMBER -> printMessage("Type: create #plNum, to create a lobby.");
             case WRONG_NICKNAME -> {
                 try {
                     askNickname();
@@ -129,26 +132,25 @@ public class Tui implements IF_GameUI {
 	@Override
 	public void showLobbies(Map<String, Integer> availableLobbies) {
 		if (availableLobbies.isEmpty()) {
-			printMessage("[System]: No available lobbies.");
+			printMessage("[ERROR]: No available lobbies.");
 			return;
 		}
 		StringBuilder sb = new StringBuilder("[System]: Available lobbies:\n");
 		availableLobbies.forEach((code, players) ->
 				sb.append("  Code: ").append(code).append(" | Players: ").append(players).append("\n"));
-		printMessage(sb.toString());
+		printSysMessage(sb.toString());
 	}
 
 	@Override
 	public void confirmConnection() {
-		printMessage("[System]: Connected! Type -h for available commands.");
+		printSysMessage("[System]: Connected! Type -h or -help to show available commands at anytime." + "\033[0m");
 		gPhase = GamePhase.MENU;
 		startCLient();
 	}
 
 	@Override
 	public void confirmLobbyJoined() {
-		printMessage("[System]: Lobby joined!");
-		printMessage("[System]: Waiting for other players: type -h or -help to show available commands.");
+		printSysMessage("[System]: Lobby joined! \n[System]: Waiting for other players... \nOnce the match starts, type -h or -help to show all available commands.");
 		gPhase = GamePhase.GAME;
 	}
 
@@ -260,6 +262,11 @@ public class Tui implements IF_GameUI {
      * @param plAction contains terminal player's input
      */
 	private void matchCMDs(String[] plAction) {
+		if (!isMatchRunning) {
+			printMessage("[ERROR]: Game hasn't started yet.");
+			return;
+		}
+
 		String action = " ";
 		int cIndex = -1;
 
@@ -311,29 +318,41 @@ public class Tui implements IF_GameUI {
 	}
 
 	/**
+	 * Method to print on TUI - Prints all [System] messages green
+	 * @param message string to be printed
+	 */
+	private void printSysMessage(String message) {
+		synchronized (tuiLock) {
+			System.out.println("\033[1;32m" + message + "\033[0m");
+			System.out.print("cmd > ");
+			System.out.flush();
+		}
+	}
+
+	/**
 	 * Prints a list of all available commands
 	 */
 	private void showGameCommands() {
-		printMessage("""
+		printMessage("\033[1;36m" + """
 				tile #num -> chose a Tile 
 				draw up #num -> draw a Card 
 				draw down #num-> draw a Card 
 				buy up #num -> buy a Building 
 				buy down #num -> chose a Building 
 				-h or -help #num -> to show available commands 
-				""");
+				""" + "\033[0m");
 	}
 
 	/**
 	 * Prints a list of all available commands
 	 */
 	private void showMenuCommands() {
-		printMessage("""
+		printMessage("\033[1;36m" + """
 				list -> shows available lobbies 
 				create #plNum #code -> creates a lobby with chosen parameters
 				join #code-> join #code lobby 
 				-h or -help #num -> to show available commands 
-				""");
+				""" + "\033[0m");
 	}
 
 	/**

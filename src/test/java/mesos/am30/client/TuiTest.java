@@ -39,10 +39,17 @@ class TuiTest {
     }
 
     @Test
+    void askNickname() throws IOException {
+        tui.askNickname();
+        String output = streamOut.toString();
+
+        assertTrue(output.contains("Insert nickname: "));
+    }
+
+    @Test
     void printMove() {
         tui.printMove("Alice", Move.PICK_TILE);
         String output = streamOut.toString();
-
 
         assertTrue(output.contains("PICK_TILE"));
         assertTrue(output.contains("Alice"));
@@ -56,4 +63,19 @@ class TuiTest {
         assertTrue(output.contains("NOT_YOUR_TURN"));
     }
 
+    @Test
+    void printErrorName() throws Exception {
+        tui.printError(ErrorType.WRONG_NICKNAME);
+        String output = streamOut.toString();
+
+        assertTrue(output.contains("Insert nickname: "));
+    }
+
+    @Test
+    void printErrorPlNum() throws Exception {
+        tui.printError(ErrorType.WRONG_PLAYERS_NUMBER);
+        String output = streamOut.toString();
+
+        assertTrue(output.contains("Type: create #plNum, to create a lobby."));
+    }
 }
