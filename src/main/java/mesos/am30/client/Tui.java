@@ -42,7 +42,7 @@ public class Tui implements IF_GameUI {
 	 * Starts executor service for terminal reading
 	 */
 	public void startCLient() {
-		clientExecutor.submit(() -> plInputReader());
+		clientExecutor.submit(this::plInputReader);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class Tui implements IF_GameUI {
     }
 
 	/**
-	 * @return nickname inserted after server's invoice
+	 *
 	 */
     public void askNickname() throws IOException {
             gPhase = GamePhase.LOBBY;
@@ -110,6 +110,11 @@ public class Tui implements IF_GameUI {
 		System.exit(0);
 	}
 
+	@Override
+	public void setvView(VirtualView view) {
+		this.vView=view;
+	}
+
 	/**
 	 * Shows on TUI any errors sent by the server/view model for incorrect player's actions
 	 * if the wrong nickname was inserted, client gets prompted again
@@ -126,7 +131,7 @@ public class Tui implements IF_GameUI {
                     printMessage("[Error]: error on setting player's nickname");
                 }
             }
-        };
+        }
     }
 
 	@Override

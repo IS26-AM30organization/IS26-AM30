@@ -29,4 +29,6 @@ public interface IF_GameUI {
     void printError(ErrorType errorType) throws IOException;
     void refresh(ViewModel viewModel);
     void printEnd();
+
+    void setvView(VirtualView view);
 }
