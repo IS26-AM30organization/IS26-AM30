@@ -14,27 +14,37 @@ import mesos.am30.common.Move;
 import mesos.am30.common.ViewParameter;
 import mesos.am30.client.IF_GameView;
 
+/**
+ * Representation of the Game Board.
+ * <br/>This Class works as the representation of the Game Board, which defines the Model in the ModelViewController Pattern.
+ */
 public class Board implements IF_GameModel {
-
-    private List<IF_GameView> views;
+    private final List<IF_GameView> views;
 
     private List<Tile> usedTiles;
     private List<List<Card>> decks;
     private List<List<BuildingCard>> buildingDecks;
 
-    private List<Card> upperRow;
+    private final List<Card> upperRow;
     private List<BuildingCard> upperBuildings;
-    private List<Card> lowerRow;
-    private List<BuildingCard> lowerBuildings;
+    private final List<Card> lowerRow;
+    private final List<BuildingCard> lowerBuildings;
 
     private final List<Player> players;
-    private List<Player> playersOrder;
+    private final List<Player> playersOrder;
 
-    private int[] tileBoost;
+    private final int[] tileBoost;
 
     private GameManager game;
 
-    //constructor
+    /**
+     * Constructor of the Board.
+     * <br/><strong>Pre:</strong> players != null && !players.contains(null) && views != null && !views.contains(null)
+     * <br/><strong>Post:</strong> this.players = players && this.views = views && (* Other attributes are initialized *)
+     *
+     * @param players   List of Players for the Game.
+     * @param views     List of Views associated to each Player.
+     */
     public Board(List<Player> players, List<IF_GameView> views) {
         this.players = players;
 
@@ -57,10 +67,80 @@ public class Board implements IF_GameModel {
             case 5 -> new int[]{3,1,0,0,-1};
             default -> new int[]{};
         };
-
     }
 
-    //board setup
+    // GETTERS
+
+    // Test getter for the attribute "decks"
+    List<List<Card>> getDecks() { return decks; }
+
+    // Test getter for the attribute "buildingDecks"
+    List<List<BuildingCard>> getBuildingDecks() {
+        return buildingDecks;
+    }
+
+    // Test getter for the attribute "tileBoost"
+    int[] getTileBoost() { return tileBoost; }
+
+    // Test setter for the attribute "game"
+    void testGame(GameManager game) { this.game = game; }
+
+    /**
+     * @see IF_GameModel Board implementation of the getTiles method.
+     */
+    @Override
+    public List<Tile> getTiles() { return usedTiles; }
+
+    /**
+     * @see IF_GameModel Board implementation of the getUpperRow method.
+     */
+    @Override
+    public List<Card> getUpperRow() { return upperRow; }
+
+    /**
+     * @see IF_GameModel Board implementation of the getUpperBuildings method.
+     */
+    @Override
+    public List<BuildingCard> getUpperBuildings() { return upperBuildings; }
+
+    /**
+     * @see IF_GameModel Board implementation of the getLowerRow method.
+     */
+    @Override
+    public List<Card> getLowerRow() { return lowerRow; }
+
+    /**
+     * @see IF_GameModel Board implementation of the getLowerBuildings method.
+     */
+    @Override
+    public List<BuildingCard> getLowerBuildings() { return lowerBuildings; }
+
+    /**
+     * @see IF_GameModel Board implementation of the getPlayersOrder method.
+     */
+    @Override
+    public List<Player> getPlayersOrder() { return playersOrder; }
+
+    /**
+     * @see IF_GameModel Board implementation of the getCurrentPlayer method.
+     */
+    @Override
+    public Player getCurrentPlayer() { return playersOrder.getFirst(); }
+
+    /**
+     * @see IF_GameModel Board implementation of the getCurrentMove method.
+     */
+    @Override
+    public Move getCurrentMove() {
+        return game.getCurrentMove();
+    }
+
+    // STARTING METHODS
+
+    /**
+     * @see IF_GameModel Board implementation of the prepare method.
+     */
+    @Override
     public void prepare() throws IOException {
         //first playersOrder
         game = new GameManager(this, players, views);
@@ -97,7 +177,6 @@ public class Board implements IF_GameModel {
 
         //defining #Buildings based on playerNum
         long[] b = switch (playerNum) {
-            case 0,1 -> new long[]{0, 0, 0};
             case 2 -> new long[]{1, 2, 3};
             case 3 -> new long[]{2, 2, 4};
             case 4 -> new long[]{2, 3, 4};
@@ -121,41 +200,38 @@ public class Board implements IF_GameModel {
 
     }
 
-    //first round
+    /**
+     * @see IF_GameModel Board implementation of the start method.
+     */
+    @Override
     public void start(){
         upperBuildings = buildingDecks.getFirst();
         buildingDecks.removeFirst();
-        for(int i = 0; i < players.size()+1; i=lowerRow.size()) {
-            if (!decks.isEmpty() && !decks.getFirst().isEmpty()) {
-                Card card = decks.getFirst().getFirst();
-                card.drawDown(this);
+        for (int i = 0; i < players.size() + 1; i = lowerRow.size()) {
+            if (!decks.getFirst().isEmpty()) {
+                decks.getFirst().getFirst().drawDown(this);
                 decks.getFirst().removeFirst();
-            }
+            } else break;
         }
-        for(int i=upperRow.size(); i < players.size()+4; i++) {
-            if (!decks.isEmpty() && !decks.getFirst().isEmpty()) {
+        for (int i = upperRow.size(); i < players.size() + 4; i++) {
+            if (!decks.getFirst().isEmpty()) {
                 decks.getFirst().getFirst().drawUp(this);
                 decks.getFirst().removeFirst();
-            }
+            } else break;
         }
 
-        Card toMoveLast = null;
         for(Card card : upperRow) {
             if((card instanceof EventCard)&&(((EventCard) card).getEvent() instanceof Sustenance)) {
-                toMoveLast = card;
+                upperRow.remove(card);
+                upperRow.add(card);
                 break;
             }
-        }
-        if (toMoveLast!=null){
-            upperRow.remove(toMoveLast);
-            upperRow.add(toMoveLast);
         }
 
         try {
             game.iChangedTurn();
         } catch (IOException e) {
             System.err.println(("[ERROR]: error on fist update" + e.getMessage()));
-            e.printStackTrace();
         }
     }
 
@@ -168,33 +244,49 @@ public class Board implements IF_GameModel {
         upperRow.clear();
     }
 
-    public void discard (Card card){
-        if(upperRow.contains(card)){
-            upperRow.remove(card);
-        } else if (lowerRow.contains(card)){
-            lowerRow.remove(card);
-        }
+    /**
+     * Discard a Card from the correct row.
+     * <br/><strong>Pre:</strong> card != null
+     *
+     * @param card Card to discard.
+     */
+    public void discard(Card card){
+        if(upperRow.contains(card)) upperRow.remove(card);
+        else lowerRow.remove(card);
+    }
+
+    /**
+     * Discard a Card from the correct row (Building Card specific).
+     * <br/><strong>Pre:</strong> card != null
+     *
+     * @param card Card to discard.
+     */
+    public void discard(BuildingCard card){
+        if (getLowerBuildings().contains(card)) getLowerBuildings().remove(card);
+        else getUpperBuildings().remove(card);
     }
 
     // draws until the completion of upperRow or the end of current era's deck
     private void drawUpperRow(){
         for (int i = upperRow.size(); i < players.size()+4; i++){
-            if (!decks.isEmpty()&&!decks.getFirst().isEmpty()) {
+            if (!decks.getFirst().isEmpty()) {
                 decks.getFirst().getFirst().drawUp(this);
                 decks.getFirst().removeFirst();
-            }
+            } else break;
         }
     }
 
+    // handle all buildings with a given event type
     private void handleBuildings(Player player, EventType type){
         for (BuildingCard building : player.getBuildings()){
             if (building.getEventType()==type) building.getEvent().handleEvent(player);
         }
     }
 
-    protected void scanTiles() throws IOException {
+    // scan the Tiles for getting PlayersOrder
+    protected void scanTiles() {
         playersOrder.clear();
-        //scanning new players order, tiles get resetted
+        //scanning new players order, tiles get reset
         for(Tile t : usedTiles){
             t.getCurrentPlayer().ifPresent(x -> {
                 playersOrder.add(x);
@@ -209,10 +301,7 @@ public class Board implements IF_GameModel {
         }
     }
 
-    /**
-     * starts new era: moves and draws buildings,
-     * unlocks in draw() the new era's characters and events
-     */
+    // starts new era: moves and draws buildings, unlocks in draw() the new era's characters and events
     private void nextEra(){
         lowerBuildings.clear();
         lowerBuildings.addAll(upperBuildings);
@@ -221,21 +310,17 @@ public class Board implements IF_GameModel {
             upperBuildings.addAll(buildingDecks.getFirst());
             buildingDecks.removeFirst();
         }
-        if(!decks.isEmpty()) {
-            decks.removeFirst();
-        }
+        decks.removeFirst();
     }
 
-    //NEXTROUND
+    // NEXT ROUND
 
     /**
-     * Does everything to change round.
-     * Returns true if it changed era.
-     * @return true if nextEra
+     * @see IF_GameModel Board implementation of the nextRound method.
      */
-    public boolean nextRound() throws IOException {
+    @Override
+    public void nextRound() throws IOException {
         if (playersOrder.isEmpty()) scanTiles();
-
         for (Player player : players) {
             handleBuildings(player,EventType.ONETIME);
         }
@@ -254,7 +339,7 @@ public class Board implements IF_GameModel {
                 System.out.println("[GAME LOG] deck is empty");
                 end();
                 game.sendClientEnd();
-                return true;
+                return;
             }
             else {
                 drawUpperRow();
@@ -272,9 +357,9 @@ public class Board implements IF_GameModel {
         }
 
         game.iChangedTurn();
-        return false;
     }
 
+    // end of the Game
     private void end(){
         List<Card> tempLower = new ArrayList<>(lowerRow);
         for(Card card : tempLower)
@@ -310,13 +395,12 @@ public class Board implements IF_GameModel {
         }
     }
 
-    //player's actions:
+    // player's actions:
 
     /**
-     * If the character is found on the board, it's drawn and added to the player's tribe
-     * @param player who picks
-     * @param card character picked
+     * @see IF_GameModel Board implementation of the pickCard method (Character Card).
      */
+    @Override
     public boolean pickCard(Player player, CharacterCard card) throws IOException {
         if (upperRow.contains(card)) {
             upperRow.remove(card);
@@ -332,12 +416,9 @@ public class Board implements IF_GameModel {
     }
 
     /**
-     * If the building is found on the board, the player pays for it, it gets drawn and added to the player's buildings.
-     *
-     * @param player who picks
-     * @param card   character picked
-     * @return
+     * @see IF_GameModel Board implementation of the pickCard method (Building Card).
      */
+    @Override
     public boolean pickCard(Player player, BuildingCard card) throws IOException {
         if (upperBuildings.contains(card)) {
             upperBuildings.remove(card);
@@ -350,38 +431,32 @@ public class Board implements IF_GameModel {
         return game.iPickedCard(player);
     }
 
+    /**
+     * @see IF_GameModel Board implementation of the pickTile method.
+     */
+    @Override
     public void pickTile(Player player, Tile tile) throws IOException {
-            tile.setCurrentPlayer(player);
-            game.iPickedTile(player);
+        tile.setCurrentPlayer(player);
+        game.iPickedTile(player);
     }
 
-    public void testGame(GameManager game) { this.game = game; }
-
+    /**
+     * Draw a Card and put it in the upper row.
+     * <br/><strong>Pre:</strong> card != null
+     *
+     * @param card Card drawn.
+     */
     public void drawUp (Card card){
         upperRow.add(card);
     }
 
+    /**
+     * Draw a Card and put it in the lower row.
+     * <br/><strong>Pre:</strong> card != null
+     *
+     * @param card Card drawn.
+     */
     public void drawDown(Card card){
         lowerRow.add(card);
-    }
-
-    public Player getCurrentPlayer() { return playersOrder.getFirst(); }
-
-    public List<Tile> getTiles() { return usedTiles; }
-
-    public List<List<Card>> getDecks() { return decks; }
-
-    public List<Card> getUpperRow() { return upperRow; }
-
-    public List<BuildingCard> getUpperBuildings() { return upperBuildings; }
-
-    public List<Card> getLowerRow() { return lowerRow; }
-
-    public List<BuildingCard> getLowerBuildings() { return lowerBuildings; }
-
-    public List<Player> getPlayersOrder() { return playersOrder; }
-
-    public Move getCurrentMove() {
-        return game.getCurrentMove();
     }
 }

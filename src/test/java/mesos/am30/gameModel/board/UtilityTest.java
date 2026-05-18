@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -17,6 +18,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class UtilityTest {
+
+     @Test
+     void wrongFile() {
+         int playerNum = 5;
+         Type type = new TypeToken<CharacterCard>(){}.getType();
+         assertThrows(IllegalArgumentException.class, () -> Utility.cardLoader("wrong", playerNum, type));
+     }
+
+     @Test
+     void wrongPlayersNumber() throws IOException {
+         int playerNum = 1;
+         Type type = new TypeToken<CharacterCard>(){}.getType();
+         List<CharacterCard> cards = Utility.cardLoader("characters.json", playerNum, type);
+         assertTrue(cards.isEmpty());
+     }
 
     @Test
     void testCharacterLoader() throws Exception {
