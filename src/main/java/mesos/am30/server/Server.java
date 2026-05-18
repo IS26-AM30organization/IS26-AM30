@@ -96,17 +96,24 @@ public class Server extends UnicastRemoteObject implements IF_Server {
      *
      * @throws IOException The connection cannot be established correctly.
      */
-    static void main() throws IOException {
+    public static void main(String[] args) throws IOException {
+        String ip = (args.length >= 1) ? args[0] : "localhost";
         Server server = Server.getInstance();
-        if (startRmiServer(server, 1099)) startSocketServer(server, 12345);
+        if (startRmiServer(server, 1099, ip)) startSocketServer(server, 12345);
     }
 
     // package-private for testing
     static boolean startRmiServer(Server server, int port) throws IOException {
+        return startRmiServer(server, port, "localhost");
+    }
+
+    // package-private for testing
+    static boolean startRmiServer(Server server, int port, String ip) throws IOException {
+        System.setProperty("java.rmi.server.hostname", ip);
         try {
             registry = LocateRegistry.createRegistry(port);
             registry.bind("server", server);
-            System.out.println("Server RMI Registry open at port " + port);
+            System.out.println("Server RMI Registry open at port " + port + " (hostname: " + ip + ")");
             return true;
         } catch (AlreadyBoundException exception) {
             // already running Server

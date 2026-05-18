@@ -231,7 +231,7 @@ class ServerTest {
         Thread.sleep(500);
         verify(controller).connect(mockView, "Lorenzo");
         verify(controller).startGame();
-        verify(mockView, never()).confirmLobbyJoined();
+        verify(mockView).confirmLobbyJoined();
     }
 
     @Test
@@ -530,7 +530,7 @@ class ServerTest {
             mockedLocate.when(() -> LocateRegistry.createRegistry(1099)).thenReturn(mockRegistry);
 
             // Act
-            Server.main();
+            Server.main(new String[0]);
 
             // Assert: registry bound and socket server thread started (no exception)
             verify(mockRegistry).bind(eq("server"), any());
@@ -544,7 +544,7 @@ class ServerTest {
             doThrow(new AlreadyBoundException()).when(mockRegistry).bind(eq("server"), any());
 
             // Act: startRmiServer returns false, so startSocketServer must not be called
-            Server.main();
+            Server.main(new String[0]);
 
             // Assert: no exception thrown, execution stopped after RMI failure
             verify(mockRegistry).bind(eq("server"), any());

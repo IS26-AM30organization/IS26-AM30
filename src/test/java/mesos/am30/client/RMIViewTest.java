@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.rmi.NoSuchObjectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -51,16 +52,26 @@ class RMIViewTest {
     @AfterEach
     void tearDown() {
         try { UnicastRemoteObject.unexportObject(rmiView, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
-        try { UnicastRemoteObject.unexportObject(testRegistry, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
+        try { UnicastRemoteObject.unexportObject(mockServer, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
+        if (testRegistry != null) {
+            try { UnicastRemoteObject.unexportObject(testRegistry, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
+            testRegistry = null;
+        }
     }
 
     @Test
     void findServer_Success() throws Exception {
+        // find a free port to avoid "Port already in use" across test runs
+        int registryPort;
+        try (ServerSocket s = new ServerSocket(0)) {
+            registryPort = s.getLocalPort();
+        }
+
         // Act
         IF_Server serverStub = (IF_Server) UnicastRemoteObject.exportObject(mockServer, 0);
-        testRegistry = LocateRegistry.createRegistry(1099);
+        testRegistry = LocateRegistry.createRegistry(registryPort);
         testRegistry.rebind("server", serverStub);
-        rmiView.findServer("localhost", 1099);
+        rmiView.findServer("localhost", registryPort);
 
         // Assert
         verify(mockUI, never()).printError(ErrorType.WRONG_IP);
@@ -69,7 +80,13 @@ class RMIViewTest {
 
     @Test
     void findServer_Fail() throws Exception {
-        rmiView.findServer("localhost", 1099);
+        // get a port that is guaranteed to have no server listening on it
+        int closedPort;
+        try (ServerSocket s = new ServerSocket(0)) {
+            closedPort = s.getLocalPort();
+        }
+
+        rmiView.findServer("localhost", closedPort);
 
         verify(mockUI, times(1)).printError(ErrorType.WRONG_IP);
     }
