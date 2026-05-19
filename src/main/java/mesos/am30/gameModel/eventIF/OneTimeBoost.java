@@ -27,6 +27,11 @@ public class OneTimeBoost implements IF_Event {
     }
 
     @Override
+    public String getArt(){
+        return new String(target.name().toLowerCase().charAt(0)+"o");
+    }
+
+    @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("oneTBoost");
         str3.append("Role: " + target).append("+" + gain);

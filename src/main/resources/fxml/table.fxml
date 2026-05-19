@@ -1,0 +1,1955 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1000.0" prefHeight="710.0" prefWidth="1000.0" styleClass="background" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mesos.am30.client.TableGui">
+   <children>
+      <VBox alignment="TOP_CENTER" layoutY="-129.0" prefHeight="729.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="TOP_CENTER">
+               <children>
+                  <Label fx:id="eraLabel" alignment="CENTER" maxHeight="100.0" maxWidth="200.0" minHeight="50.0" minWidth="150.0" prefHeight="100.0" prefWidth="300.0" style="-fx-text-fill: ffdd00;" styleClass="text" stylesheets="@../css/style.css" text="ERA 0" textAlignment="CENTER" textFill="#ffd000">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </Label>
+                  <Label fx:id="turnLabel" alignment="CENTER" maxHeight="100.0" minHeight="100.0" minWidth="400.0" prefHeight="100.0" prefWidth="700.0" style="-fx-text-fill: ffffff; -fx-stroke: black; -fx-stroke-width: 2;" styleClass="text" stylesheets="@../css/style.css" text="WELCOME!" textFill="WHITE">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="4000.0" prefWidth="1000.0">
+               <children>
+                  <HBox alignment="CENTER" minHeight="150.0" prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="upper1" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up1" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upper2" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up2" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upper3" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up3" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upper4" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up4" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upper5" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up5" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upper6" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up6" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upper7" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up7" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upper8" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up8" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upper9" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#up9" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upB1" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#upb1" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upB2" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#upb2" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upB3" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#upb3" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upB4" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#upb4" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="upB5" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#upb5" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox fx:id="tiles" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                     <children>
+                        <Button fx:id="tile1" contentDisplay="CENTER" mnemonicParsing="false" onAction="#til1" styleClass="tile" stylesheets="@../css/style.css">
+                           <graphic>
+                              <HBox>
+                                 <children>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/tile%20food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="tile2" contentDisplay="CENTER" mnemonicParsing="false" onAction="#til2" styleClass="tile" stylesheets="@../css/style.css">
+                           <graphic>
+                              <HBox>
+                                 <children>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/tile%20food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="tile3" contentDisplay="CENTER" mnemonicParsing="false" onAction="#til3" styleClass="tile" stylesheets="@../css/style.css">
+                           <graphic>
+                              <HBox>
+                                 <children>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/tile%20food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="tile4" contentDisplay="CENTER" mnemonicParsing="false" onAction="#til4" styleClass="tile" stylesheets="@../css/style.css">
+                           <graphic>
+                              <HBox>
+                                 <children>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/tile%20food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="tile5" contentDisplay="CENTER" mnemonicParsing="false" onAction="#til5" styleClass="tile" stylesheets="@../css/style.css">
+                           <graphic>
+                              <HBox>
+                                 <children>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/tile%20food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="tile6" contentDisplay="CENTER" mnemonicParsing="false" onAction="#til6" styleClass="tile" stylesheets="@../css/style.css">
+                           <graphic>
+                              <HBox>
+                                 <children>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/tile%20food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="tile7" contentDisplay="CENTER" mnemonicParsing="false" onAction="#til7" styleClass="tile" stylesheets="@../css/style.css">
+                           <graphic>
+                              <HBox>
+                                 <children>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/tile%20food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/up.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/down.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </HBox>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" minHeight="150.0" prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="lower1" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down1" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="lower2" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down2" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="lower3" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down3" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Button fx:id="lower6" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down6" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                                       <graphic>
+                                          <StackPane prefHeight="100.0" prefWidth="50.0">
+                                             <children>
+                                                <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/hf.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../images/0h0.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </children>
+                                          </StackPane>
+                                       </graphic>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </Button>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="lower4" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down4" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="lower5" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down5" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="lower7" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down7" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="lower8" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down8" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="lower9" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#down9" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="downB1" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#downb1" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="downB2" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#downb2" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="downB3" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#downb3" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="downB4" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#downb4" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                        <Button fx:id="downB5" alignment="CENTER" cache="true" graphicTextGap="0.0" minHeight="100.0" minWidth="10.0" mnemonicParsing="false" onAction="#downb5" style="-fx-background-color: transparent;" styleClass="card" stylesheets="@../css/style.css">
+                           <graphic>
+                              <StackPane prefHeight="100.0" prefWidth="50.0">
+                                 <children>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/hf.png" />
+                                       </image>
+                                    </ImageView>
+                                    <ImageView fitHeight="120.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/0h0.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                           </graphic>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <HBox alignment="CENTER" maxHeight="200.0" minHeight="200.0" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <VBox fx:id="player1" alignment="CENTER" maxHeight="200.0" minWidth="225.0" prefWidth="300.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #F15C3E; -fx-border-radius: 18; -fx-border-width: 2;">
+                     <children>
+                        <HBox alignment="CENTER" minHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/player1.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="name1" minHeight="30.0" style="-fx-background-color: #F15C3E; -fx-background-radius: 20; -fx-text-fill: ffffff;" text="PLAYER 1" textFill="WHITE">
+                                 <font>
+                                    <Font size="36.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0" spacing="5.0">
+                           <children>
+                              <VBox alignment="CENTER" minHeight="60.0" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: FCDF5A; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/points.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="pt1" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #5DC3AE; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="food1" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: d3d3d3; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/people.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="people1" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox fx:id="invlist1" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="inv11" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%201.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv21" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%202.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv31" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%203.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv41" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%204.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv51" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%205.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv61" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%206.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv71" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%207.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv81" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%208.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv91" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%209.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv101" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%2010.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="buildnum1" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/builder.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="build1" alignment="BOTTOM_CENTER" style="-fx-text-fill: 4B011E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="gathnum1" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/gatherer.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="gath1" alignment="BOTTOM_CENTER" style="-fx-text-fill: F57E2E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="artnum1" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/artist.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="art1" alignment="BOTTOM_CENTER" style="-fx-text-fill: FDD02F;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="invnum1" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/inventor.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="inv1" alignment="BOTTOM_CENTER" style="-fx-text-fill: #3ABDAE;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="shamnum1" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/shaman.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="sham1" alignment="BOTTOM_CENTER" style="-fx-text-fill: #8E425D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="huntnum1" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/hunter.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="hunt1" alignment="BOTTOM_CENTER" style="-fx-text-fill: #ED4D3D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="player2" alignment="CENTER" maxHeight="200.0" minWidth="225.0" prefWidth="300.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #00A1C1; -fx-border-radius: 18; -fx-border-width: 2;">
+                     <children>
+                        <HBox alignment="CENTER" minHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/player2.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="name2" minHeight="30.0" style="-fx-background-color: #00A1C1; -fx-background-radius: 20; -fx-text-fill: ffffff;" text="PLAYER 2" textFill="WHITE">
+                                 <font>
+                                    <Font size="36.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0" spacing="5.0">
+                           <children>
+                              <VBox alignment="CENTER" minHeight="60.0" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: FCDF5A; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/points.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="pt2" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #5DC3AE; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="food2" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: d3d3d3; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/people.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="people2" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox fx:id="invlist2" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="inv12" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%201.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv22" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%202.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv32" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%203.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv42" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%204.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv52" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%205.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv62" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%206.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv72" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%207.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv82" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%208.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv92" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%209.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv102" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%2010.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="buildnum2" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/builder.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="build2" alignment="BOTTOM_CENTER" style="-fx-text-fill: 4B011E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="gathnum2" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/gatherer.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="gath2" alignment="BOTTOM_CENTER" style="-fx-text-fill: F57E2E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="artnum2" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/artist.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="art2" alignment="BOTTOM_CENTER" style="-fx-text-fill: FDD02F;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="invnum2" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/inventor.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="inv2" alignment="BOTTOM_CENTER" style="-fx-text-fill: #3ABDAE;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="shamnum2" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/shaman.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="sham2" alignment="BOTTOM_CENTER" style="-fx-text-fill: #8E425D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="huntnum2" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/hunter.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="hunt2" alignment="BOTTOM_CENTER" style="-fx-text-fill: #ED4D3D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="player3" alignment="CENTER" maxHeight="200.0" minWidth="225.0" prefWidth="300.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #FFCD28; -fx-border-radius: 18; -fx-border-width: 2;">
+                     <children>
+                        <HBox alignment="CENTER" minHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/player3.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="name3" minHeight="30.0" style="-fx-background-color: #FFCD28; -fx-background-radius: 20; -fx-text-fill: #000000;" text="PLAYER 3" textFill="WHITE">
+                                 <font>
+                                    <Font size="36.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0" spacing="5.0">
+                           <children>
+                              <VBox alignment="CENTER" minHeight="60.0" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: FCDF5A; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/points.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="pt3" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #5DC3AE; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="food3" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: d3d3d3; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/people.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="people3" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox fx:id="invlist3" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="inv13" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%201.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv23" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%202.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv33" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%203.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv43" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%204.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv53" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%205.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv63" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%206.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv73" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%207.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv83" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%208.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv93" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%209.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv103" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%2010.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="buildnum3" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/builder.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="build3" alignment="BOTTOM_CENTER" style="-fx-text-fill: 4B011E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="gathnum3" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/gatherer.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="gath3" alignment="BOTTOM_CENTER" style="-fx-text-fill: F57E2E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="artnum3" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/artist.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="art3" alignment="BOTTOM_CENTER" style="-fx-text-fill: FDD02F;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="invnum3" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/inventor.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="inv11" alignment="BOTTOM_CENTER" style="-fx-text-fill: #3ABDAE;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="shamnum3" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/shaman.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="sham3" alignment="BOTTOM_CENTER" style="-fx-text-fill: #8E425D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="huntnum3" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/hunter.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="hunt3" alignment="BOTTOM_CENTER" style="-fx-text-fill: #ED4D3D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="player4" alignment="CENTER" maxHeight="200.0" minWidth="225.0" prefWidth="300.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #410B2C; -fx-border-radius: 18; -fx-border-width: 2;">
+                     <children>
+                        <HBox alignment="CENTER" minHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/player4.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="name4" minHeight="30.0" style="-fx-background-color: #410B2C; -fx-background-radius: 20; -fx-text-fill: ffffff;" text="PLAYER 4" textFill="WHITE">
+                                 <font>
+                                    <Font size="36.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0" spacing="5.0">
+                           <children>
+                              <VBox alignment="CENTER" minHeight="60.0" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: FCDF5A; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/points.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="pt4" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #5DC3AE; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="food4" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: d3d3d3; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/people.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="people4" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox fx:id="invlist4" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="inv14" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%201.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv24" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%202.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv34" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%203.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv44" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%204.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv54" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%205.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv64" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%206.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv74" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%207.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv84" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%208.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv94" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%209.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv104" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%2010.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="buildnum4" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/builder.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="build4" alignment="BOTTOM_CENTER" style="-fx-text-fill: 4B011E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="gathnum4" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/gatherer.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="gath4" alignment="BOTTOM_CENTER" style="-fx-text-fill: F57E2E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="artnum4" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/artist.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="art4" alignment="BOTTOM_CENTER" style="-fx-text-fill: FDD02F;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="invnum4" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/inventor.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="inv11" alignment="BOTTOM_CENTER" style="-fx-text-fill: #3ABDAE;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="shamnum4" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/shaman.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="sham4" alignment="BOTTOM_CENTER" style="-fx-text-fill: #8E425D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="huntnum4" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/hunter.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="hunt4" alignment="BOTTOM_CENTER" style="-fx-text-fill: #ED4D3D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="player5" alignment="CENTER" maxHeight="200.0" minWidth="225.0" prefWidth="300.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #EDEDEC; -fx-border-radius: 18; -fx-border-width: 2;">
+                     <children>
+                        <HBox alignment="CENTER" minHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/player5.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="name5" minHeight="30.0" style="-fx-background-color: #EDEDEC; -fx-background-radius: 20; -fx-text-fill: #000000;" text="PLAYER 5" textFill="WHITE">
+                                 <font>
+                                    <Font size="36.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="20.0" right="20.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0" spacing="5.0">
+                           <children>
+                              <VBox alignment="CENTER" minHeight="60.0" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: FCDF5A; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/points.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="pt5" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #5DC3AE; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/food.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="food5" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: d3d3d3; -fx-background-radius: 15;">
+                                 <children>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/people.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="people5" alignment="BOTTOM_CENTER" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox fx:id="invlist5" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="inv15" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%201.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv25" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%202.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv35" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%203.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv45" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%204.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv55" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%205.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv65" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%206.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv75" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%207.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv85" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%208.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv95" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%209.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="inv105" fitHeight="20.0" fitWidth="20.0" opacity="0.2" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../icons/invention%2010.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="buildnum5" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/builder.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="build5" alignment="BOTTOM_CENTER" style="-fx-text-fill: 4B011E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="gathnum5" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/gatherer.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="gath5" alignment="BOTTOM_CENTER" style="-fx-text-fill: F57E2E;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="artnum5" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/artist.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="art5" alignment="BOTTOM_CENTER" style="-fx-text-fill: FDD02F;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="300.0">
+                           <children>
+                              <HBox alignment="CENTER" minHeight="30.0" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="invnum5" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/inventor.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="inv11" alignment="BOTTOM_CENTER" style="-fx-text-fill: #3ABDAE;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="shamnum5" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/shaman.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="sham5" alignment="BOTTOM_CENTER" style="-fx-text-fill: #8E425D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="huntnum5" alignment="BOTTOM_CENTER" style="-fx-font-size: 10;" text="0x" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="8.0" />
+                                       </font>
+                                    </Label>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../icons/hunter.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label fx:id="hunt5" alignment="BOTTOM_CENTER" style="-fx-text-fill: #ED4D3D;" text="00" textAlignment="CENTER" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+               <opaqueInsets>
+                  <Insets bottom="5.0" />
+               </opaqueInsets>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

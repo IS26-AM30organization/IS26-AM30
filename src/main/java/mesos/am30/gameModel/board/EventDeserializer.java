@@ -39,7 +39,6 @@ public class EventDeserializer implements JsonDeserializer<IF_Event> {
             case "FullSet"          -> context.deserialize(jsonObject, FullSet.class);
             case "StatsBoost"       -> context.deserialize(jsonObject, StatsBoost.class);
             case "FinalBuilderBoost" -> context.deserialize(jsonObject, FinalBuilderBoost.class);
-            case "RoleBoost"        -> context.deserialize(jsonObject, RoleBoost.class);
             default -> throw new JsonParseException("Unknown Event: " + type);
         };
     }

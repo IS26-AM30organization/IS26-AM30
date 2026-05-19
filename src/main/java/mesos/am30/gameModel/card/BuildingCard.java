@@ -12,15 +12,15 @@ public class BuildingCard extends Card {
     private final IF_Event event;
     private final EventType eventType;
     private final int foodCost;
-    private final int ppGainEnd;
+    private final int ppGain;
 
 
-    public BuildingCard(int era, IF_Event event, EventType eventType, int foodCost, int ppGainEnd, int id) {
+    public BuildingCard(int era, IF_Event event, EventType eventType, int foodCost, int ppGain, int id) {
         super(era, id);
         this.event = event;
         this.eventType = eventType;
         this.foodCost = foodCost;
-        this.ppGainEnd = ppGainEnd;
+        this.ppGain = ppGain;
     }
 
     public int getFoodCost() {
@@ -28,7 +28,7 @@ public class BuildingCard extends Card {
     }
 
     public int getPpGainEnd() {
-        return ppGainEnd;
+        return ppGain;
     }
 
     public IF_Event getEvent() {
@@ -43,11 +43,6 @@ public class BuildingCard extends Card {
         return true;
     }
 
-    /**
-     * Checks whether a player has enough food to buy the building card
-     * @param player
-     * @return T if he can, F if he cannot
-     */
     public boolean canBeBought(Player player) {
         return player.getParameters().get(Parameter.FOOD)
                 + player.getParameters().get(Parameter.BUILDER) >= foodCost;
@@ -57,7 +52,7 @@ public class BuildingCard extends Card {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         BuildingCard that = (BuildingCard) o;
-        return foodCost == that.foodCost && ppGainEnd == that.ppGainEnd && Objects.equals(event, that.event) && eventType == that.eventType;
+        return foodCost == that.foodCost && ppGain == that.ppGain && Objects.equals(event, that.event) && eventType == that.eventType;
     }
 
     @Override
@@ -70,7 +65,13 @@ public class BuildingCard extends Card {
 
     @Override
     public int hashCode() {
-        return Objects.hash(event, eventType, foodCost, ppGainEnd);
+        return Objects.hash(event, eventType, foodCost, ppGain);
+    }
+
+    @Override
+    public void displayCard() {
+        System.out.println(String.format("%-10s | %-5d | %-5d",
+                eventType, foodCost, ppGain));
     }
 
     @Override
@@ -80,7 +81,7 @@ public class BuildingCard extends Card {
         StringBuilder str3 = new StringBuilder();
 
         if (foodCost != 0) str2.append("fCost: " + foodCost);
-        if (ppGainEnd != 0) str2.append("ppGainEnd: " + ppGainEnd);
+        if (ppGain != 0) str2.append("ppGainEnd: " + ppGain);
 
         event.getAttributes(str1, str2, str3);
 
@@ -104,4 +105,8 @@ public class BuildingCard extends Card {
         for (int x = str3.length(); x < maxWidth; x++) ln3.append(" ");
     }
 
+    @Override
+    public String getArt(){
+        return new String(ppGain+""+event.getArt()+""+foodCost);
+    }
 }

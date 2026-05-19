@@ -56,6 +56,7 @@ public class Gui extends Application implements IF_GameUI {
         }
 
         game = loader.getController();
+        game.setView(vView);
 
         this.little = little;
         little.show();
@@ -78,7 +79,7 @@ public class Gui extends Application implements IF_GameUI {
 
     @Override
     public void printMove(String nickname, Move move) {
-
+        game.printMove(nickname, move);
     }
 
     @Override
@@ -92,11 +93,14 @@ public class Gui extends Application implements IF_GameUI {
             game.setBoard(viewModel);
             if (little.isShowing()) {
                 menu.hide();
+                System.out.println("menu closed");
             }
             if (!big.isShowing()) {
+                game.setName(menu.getNickname());
                 game.createTable();
                 big.show();
             }
+            game.refresh(viewModel);
         });
     }
 

@@ -33,4 +33,8 @@ public class FinalBoost implements IF_Event {
         str1.append("fnlBoost");
         str3.append("Role:" + target).append("x" + multiplier);
     }
+    @Override
+    public String getArt(){
+        return new String(target.name().toLowerCase().charAt(0)+"b");
+    }
 }

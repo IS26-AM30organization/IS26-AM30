@@ -30,5 +30,10 @@ public class FinalBuilderBoost implements IF_Event {
         str1.append("fnlBuilder");
         str3.append("x" + multiplier);
     }
+
+    @Override
+    public String getArt(){
+        return new String("fb");
+    }
 }
 

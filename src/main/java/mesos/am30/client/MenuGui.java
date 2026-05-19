@@ -15,6 +15,7 @@ public class MenuGui {
     boolean numAsked = false;
     boolean nameAsked = false;
 
+    String nickname;
     VirtualView vView;
 
     @FXML
@@ -66,13 +67,17 @@ public class MenuGui {
 
     public void hide(){
         Platform.runLater(() -> {
-            if (number.getScene().getWindow().isShowing()) {
+            if (number != null && number.getScene().getWindow().isShowing()) {
                 number.getScene().getWindow().hide();
             }
-            if (name.getScene().getWindow().isShowing()) {
+            if (name != null && name.getScene().getWindow().isShowing()) {
                 name.getScene().getWindow().hide();
             }
         });
+    }
+
+    public String getNickname() {
+        return new String(nickname);
     }
 
     @FXML
@@ -119,7 +124,8 @@ public class MenuGui {
         } else if (!nameAsked) {
             quickMessage.setText("Connecting... Please retry");
         } else {
-            vView.answerNickname(name.getText());
+            nickname = name.getText();
+            vView.answerNickname(nickname);
             quickMessage.setText("Waiting for players...");
             name.setVisible(false);
             write.setVisible(false);

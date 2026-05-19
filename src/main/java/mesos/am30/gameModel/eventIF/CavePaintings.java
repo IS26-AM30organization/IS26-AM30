@@ -75,4 +75,9 @@ public class CavePaintings implements IF_Event {
         str3.append("Lost: "+ lostPrestigePoints + " Gained: " + gainedPrestigePoints);
 
     }
+
+    @Override
+    public String getArt(){
+        return new String(gainedPrestigePoints+"c"+(lostPrestigePoints<0 ? lostPrestigePoints*(-1) : lostPrestigePoints)+"c"+artistMinimum);
+    }
 }

@@ -73,6 +73,11 @@ public class Sustenance implements IF_Event {
     }
 
     @Override
+    public String getArt(){
+        return new String("0s"+(prestigePoints<0 ? prestigePoints*(-1) : prestigePoints)+"s1");
+    }
+
+    @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("Sustenance");
         str2.append("pP:" + prestigePoints);
