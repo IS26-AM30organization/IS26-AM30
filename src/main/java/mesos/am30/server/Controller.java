@@ -5,7 +5,6 @@ import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.board.Board;
 import mesos.am30.gameModel.IF_GameModel;
 import mesos.am30.gameModel.card.BuildingCard;
-import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.ErrorType;
@@ -14,40 +13,99 @@ import mesos.am30.common.Move;
 
 import java.io.IOException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.sql.SQLException;
 import java.util.*;
 
-
+/**
+ * Controller for the Players' Moves.
+ * <br/>This Class works as the Controller for the Players' Moves, defining the Controller in the ModelViewController Pattern.
+ */
 public class Controller extends UnicastRemoteObject implements IF_GameController {
+    private Server server;
     private IF_GameModel board;
     private final Map<Player, IF_GameView> connections;
     private final int numPlayers;
 
+    /**
+     * Constructor for the Controller.
+     * <br/><strong>Pre:</strong> 2 <= numPlayers <= 5
+     * <br/><strong>Post:</strong> this.numPlayers = numPlayers
+     *
+     * @param numPlayers Number of Players for the given Game.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
     public Controller(int numPlayers) throws IOException {
         this.numPlayers = numPlayers;
         this.connections = new HashMap<>(numPlayers);
+        this.server = Server.getInstance();
     }
 
-    synchronized protected void startTest(IF_GameModel board) throws IOException {
-        this.board = board;
-        this.board.prepare();
-        this.board.start();
+    // Test setter for the attribute "server"
+    void setServer(Server server) {
+        this.server = server;
     }
 
-    public synchronized boolean isFull() {
-        return connections.size() == numPlayers;
+    // Test getter for the attribute "numPlayers"
+    int getPlayersNumber() {
+        return numPlayers;
     }
 
+    /**
+     * Getter for the connected Clients (identified by their Player).
+     *
+     * @return Map of tuples (Player, Client).
+     */
+    public Map<Player, IF_GameView> getClients() {
+        return connections;
+    }
+
+    /**
+     * Get the number of occupied slots of the Lobby.
+     *
+     * @return Number of Players connected.
+     */
     public synchronized int getOccupiedSlots() {
         return getClients().size();
     }
 
-    public synchronized boolean connect(IF_GameView view, String nickname) throws IOException {
+    // get a Player by its Nickname
+    private Player getPlayerByNickname(String nickname) {
+        return connections.keySet().stream()
+                .filter(p -> nickname.equals(p.getNickname())).toList().getFirst();
+    }
+
+    /**
+     * Check if the Lobby is full.
+     *
+     * @return True is all the Clients are connected, false otherwise.
+     */
+    public synchronized boolean isFull() {
+        return connections.size() == numPlayers;
+    }
+
+    /**
+     * Connect a Client to the Lobby.
+     *
+     * @param view      Client to connect.
+     * @param nickname  Nickname of the Client.
+     *
+     * @return True if the Client fills the lobby, false otherwise.
+     * @throws IOException The connection cannot be established correctly.
+     */
+    public boolean connect(IF_GameView view, String nickname) throws IOException {
         connections.put(new Player(nickname), view);
         view.setController(this);
         return connections.size() == numPlayers;
     }
 
+    /**
+     * Start the Game.
+     * <br/>This method set up the Model and starts the Game, notifying the first Move.
+     */
     synchronized public void startGame() {
         board = new Board(
                 connections.keySet().stream().toList(),
@@ -58,6 +116,7 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
             board.prepare();
         } catch (IOException e) {
             System.err.println("[Error]: error on start-up" + e.getMessage());
+            for (IF_GameView view : connections.values()) server.handleDisconnection(view);
         }
         board.start();
 
@@ -66,150 +125,115 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
             sendMove(currentPlayer, Move.PICK_TILE);
         } catch (IOException e) {
             System.err.println("[Error]: error on start-up" + e.getMessage());
+            for (IF_GameView view : connections.values()) server.handleDisconnection(view);
         }
     }
+
+    // check if the Player can Move
+    boolean isPlayerTurn(Player requestingPlayer) {
+        Player currentPlayer = board.getCurrentPlayer();
+        if (currentPlayer == null) return false;
+        return requestingPlayer.equals(currentPlayer);
+    }
+
+    /**
+     * @see IF_GameController Controller implementation of the chooseTile method.
+     */
+    @Override
     synchronized public void chooseTile(String nickname, Tile requestingTile) throws IOException {
         Player requestingPlayer = getPlayerByNickname(nickname);
-        Player currentPlayer = board.getCurrentPlayer();
 
-        if (!isPlayerTurn(requestingPlayer, currentPlayer) || !requestingPlayer.hasNoMoves()) {
+        if (!isPlayerTurn(requestingPlayer) || !requestingPlayer.hasNoMoves()) {
             handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
 
-        Tile chosenTile = null;
-
         try {
-            chosenTile = board.getTiles().stream().filter(t -> t.equals(requestingTile)).toList().getFirst();
+            Tile chosenTile = board.getTiles().stream().filter(t -> t.equals(requestingTile)).toList().getFirst();
+            board.pickTile(requestingPlayer, chosenTile);
         } catch (NoSuchElementException e) {
             handleError(requestingPlayer, ErrorType.WRONG_TILE);
-            return;
         }
-
-        board.pickTile(requestingPlayer, chosenTile);
     }
 
+    /**
+     * @see IF_GameController Controller implementation of the chooseCharacter method.
+     */
+    @Override
     synchronized public void chooseCharacter(String nickname, CharacterCard card) throws IOException {
         Player requestingPlayer = getPlayerByNickname(nickname);
 
-        Player currentPlayer = board.getCurrentPlayer();
-        if (!isPlayerTurn(requestingPlayer, currentPlayer) || requestingPlayer.hasNoMoves()) {
+        if (!isPlayerTurn(requestingPlayer) || requestingPlayer.hasNoMoves()) {
             handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
 
-        if (tryPickedCard(currentPlayer, card)) {
+        if (tryPickedCharacter(requestingPlayer, card)) {
             if (board.pickCard(requestingPlayer, card)) {
-                if (board.nextRound()) {
-                }
+                board.nextRound();
             }
         }
     }
 
+    // check if a CharacterCard can be picked
+    private boolean tryPickedCharacter(Player requestingPlayer, CharacterCard card) throws IOException {
+        if (requestingPlayer.hasEnoughUpMoves() && board.getUpperRow().contains(card)) {
+            requestingPlayer.decreaseRemainingUpMoves();
+            return true;
+        }
+        else if (requestingPlayer.hasEnoughDownMoves() && board.getLowerRow().contains(card)) {
+            requestingPlayer.decreaseRemainingDownMoves();
+            return true;
+        }
+        handleError(requestingPlayer, ErrorType.WRONG_CARD);
+        return false;
+    }
+
+    /**
+     * @see IF_GameController Controller implementation of the chooseBuilding method.
+     */
+    @Override
     synchronized public void chooseBuilding(String nickname, BuildingCard card) throws IOException {
         Player requestingPlayer = getPlayerByNickname(nickname);
-        Player currentPlayer = board.getCurrentPlayer();
         
-        if (!isPlayerTurn(requestingPlayer, currentPlayer) || requestingPlayer.hasNoMoves()) {
+        if (!isPlayerTurn(requestingPlayer) || requestingPlayer.hasNoMoves()) {
             handleError(requestingPlayer, ErrorType.NOT_YOUR_TURN);
             return;
         }
 
-        if (tryPickedCard(currentPlayer, card)) {
-            if (!card.canBeBought(currentPlayer)) {
+        if (tryPickedBuilding(requestingPlayer, card)) {
+            if (board.pickCard(requestingPlayer, card))
+                board.nextRound();
+        }
+    }
+
+    // check if a BuildingCard can be picked
+    private boolean tryPickedBuilding(Player requestingPlayer, BuildingCard card) throws IOException {
+        if (requestingPlayer.hasEnoughUpMoves() && board.getUpperBuildings().contains(card)) {
+            if (!card.canBeBought(requestingPlayer)) {
                 handleError(requestingPlayer, ErrorType.NOT_ENOUGH_FOOD);
-                return;
-            }
-            if (board.pickCard(requestingPlayer, card)) {
-                if (board.nextRound()) {
-                }
+                return false;
+            } else {
+                requestingPlayer.decreaseRemainingUpMoves();
+                return true;
             }
         }
-    }
-
-    //OTHER METHODS:
-
-    private boolean isPlayerTurn(Player requestingPlayer, Player currentPlayer) throws IOException {
-        if(currentPlayer == null) return false;
-        if(requestingPlayer.equals(currentPlayer)) return true;
-        return false;
-    }
-
-    private boolean tryPickedCard(Player requestingPlayer, CharacterCard card) throws IOException {
-        if (requestingPlayer.hasEnoughUpMoves() && cardIsInRow(board.getUpperRow(), card)) {
-            requestingPlayer.decreaseRemainingUpMoves();
-            return true;
-        }
-        else if (requestingPlayer.hasEnoughDownMoves() && cardIsInRow(board.getLowerRow(), card)) {
-            requestingPlayer.decreaseRemainingDownMoves();
-            return true;
+        else if (requestingPlayer.hasEnoughDownMoves() && board.getLowerBuildings().contains(card)) {
+            if (!card.canBeBought(requestingPlayer)) {
+                handleError(requestingPlayer, ErrorType.NOT_ENOUGH_FOOD);
+                return false;
+            } else {
+                requestingPlayer.decreaseRemainingDownMoves();
+                return true;
+            }
         }
         handleError(requestingPlayer, ErrorType.WRONG_CARD);
         return false;
     }
 
-    private boolean tryPickedCard(Player requestingPlayer, BuildingCard card) throws IOException {
-        if (requestingPlayer.hasEnoughUpMoves() && cardIsInRow(board.getUpperBuildings(), card)) {
-            requestingPlayer.decreaseRemainingUpMoves();
-            return true;
-        }
-        else if (requestingPlayer.hasEnoughDownMoves() && cardIsInRow(board.getLowerBuildings(), card)) {
-            requestingPlayer.decreaseRemainingDownMoves();
-            return true;
-        }
-        handleError(requestingPlayer, ErrorType.WRONG_CARD);
-        return false;
-    }
-
-    private boolean cardIsInRow(List<Card> cards, CharacterCard card) {
-        return cards.contains(card);
-    }
-
-    private boolean cardIsInRow(List<BuildingCard> cards, BuildingCard card) {
-        return cards.contains(card);
-    }
-
-    private void handleError(Player player, ErrorType errorType) throws IOException {
-        IF_GameView connection = connections.get(player);
-        if (connection != null) {
-            connection.notifyError(errorType);
-            reSendCurrentMove();
-        }
-    }
-
-    private void sendMove(Player player, Move move) throws IOException {
-        IF_GameView connection = connections.get(player);
-        if (connection != null) connection.notifyTurn(player.getNickname(), move);
-    }
-
-    private void sendEnd() throws IOException {
-        IF_GameView connection = null;
-        for (Player p : connections.keySet()) {
-            connection = connections.get(p);
-            if (connection != null) connection.end();
-        }
-        System.out.println("[TURN LOG] game is ended");
-    }
-
-    private Player getPlayerByNickname(String nickname) {
-        return connections.keySet().stream()
-            .filter(p -> nickname.equals(p.getNickname())).toList().getFirst();
-    }
-
-    // Test getter for the attribute playersNumber
-    int getPlayersNumber() {
-        return numPlayers;
-    }
-
-    // Test getter for the attribute clients
-    Map<Player, IF_GameView> getClients() {
-        return connections;
-    }
-
-    private void reSendCurrentMove() throws IOException {
-        sendMove(board.getCurrentPlayer(), board.getCurrentMove());
-    }
-
+    /**
+     * @see IF_GameController Controller implementation of the showRankings method.
+     */
     @Override
     public void showRankings(String nickname, boolean response) throws IOException {
         IF_GameView connection = connections.get(getPlayerByNickname(nickname));
@@ -229,5 +253,27 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
         try {
             connection.end();
         } catch (Exception ignored) { /* ignored */ }
+    }
+
+    //OTHER METHODS:
+
+    // notify a Client about its Move
+    void sendMove(Player player, Move move) throws IOException {
+        IF_GameView connection = connections.get(player);
+        if (connection != null) connection.notifyTurn(player.getNickname(), move);
+    }
+
+    // send the current Move
+    private void reSendCurrentMove() throws IOException {
+        sendMove(board.getCurrentPlayer(), board.getCurrentMove());
+    }
+
+    // notify a Client about an Error
+    private void handleError(Player player, ErrorType errorType) throws IOException {
+        IF_GameView connection = connections.get(player);
+        if (connection != null) {
+            connection.notifyError(errorType);
+            reSendCurrentMove();
+        }
     }
 }
