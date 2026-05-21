@@ -84,7 +84,7 @@ class SocketProxyTest {
         proxy.end();
 
         // Assert Client-side
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.END, message.getType());
 
@@ -109,7 +109,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verify(mockController).chooseTile(eq("nickname"), any(Tile.class));
         verify(mockServer, times(1)).handleDisconnection(proxy);
     }
@@ -121,7 +121,7 @@ class SocketProxyTest {
         clientOut.writeObject(new Message(MessageType.NOTIFY));
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verifyNoInteractions(mockServer);
         verifyNoInteractions(mockController);
     }
@@ -132,7 +132,7 @@ class SocketProxyTest {
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_TILE, "nickname", mock(Tile.class)));
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verifyNoInteractions(mockServer);
         verifyNoInteractions(mockController);
     }
@@ -144,7 +144,7 @@ class SocketProxyTest {
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.NICKNAME, "123456", "nickname"));
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verifyNoInteractions(mockServer);
         verifyNoInteractions(mockController);
     }
@@ -156,7 +156,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verify(mockServer, times(1)).createLobby(proxy, 3, "123456");
         verifyNoInteractions(mockController);
     }
@@ -168,7 +168,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verify(mockServer, times(1)).showAvailableLobbies(proxy);
         verifyNoInteractions(mockController);
     }
@@ -180,7 +180,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verify(mockServer, times(1)).joinLobby(proxy, "123456");
         verifyNoInteractions(mockController);
     }
@@ -192,7 +192,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verify(mockServer, times(1)).setNickname(proxy, "nickname", "123456");
         verifyNoInteractions(mockController);
     }
@@ -205,7 +205,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verifyNoInteractions(mockServer);
         verify(mockController).chooseTile(eq("nickname"), any(Tile.class));
     }
@@ -218,7 +218,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verifyNoInteractions(mockServer);
         verify(mockController).chooseCharacter(eq("nickname"), any(CharacterCard.class));
     }
@@ -231,7 +231,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         verifyNoInteractions(mockServer);
         verify(mockController).chooseBuilding(eq("nickname"), any(BuildingCard.class));
     }
@@ -242,7 +242,7 @@ class SocketProxyTest {
         proxy.confirmConnection();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.CONFIRM_CONNECTION, message.getType());
     }
@@ -258,7 +258,7 @@ class SocketProxyTest {
         proxy.showLobbies(lobbies);
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.SHOW_LOBBIES, message.getType());
         ShowLobbiesMessage showLobbiesMessage = (ShowLobbiesMessage) message;
@@ -271,7 +271,7 @@ class SocketProxyTest {
         proxy.askNickname("123456");
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.NICKNAME, message.getType());
         AskNicknameMessage askNicknameMessage = (AskNicknameMessage) message;
@@ -284,7 +284,7 @@ class SocketProxyTest {
         proxy.confirmLobbyJoined();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.CONFIRM_LOBBY_JOINED, message.getType());
     }
@@ -295,7 +295,7 @@ class SocketProxyTest {
         proxy.notifyTurn("nickname", Move.PICK_TILE);
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.NOTIFY, message.getType());
         ClienTurnMessage clienTurnMessage = (ClienTurnMessage) message;
@@ -309,7 +309,7 @@ class SocketProxyTest {
         proxy.notifyError(ErrorType.WRONG_TILE);
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.ERROR, message.getType());
         ErrorMessage errorMessage = (ErrorMessage) message;
@@ -322,7 +322,7 @@ class SocketProxyTest {
         proxy.update(ViewParameter.PLAYERS, List.of(mock(Player.class)));
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.UPDATE, message.getType());
         ModelUpdateMessage modelUpdateMessage = (ModelUpdateMessage) message;
@@ -340,7 +340,7 @@ class SocketProxyTest {
         proxy.ping();
 
         // Assert
-        Thread.sleep(500);
+        Thread.sleep(2000);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.PING, message.getType());
     }

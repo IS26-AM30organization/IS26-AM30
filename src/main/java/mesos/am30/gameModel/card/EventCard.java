@@ -1,5 +1,6 @@
 package mesos.am30.gameModel.card;
 
+import mesos.am30.common.TColors;
 import mesos.am30.gameModel.IF_Event;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.board.Board;
@@ -46,19 +47,20 @@ public class EventCard extends Card {
         StringBuilder str3 = new StringBuilder();
 
         event.getAttributes(str1, str2, str3);
+        str1.append(" ").append("\u26A0");
 
         //need to take longest word
-        int maxWidth = str1.length()+2;
+        int maxWidth = str1.length();
         if (str2.length() > maxWidth) {
             maxWidth = str2.length();
         }
         if (str3.length() > maxWidth) {
             maxWidth = str3.length();
         }
-        maxWidth += 3;
+        maxWidth += 5;
 
-        eventRole.append(str1).append("\uD83D\uDDD3\uFE0F");;
-        for (int x = str1.length()+2; x < maxWidth; x++) eventRole.append(" ");
+        eventRole.append(TColors.RED).append(str1).append(TColors.RESET);
+        for (int x = str1.length(); x < maxWidth; x++) eventRole.append(" ");
 
         ln2.append(str2);
         for (int x = str2.length(); x < maxWidth; x++) ln2.append(" ");

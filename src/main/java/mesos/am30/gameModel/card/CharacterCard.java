@@ -1,5 +1,6 @@
 package mesos.am30.gameModel.card;
 
+import mesos.am30.common.TColors;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.board.Board;
 
@@ -36,11 +37,6 @@ public class CharacterCard extends Card {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(role, value, prestigePoints);
-    }
-
     public void drawUp(Board board){
         board.drawUp(this);
     }
@@ -55,34 +51,35 @@ public class CharacterCard extends Card {
 
     @Override
     public void createRow(StringBuilder rowRoles, StringBuilder rowValue, StringBuilder rowPP) {
-        String r = role + "";
+        String r = role + " " + "\u265F";
         StringBuilder i = new StringBuilder();
+
 
         if (value != 0) {
             valueToItem(i);
             i.append(value);
         }
         String pp = "";
-        if (prestigePoints != 0) pp = "PP: " + prestigePoints;
+        if (prestigePoints != 0) pp = "PP:" + prestigePoints;
 
         //need to take the longest word
-        int maxWidth = r.length();
+        int maxWidth = TColors.getVisibleLength(r);
         if (i.length() > maxWidth) {
-            maxWidth = i.length();
+            maxWidth = TColors.getVisibleLength(i);
         }
         if (pp.length() > maxWidth) {
-            maxWidth = pp.length();
+            maxWidth = TColors.getVisibleLength(pp);
         }
-        maxWidth += 3;
+        maxWidth += 5;
 
-        rowRoles.append(r).append("\uD83D\uDC64");
-        for (int x = r.length()+2; x < maxWidth; x++) rowRoles.append(" ");
+        rowRoles.append(TColors.SILVER_B).append(r).append(TColors.RESET);
+        for (int x = TColors.getVisibleLength(r); x < maxWidth; x++) rowRoles.append(" ");
 
         rowValue.append(i);
-        for (int x = i.length(); x < maxWidth; x++) rowValue.append(" ");
+        for (int x = TColors.getVisibleLength(i); x < maxWidth; x++) rowValue.append(" ");
 
         rowPP.append(pp);
-        for (int x = pp.length(); x < maxWidth; x++) rowPP.append(" ");
+        for (int x = TColors.getVisibleLength(pp); x < maxWidth; x++) rowPP.append(" ");
     }
 
     @Override
@@ -100,13 +97,11 @@ public class CharacterCard extends Card {
      */
     private void valueToItem(StringBuilder str1) {
         switch (role) {
-            case INVENTOR -> str1.append("inv: ");
-            case BUILDER -> str1.append("food: ");
-            case GATHERER -> str1.append("food: ");
-            case ARTIST -> str1.append("");
-            case SHAMAN -> str1.append("starts: ");
-            case HUNTER -> str1.append("food");
-            default -> str1.append("ITEM: ");
+            case INVENTOR -> str1.append(TColors.DARK_GRAY).append("Invention:").append(TColors.RESET);
+            case BUILDER, GATHERER, HUNTER -> str1.append(TColors.PINK).append("Food:").append(TColors.RESET);
+            case SHAMAN -> str1.append(TColors.GOLD).append("Stars:").append(TColors.RESET);
+            case ARTIST -> {}
+            default -> str1.append("ITEM:");
         }
     }
 }

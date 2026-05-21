@@ -1,5 +1,6 @@
 package mesos.am30.client;
 
+import mesos.am30.common.TColors;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
@@ -38,6 +39,10 @@ public class Tui implements IF_GameUI {
 		gPhase = GamePhase.MENU;
 	}
 
+	public void setvModel(ViewModel vBoard){
+		this.vBoard = vBoard;
+	}
+
 	/**
 	 * Starts executor service for terminal reading
 	 */
@@ -56,15 +61,15 @@ public class Tui implements IF_GameUI {
             String[] plAction = plInput.toLowerCase().split("\\s+"); //input is divided in words.
 
             switch (gPhase) {
-                case MENU -> menuCMDs(plAction); //MENU is connecting to a lobby
-                case LOBBY -> {
+                case MENU -> menuCMDs(plAction); //MENU Phase: connecting to a lobby
+                case LOBBY -> { //LOBBY Phase: inserting a valid name
                     try {
-                        vView.answerNickname(plAction[0]); //LOBBY is inserting a valid name
+                        if (!plAction[0].isBlank()) vView.answerNickname(plAction[0]);
                     } catch (IOException e) {
                         printMessage("[ERROR]: error on transmitting player's Nickname.");
                     }
                 }
-                case GAME -> matchCMDs(plAction); //GAME is game phase
+                case GAME -> matchCMDs(plAction); //GAME Phase: game phase
                 default -> {}
             }
         }
@@ -83,8 +88,6 @@ public class Tui implements IF_GameUI {
 	 * Invoked by virtualView, used to set vBoard
 	 */
 	public void refresh(ViewModel vBoard) {
-		this.vBoard = vBoard; //check if needed
-		//boardRender();
 	}
 
 	/**
@@ -282,7 +285,10 @@ public class Tui implements IF_GameUI {
 			try {
 				switch (cmdSize) {
 					case 1 -> {}
-					case 2 -> cIndex = parseInt(plAction[1]);
+					case 2 -> {
+						if (!action.equals("display"))
+							cIndex = parseInt(plAction[1]);
+					}
 					case 3 -> {
 						action += " " + plAction[1];
 						cIndex = parseInt(plAction[2]);
@@ -292,6 +298,7 @@ public class Tui implements IF_GameUI {
 
 				switch (action) {
 					case "-h", "-help" -> showGameCommands();
+					case "display" -> displayChosenPlayer(plAction[1]);
 					case "tile" -> vView.checkTile(wantedTile(cIndex));
 					case "draw up" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_UP, cIndex));
 					case "draw down" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_DOWN, cIndex));
@@ -344,6 +351,7 @@ public class Tui implements IF_GameUI {
 				draw down #num-> draw a Card 
 				buy up #num -> buy a Building 
 				buy down #num -> chose a Building 
+				display #plName -> shows tribe of player
 				-h or -help #num -> to show available commands 
 				""" + "\033[0m");
 	}
@@ -398,7 +406,9 @@ public class Tui implements IF_GameUI {
 
 		for (Player p : players) {
 			displayPlayer(p);
+			System.out.println("\n");
 		}
+		System.out.println("\n\n");
 
 		System.out.println("\033[1;32m" + "\n\n--- UPPER-ROW --------------" + "\033[0m");
 		displayRows(upRow);
@@ -408,6 +418,7 @@ public class Tui implements IF_GameUI {
 
 		System.out.println("\033[1;34m" + "\n--- TILES ------------------" + "\033[0m");
 		displayTiles(tiles);
+        System.out.println("\033[1;34m" + "----------------------------" + "\033[0m");
 
 		System.out.println("\033[1;32m" + "\n--- LOWER-ROW --------------" + "\033[0m");
 		displayRows(loRow);
@@ -450,17 +461,19 @@ public class Tui implements IF_GameUI {
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Card card : row) {
-			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
+			ln1.append(TColors.CYAN_B).append("|").append(TColors.RESET);
+			ln2.append(TColors.CYAN_B).append("|").append(TColors.RESET);
+			ln3.append(TColors.CYAN_B).append("|").append(TColors.RESET);
+			ln1.append(TColors.MAGENTA_B).append(j).append(".").append(TColors.RESET);
 			ln2.append("  ");
 			ln3.append("  ");
 			card.createRow(ln1, ln2, ln3);
 			j++;
-			if (j == maxCardsXRow) {
+			if (j % maxCardsXRow == 0) {
 				displayRows(ln1, ln2, ln3);
-				j = 0;
 			}
 		}
-		if (j > 0) displayRows(ln1, ln2, ln3);
+		if (j % maxCardsXRow != 0) displayRows(ln1, ln2, ln3);
 	}
 
 	/**
@@ -475,7 +488,7 @@ public class Tui implements IF_GameUI {
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Card card : builds) {
-			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
+			ln1.append(TColors.MAGENTA_B).append(j).append(".").append(TColors.RESET);
 			card.createRow(ln1, ln2, ln3);
 			j++;
 		}
@@ -494,8 +507,8 @@ public class Tui implements IF_GameUI {
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Tile tile : tiles) {
-			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
-			ln2.append("\033[1;35m").append(j).append(".").append("\033[0m");
+			ln1.append(TColors.MAGENTA_B).append(j).append(".").append(TColors.RESET);
+			ln2.append(TColors.MAGENTA_B).append(j).append(".").append(TColors.RESET);
 			ln3.append("  ");
 			tile.createRow(ln1, ln2, ln3);
 			j++;
@@ -507,11 +520,27 @@ public class Tui implements IF_GameUI {
 	 * Displays player's info
 	 */
 	private void displayPlayer(Player p) {
-		System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
+        System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
 		p.displayTribe();
 		p.displayStats();
 	}
+
+	private void displayChosenPlayer(String nickname) {
+		synchronized (tuiLock) {
+			for (Player p : vBoard.getPlayers()) {
+				if (p.getNickname().equals(nickname)) {
+					displayPlayer(p);
+					System.out.println("\n\ncmd > ");
+					System.out.flush();
+					return;
+				}
+			}
+		}
+		printMessage("\n[ERROR]: player does not exists.");
+	}
+
 }
+
 
 
 

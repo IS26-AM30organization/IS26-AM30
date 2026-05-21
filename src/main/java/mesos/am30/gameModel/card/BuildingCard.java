@@ -1,5 +1,6 @@
 package mesos.am30.gameModel.card;
 
+import mesos.am30.common.TColors;
 import mesos.am30.gameModel.EventType;
 import mesos.am30.gameModel.IF_Event;
 import mesos.am30.gameModel.Parameter;
@@ -78,6 +79,7 @@ public class BuildingCard extends Card {
         if (ppGain != 0) str2.append("ppGainEnd: " + ppGain);
 
         event.getAttributes(str1, str2, str3);
+        str1.append(" ").append("\u26EB");
 
         //need to take longest word
         int maxWidth = str1.length();
@@ -89,8 +91,8 @@ public class BuildingCard extends Card {
         }
         maxWidth += 3;
 
-        eventRole.append(str1).append("\uD83C\uDFE0");;
-        for (int x = str1.length()+2; x < maxWidth; x++) eventRole.append(" ");
+        eventRole.append(TColors.BROWN).append(str1).append(TColors.RESET);
+        for (int x = str1.length()+1; x < maxWidth; x++) eventRole.append(" ");
 
         ln2.append(str2);
         for (int x = str2.length(); x < maxWidth; x++) ln2.append(" ");

@@ -42,6 +42,8 @@ public abstract class VirtualView implements IF_GameView {
     public VirtualView(IF_GameUI userInterface) {
         this.userInterface = userInterface;
         model = new ViewModel();
+        this.userInterface.setvModel(model);
+        this.userInterface.setvView(this);
     }
 
     // Test getter for the attribute model

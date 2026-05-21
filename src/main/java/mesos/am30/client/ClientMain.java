@@ -38,7 +38,6 @@ public class ClientMain {
                 System.err.println("[Wrong argument] : " + args[2] + "is not valid!!! Use 'socket' or 'rmi'!!!");
                 System.exit(1);
             }
-            userInterface.setvView(view);
             view.findServer(args[0], port);
         } catch (IOException exception) {
             System.err.println("[ERROR: ] " + exception.getMessage());
