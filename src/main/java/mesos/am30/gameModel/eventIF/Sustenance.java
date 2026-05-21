@@ -80,6 +80,13 @@ public class Sustenance implements IF_Event {
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("Sustenance");
-        str2.append("pP:" + prestigePoints);
+        str2.append("pP:").append(prestigePoints);
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This is a Sustenance Event Card: when resolved, each player must pay 1 food for each Character in player's tribe")
+                .append("\nIf player's food is not enough, he loses ").append(prestigePoints)
+                .append("for each Character remaining.").toString();
     }
 }

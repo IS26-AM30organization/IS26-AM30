@@ -60,4 +60,6 @@ public abstract class Card implements Serializable {
      * Each parameter holds a different kind of info based on the card type.
      */
     public void createRow(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {}
+
+    abstract public String getCardInfo(StringBuilder info);
 }

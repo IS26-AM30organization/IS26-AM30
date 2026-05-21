@@ -70,6 +70,11 @@ public class EventCard extends Card {
     }
 
     @Override
+    public String getCardInfo(StringBuilder info) {
+        return event.getCardInfo(info);
+    }
+
+    @Override
     public String getArt(){
         return event.getArt();
     }

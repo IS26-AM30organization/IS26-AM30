@@ -4,10 +4,6 @@ import mesos.am30.common.TColors;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.board.Board;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 public class CharacterCard extends Card {
     private final Parameter role;
     private final Integer value;
@@ -54,7 +50,6 @@ public class CharacterCard extends Card {
         String r = role + " " + "\u265F";
         StringBuilder i = new StringBuilder();
 
-
         if (value != 0) {
             valueToItem(i);
             i.append(value);
@@ -64,10 +59,10 @@ public class CharacterCard extends Card {
 
         //need to take the longest word
         int maxWidth = TColors.getVisibleLength(r);
-        if (i.length() > maxWidth) {
+        if (TColors.getVisibleLength(i) > maxWidth) {
             maxWidth = TColors.getVisibleLength(i);
         }
-        if (pp.length() > maxWidth) {
+        if (TColors.getVisibleLength(pp) > maxWidth) {
             maxWidth = TColors.getVisibleLength(pp);
         }
         maxWidth += 5;
@@ -103,5 +98,11 @@ public class CharacterCard extends Card {
             case ARTIST -> {}
             default -> str1.append("ITEM:");
         }
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("Character")
+                .toString();
     }
 }

@@ -224,22 +224,10 @@ public abstract class VirtualView implements IF_GameView {
      */
     public void createLobby(int playersNumber, String lobbyCode) throws IOException {
         this.playersNumber = playersNumber;
-
         if (lobbyCode == null || lobbyCode.isEmpty()) {
             this.lobbyCode = "";
         }
-        else {
-            String code = lobbyCode;
-
-            if (code.length() > 6) {
-                code = code.substring(0, 6);
-            }
-            else if (code.length() < 6) {
-                code = code + "0".repeat(6 - code.length());
-            }
-
-            this.lobbyCode = code;
-        }
+        else this.lobbyCode = lobbyCodePadded(lobbyCode);
 
         toServer(Choice.CREATE_LOBBY, this.lobbyCode, playersNumber);
     }
@@ -271,8 +259,8 @@ public abstract class VirtualView implements IF_GameView {
      * @throws IOException The connection cannot be established correctly.
      */
     public void joinLobby(String lobbyCode) throws IOException{
-        this.lobbyCode = lobbyCode;
-        toServer(Choice.JOIN_LOBBY, lobbyCode, null);
+        this.lobbyCode = lobbyCodePadded(lobbyCode);
+        toServer(Choice.JOIN_LOBBY, this.lobbyCode, null);
     }
 
     /**
@@ -375,4 +363,17 @@ public abstract class VirtualView implements IF_GameView {
      */
     @Override
     public void ping() throws IOException { /* heartbeat */ }
+
+    private String lobbyCodePadded (String lobbyCode){
+        String code = lobbyCode;
+
+        if (code.length() > 6) {
+            code = code.substring(0, 6);
+        }
+        else if (code.length() < 6) {
+            code = code + "0".repeat(6 - code.length());
+        }
+
+        return code;
+    }
 }

@@ -71,9 +71,16 @@ public class CavePaintings implements IF_Event {
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("Paint");
-        str2.append("artMin:" + artistMinimum);
-        str3.append("Lost: "+ lostPrestigePoints + " Gained: " + gainedPrestigePoints);
+        str2.append("PainterMin:").append(artistMinimum);
+        str3.append("pP.Lost:").append(lostPrestigePoints).append(" Gained:").append(gainedPrestigePoints);
+    }
 
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This is a Painting Event Card: when resolved, if the player has at least ")
+                .append(artistMinimum).append(" he gains ").append(gainedPrestigePoints)
+                .append(" pP, otherwise player loses ").append(lostPrestigePoints).append(" pP")
+                .toString();
     }
 
     @Override

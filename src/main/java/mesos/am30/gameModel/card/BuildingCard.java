@@ -7,8 +7,6 @@ import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.board.Board;
 
-import java.util.Objects;
-
 public class BuildingCard extends Card {
     private final IF_Event event;
     private final EventType eventType;
@@ -44,6 +42,11 @@ public class BuildingCard extends Card {
         return true;
     }
 
+    /**
+     * Checks whether a player has enough food to buy the building card
+     * @param player
+     * @return T if he can, F if he cannot
+     */
     public boolean canBeBought(Player player) {
         return player.getParameters().get(Parameter.FOOD)
                 + player.getParameters().get(Parameter.BUILDER) >= foodCost;
@@ -104,5 +107,9 @@ public class BuildingCard extends Card {
     @Override
     public String getArt(){
         return new String(ppGain+""+event.getArt()+""+foodCost);
+    }
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return event.getCardInfo(info);
     }
 }

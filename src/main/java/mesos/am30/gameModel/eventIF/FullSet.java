@@ -72,8 +72,15 @@ public class FullSet implements IF_Event {
 
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
-        str1.append("fullSet");
-        str3.append("food+" + foodGain);
+        str1.append("FullSet");
+        str3.append("foodGain:").append(foodGain);
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This Building gives ").append(foodGain)
+                .append(" food to its owner, once he collects a set of 6 unique Characters")
+                .toString();
     }
 }
 

@@ -47,7 +47,14 @@ public class DoubleInventions implements IF_Event {
 
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
-        str1.append("dblInv");
-        str2.append("food:" + foodGain);
+        str1.append("2Inventions");
+        str2.append("food:").append(foodGain);
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This Building gives ").append(foodGain)
+                .append(" food to its owner whe he acquires two inventions of the same type.")
+                .toString();
     }
 }
