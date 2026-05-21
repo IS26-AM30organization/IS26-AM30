@@ -1,6 +1,7 @@
 package mesos.am30.gameModel;
 
 import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
 
 import java.io.Serializable;
@@ -15,7 +16,7 @@ public class Player implements Serializable {
     private final Map<Parameter, Integer> parameters; /**Contains each parameter amount*/
     private final Map<Parameter, List<CharacterCard>> tribe; /**Contains character parameter + list of that type*/
     private final Set<Integer> inventions; /**Contains set of player's inventions*/
-    private final Set<BuildingCard> buildings;
+    private final List<BuildingCard> buildings;
     private final Set<SpecialBuff> specialBuffs;
 
     public Player(String nickname) {
@@ -23,7 +24,7 @@ public class Player implements Serializable {
         this.parameters = new HashMap<>();
         this.tribe = new HashMap<>();
         this.inventions = new HashSet<>(10);
-        this.buildings = new HashSet<>();
+        this.buildings = new ArrayList<>();
         this.specialBuffs = new HashSet<>();
 
         //Population both parameters and tribe Maps with default value (0) for each key
@@ -33,6 +34,8 @@ public class Player implements Serializable {
                 tribe.put(role, new ArrayList<>());
             }
         }
+
+        parameters.put(Parameter.FOOD,100);
     }
 
     public String getNickname() {
@@ -71,7 +74,7 @@ public class Player implements Serializable {
         return inventions;
     }
 
-    public Set<BuildingCard> getBuildings() {
+    public List<BuildingCard> getBuildings() {
         return buildings;
     }
 
@@ -179,37 +182,54 @@ public class Player implements Serializable {
     }
 
     /**
-     * It prints the entire tribe
+     *Invoked buy TUI to display player's tribe
      */
     public void displayTribe() {
+        List<Card> allCharacters = new ArrayList<>();
+        for (List<CharacterCard> roles : tribe.values()) {
+            allCharacters.addAll(roles);
+        }
+
+        createRows(allCharacters);
+        createRows(buildings);
+    }
+
+    /**
+     * Takes a Collection of Cards an adds their info to the corresponding StringBuilder
+     * @param cards either player's tribe or player's building;
+     */
+    private void createRows(List<? extends Card> cards) {
+        if (cards.isEmpty()) return;
+
         int i = 0;
-        int maxCardsXRow = 7;
+        int maxCardsXRow = 8;
 
         StringBuilder rowRoles = new StringBuilder();
         StringBuilder rowValue = new StringBuilder();
         StringBuilder rowPP = new StringBuilder();
-        for (List<CharacterCard> roles : tribe.values()) {
-            for (CharacterCard card : roles) {
-                card.createRow(rowRoles, rowValue, rowPP);
-                i++;
 
-                if (i == maxCardsXRow) {
-                    System.out.println(rowRoles);
-                    System.out.println(rowValue);
-                    System.out.println(rowPP);
-                    System.out.println();
+        for (Card card : cards) {
+            card.createRow(rowRoles, rowValue, rowPP);
+            i++;
 
-                    rowRoles.setLength(0);
-                    rowValue.setLength(0);
-                    rowPP.setLength(0);
-                    i = 0;
-                }
+            if (i == maxCardsXRow) {
+                System.out.println(rowRoles);
+                System.out.println(rowValue);
+                System.out.println(rowPP);
+                System.out.println();
+
+                rowRoles.setLength(0);
+                rowValue.setLength(0);
+                rowPP.setLength(0);
+                i = 0;
             }
         }
+
         if (i > 0) {
             System.out.println(rowRoles);
             System.out.println(rowValue);
             System.out.println(rowPP);
+            System.out.println();
         }
     }
 

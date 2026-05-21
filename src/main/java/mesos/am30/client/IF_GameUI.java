@@ -31,4 +31,5 @@ public interface IF_GameUI {
     void printEnd();
 
     void setvView(VirtualView view);
+    void setvModel(ViewModel vBoard);
 }

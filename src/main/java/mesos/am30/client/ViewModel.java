@@ -42,10 +42,10 @@ public class ViewModel {
 
     /**
      * Getter for the attribute "players".
-     *
+     * Synchronized to allow UI to show player's tribe correctly
      * @return List of all Players
      */
-    public List<Player> getPlayers() {
+    synchronized public List<Player> getPlayers() {
         return players;
     }
 
@@ -53,10 +53,10 @@ public class ViewModel {
      * Setter for the attribute "players".
      * <br><strong>Pre:</strong> players != null
      * <br><strong>Post:</strong> this.players == players
-     *
+     * Synchronized to allow UI to show player's tribe correctly
      * @param players Updated players
      */
-    public void setPlayers(List<Player> players) {
+    synchronized public void setPlayers(List<Player> players) {
         this.players = players;
     }
 
