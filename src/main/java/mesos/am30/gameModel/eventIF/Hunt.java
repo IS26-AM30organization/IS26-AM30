@@ -62,6 +62,13 @@ public class Hunt implements IF_Event {
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("Hunt");
-        str2.append("pP:" + prestigePoints);
+        str2.append("pP:").append(prestigePoints);
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This is a Painting Event Card: when resolved, the player receives 1 food and ").append(prestigePoints)
+                .append(" pP for each Hunter in player's tribe")
+                .toString();
     }
 }

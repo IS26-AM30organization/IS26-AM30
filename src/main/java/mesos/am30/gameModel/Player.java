@@ -16,7 +16,7 @@ public class Player implements Serializable {
     private final Map<Parameter, Integer> parameters; /**Contains each parameter amount*/
     private final Map<Parameter, List<CharacterCard>> tribe; /**Contains character parameter + list of that type*/
     private final Set<Integer> inventions; /**Contains set of player's inventions*/
-    private final List<BuildingCard> buildings;
+    private final Set<BuildingCard> buildings;
     private final Set<SpecialBuff> specialBuffs;
 
     public Player(String nickname) {
@@ -24,7 +24,7 @@ public class Player implements Serializable {
         this.parameters = new HashMap<>();
         this.tribe = new HashMap<>();
         this.inventions = new HashSet<>(10);
-        this.buildings = new ArrayList<>();
+        this.buildings = new HashSet<>();
         this.specialBuffs = new HashSet<>();
 
         //Population both parameters and tribe Maps with default value (0) for each key
@@ -34,8 +34,6 @@ public class Player implements Serializable {
                 tribe.put(role, new ArrayList<>());
             }
         }
-
-        parameters.put(Parameter.FOOD,100);
     }
 
     public String getNickname() {
@@ -74,7 +72,7 @@ public class Player implements Serializable {
         return inventions;
     }
 
-    public List<BuildingCard> getBuildings() {
+    public Set<BuildingCard> getBuildings() {
         return buildings;
     }
 
@@ -195,10 +193,20 @@ public class Player implements Serializable {
     }
 
     /**
+     * It prints the player's food, pPoints and Unique Inventions
+     */
+    public void displayStats() {
+        int food = parameters.get(Parameter.FOOD);
+        int prestigePoints = parameters.get(Parameter.PRESTIGE_POINTS);
+        System.out.printf("\033[31m" + "Food: %d, " + "\033[0m" + "\033[33m" + "pPoints: %d\n" + "\033[0m", food, prestigePoints);
+        if (inventions != null) System.out.printf("Inventions: %s", inventions.toString());
+    }
+
+    /**
      * Takes a Collection of Cards an adds their info to the corresponding StringBuilder
      * @param cards either player's tribe or player's building;
      */
-    private void createRows(List<? extends Card> cards) {
+    private void createRows(Collection<? extends Card> cards) {
         if (cards.isEmpty()) return;
 
         int i = 0;
@@ -231,15 +239,5 @@ public class Player implements Serializable {
             System.out.println(rowPP);
             System.out.println();
         }
-    }
-
-    /**
-     * It prints the player's food, pPoints and Unique Inventions
-     */
-    public void displayStats() {
-        int food = parameters.get(Parameter.FOOD);
-        int prestigePoints = parameters.get(Parameter.PRESTIGE_POINTS);
-        System.out.printf("\033[31m" + "Food: %d, " + "\033[0m" + "\033[33m" + "pPoints: %d\n" + "\033[0m", food, prestigePoints);
-        if (inventions != null) System.out.printf("Inventions: %s", inventions.toString());
     }
 }

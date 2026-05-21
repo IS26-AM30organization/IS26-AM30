@@ -126,7 +126,7 @@ class PlayerTest {
         p.addCharacter(card1);
         p.displayTribe();
 
-        verify(streamMock, times(9)).println(Optional.ofNullable(any()));
+        verify(streamMock, times(6)).println(Optional.ofNullable(any()));
     }
 
     @Test

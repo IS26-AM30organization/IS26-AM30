@@ -8,13 +8,13 @@ import mesos.am30.gameModel.Player;
 public class StatsBoost implements IF_Event {
     private final EventType type;
     private final int food;
-    private final Integer prestigePoints = 0;
-    private Parameter role;
+    private final Integer prestigePoints;
+    private final Parameter role;
     private int alreadyDiscounted = 0;
 
     public StatsBoost(int food, int prestigePoints, Parameter role, EventType type) {
         this.food = food;
-        //this.prestigePoints = prestigePoints;
+        this.prestigePoints = prestigePoints;
         this.role= role;
         this.type = type;
     }
@@ -48,8 +48,16 @@ public class StatsBoost implements IF_Event {
 
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
-        str1.append("statsBoost");
-        str2.append("Event: " + type);
-        str3.append("food: "+ food).append("tribeRole: " + role);
+        str1.append("EventBonus");
+        str2.append("Event:").append(type);
+        str3.append("food:").append(food).append(" Role:").append(role);
     }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This Building gives ").append(food).append(" food and ").append(prestigePoints)
+                .append(" pP for each ").append(role).append(" in owner's tribe, during ").append(type)
+                .append(" event.").toString();
+    }
+
 }

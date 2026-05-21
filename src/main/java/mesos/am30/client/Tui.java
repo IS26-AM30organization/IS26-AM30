@@ -65,6 +65,7 @@ public class Tui implements IF_GameUI {
                 case LOBBY -> { //LOBBY Phase: inserting a valid name
                     try {
                         if (!plAction[0].isBlank()) vView.answerNickname(plAction[0]);
+						else askNickname();
                     } catch (IOException e) {
                         printMessage("[ERROR]: error on transmitting player's Nickname.");
                     }
@@ -96,7 +97,7 @@ public class Tui implements IF_GameUI {
 	 */
 	public void printMove(String nickname, Move move) {
 		boardRender();
-		printSysMessage("\033[1;36m" + "[System]: Player " + "\033[1;33m" + nickname + "\033[0m" + " has " + move + "\033[0m");
+		printSysMessage(TColors.CYAN_B + "[System]: Player " + TColors.YELLOW + nickname + TColors.RESET + " has " + move + TColors.RESET);
 
 		if (isMatchRunning) return;
 		isMatchRunning = true;
@@ -106,7 +107,7 @@ public class Tui implements IF_GameUI {
 	 * Handles end-game screen
 	 */
 	public void printEnd() {
-		printMessage("Game is ended - Thank you for playing\n Press 'enter' to close.");
+		printMessage(TColors.GREEN + "Game is ended - Thank you for playing." + TColors.RESET);
 		gPhase = END;
 
 		clientExecutor.shutdown();
@@ -123,7 +124,7 @@ public class Tui implements IF_GameUI {
 	 * if the wrong nickname was inserted, client gets prompted again
 	 */
     public void printError(ErrorType errorMessage) {
-        printMessage("\033[1;31m" + "[Error]: " + errorMessage + "\033[0m");
+        printMessage(TColors.RED_B + "[Error]: " + errorMessage + TColors.RESET);
 
         switch (errorMessage) {
             case WRONG_PLAYERS_NUMBER -> printMessage("Type: create #plNum, to create a lobby.");
@@ -151,7 +152,7 @@ public class Tui implements IF_GameUI {
 
 	@Override
 	public void confirmConnection() {
-		printSysMessage("[System]: Connected! Type -h or -help to show available commands at anytime." + "\033[0m");
+		printSysMessage(TColors.GREEN_B + "[System]: Connected! Type -h or -help to show available commands at anytime." + TColors.RESET);
 		gPhase = GamePhase.MENU;
 		startCLient();
 	}
@@ -176,22 +177,22 @@ public class Tui implements IF_GameUI {
 	 * Returns the wanted Card, if existing
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
-	private CharacterCard wantedCCard(Move move, int cIndex) throws IndexOutOfBoundsException {
+	private CharacterCard wantedCCard(Card card) {
+		if (!card.isPickable())
+			throw new IndexOutOfBoundsException("Card is not a Character.");
+		return (CharacterCard) card;
+	}
+
+	private Card wantedCard(Move move,int cIndex) throws IOException {
 		switch (move) {
 			case PICK_FROM_UP -> {
-				Card selectedCard = vBoard.getUpperRow().get(cIndex);
-				if (!vBoard.getUpperRow().get(cIndex).isPickable())
-					throw new IndexOutOfBoundsException("Card is not a Character.");
-				return (CharacterCard) selectedCard;
+				return vBoard.getUpperRow().get(cIndex);
 			}
 			case PICK_FROM_DOWN -> {
-				Card selectedCard = vBoard.getLowerRow().get(cIndex);
-				if (!vBoard.getLowerRow().get(cIndex).isPickable())
-					throw new IndexOutOfBoundsException("Card is not a Character.");
-				return (CharacterCard) selectedCard;
+				return vBoard.getLowerRow().get(cIndex);
 			}
 			default -> {
-				return null;
+				 throw new IOException("Unknown Move");
 			}
 		}
 	}
@@ -286,7 +287,7 @@ public class Tui implements IF_GameUI {
 				switch (cmdSize) {
 					case 1 -> {}
 					case 2 -> {
-						if (!action.equals("display"))
+						if (!action.equals("show"))
 							cIndex = parseInt(plAction[1]);
 					}
 					case 3 -> {
@@ -298,12 +299,16 @@ public class Tui implements IF_GameUI {
 
 				switch (action) {
 					case "-h", "-help" -> showGameCommands();
-					case "display" -> displayChosenPlayer(plAction[1]);
-					case "tile" -> vView.checkTile(wantedTile(cIndex));
-					case "draw up" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_UP, cIndex));
-					case "draw down" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_DOWN, cIndex));
-					case "buy up" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_UP, cIndex));
-					case "buy down" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_DOWN, cIndex));
+					case "show" -> displayChosenPlayer(plAction[1]);
+					case "tile", "t" -> vView.checkTile(wantedTile(cIndex));
+					case "draw up", "d u" -> vView.checkCharacterCard(wantedCCard(wantedCard(Move.PICK_FROM_UP, cIndex)));
+					case "draw down", "d d" -> vView.checkCharacterCard(wantedCCard(wantedCard(Move.PICK_FROM_DOWN, cIndex)));
+					case "buy up", "b u" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_UP, cIndex));
+					case "buy down", "b d" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_DOWN, cIndex));
+					case "info cup", "i cu" -> printMessage(TColors.GOLD + (wantedCard(Move.PICK_FROM_UP, cIndex).getCardInfo(new StringBuilder())) + TColors.RESET);
+					case "info cdown", "i cd" -> printMessage(TColors.GOLD + wantedCard(Move.PICK_FROM_DOWN, cIndex).getCardInfo(new StringBuilder()) + TColors.RESET);
+					case "info bup", "i bu" -> printMessage(TColors.BROWN + wantedBuild(Move.PICK_FROM_UP, cIndex).getCardInfo(new StringBuilder()) + TColors.RESET);
+					case "info bdown", "i bd" -> printMessage(TColors.BROWN + wantedBuild(Move.PICK_FROM_DOWN, cIndex).getCardInfo(new StringBuilder()) + TColors.RESET);
 					default -> printMessage("Invalid Command, type -h or -help to show all available commands.");
 				}
 			} catch (NumberFormatException | IndexOutOfBoundsException e) {
@@ -323,7 +328,7 @@ public class Tui implements IF_GameUI {
 	 */
 	private void printMessage(String message) {
 		synchronized (tuiLock) {
-			System.out.println("\033[1;31m" + message + "\033[0m");
+			System.out.println(TColors.RED + message + TColors.RESET);
 			System.out.print("cmd > ");
 			System.out.flush();
 		}
@@ -335,7 +340,7 @@ public class Tui implements IF_GameUI {
 	 */
 	private void printSysMessage(String message) {
 		synchronized (tuiLock) {
-			System.out.println("\033[1;32m" + message + "\033[0m");
+			System.out.println(TColors.GREEN_B + message + TColors.RESET);
 			System.out.print("cmd > ");
 			System.out.flush();
 		}
@@ -345,27 +350,28 @@ public class Tui implements IF_GameUI {
 	 * Prints a list of all available commands
 	 */
 	private void showGameCommands() {
-		printMessage("\033[1;36m" + """
-				tile #num -> chose a Tile 
-				draw up #num -> draw a Card 
-				draw down #num-> draw a Card 
-				buy up #num -> buy a Building 
-				buy down #num -> chose a Building 
-				display #plName -> shows tribe of player
-				-h or -help #num -> to show available commands 
-				""" + "\033[0m");
+		printMessage(TColors.CYAN_B + """
+				tile #num -> chose a Tile (t)\s
+				draw up #num -> draw a Card (d u)\s
+				draw down #num-> draw a Card (d d\s
+				buy up #num -> buy a Building (b u)\s
+				buy down #num -> chose a Building (b d)\s
+				show #plName -> shows tribe of player 
+				info cUp/cDown/bUp/bDown #num -> shows info on selected card (i cu/cd/bu/bd)
+				-h or -help #num -> to show available commands\s
+			\t""" + TColors.RESET);
 	}
 
 	/**
 	 * Prints a list of all available commands
 	 */
 	private void showMenuCommands() {
-		printMessage("\033[1;36m" + """
-				list -> shows available lobbies 
+		printMessage(TColors.CYAN + """
+				list -> shows available lobbies\s
 				create #plNum #code -> creates a lobby with chosen parameters
-				join #code-> join #code lobby 
-				-h or -help #num -> to show available commands 
-				""" + "\033[0m");
+				join #code-> join #code lobby\s
+				-h or -help #num -> to show available commands\s
+			\t""" + TColors.RESET);
 	}
 
 	/**
@@ -408,22 +414,22 @@ public class Tui implements IF_GameUI {
 			displayPlayer(p);
 			System.out.println("\n");
 		}
-		System.out.println("\n\n");
+		System.out.println("\n");
 
-		System.out.println("\033[1;32m" + "\n\n--- UPPER-ROW --------------" + "\033[0m");
+		System.out.println(TColors.GREEN_B + "\n\n--- UPPER-ROW --------------" + TColors.RESET);
 		displayRows(upRow);
 
-		System.out.println("\033[1;33m" + "--- UPPER-BUILDS -----------" + "\033[0m");
+		System.out.println(TColors.YELLOW_B + "--- UPPER-BUILDS -----------" + TColors.RESET);
 		displayBuilds(upBuild);
 
-		System.out.println("\033[1;34m" + "\n--- TILES ------------------" + "\033[0m");
+		System.out.println(TColors.BLUE_B + "\n--- TILES ------------------" + TColors.RESET);
 		displayTiles(tiles);
-        System.out.println("\033[1;34m" + "----------------------------" + "\033[0m");
+        System.out.println(TColors.BLUE_B + "----------------------------" + TColors.RESET);
 
-		System.out.println("\033[1;32m" + "\n--- LOWER-ROW --------------" + "\033[0m");
+		System.out.println(TColors.GREEN_B + "\n--- LOWER-ROW --------------" + TColors.RESET);
 		displayRows(loRow);
 
-		System.out.println("\033[1;33m" + "--- LOWER-BUILDS -----------" + "\033[0m");
+		System.out.println(TColors.YELLOW_B + "--- LOWER-BUILDS -----------" + TColors.RESET);
 		displayBuilds(loBuild);
 
 		Player crntPlayer = vBoard.getCurrentUser();
@@ -520,7 +526,7 @@ public class Tui implements IF_GameUI {
 	 * Displays player's info
 	 */
 	private void displayPlayer(Player p) {
-        System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
+        System.out.println(TColors.GREEN_B + "\n--- TRIBE OF " + TColors.CYAN_B + p.getNickname() + TColors.GREEN_B + " ---" + TColors.RESET);
 		p.displayTribe();
 		p.displayStats();
 	}

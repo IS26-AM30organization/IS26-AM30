@@ -117,8 +117,16 @@ public class ShamanicRitual implements IF_Event {
 
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
-        str1.append("Shamanic");
-        str2.append("Lost: " + lostPrestigePoints);
-        str3.append("Gained: " + gainedPrestigePoints);
+        str1.append("ShamanicRite");
+        str2.append("+pP:").append(gainedPrestigePoints);
+        str3.append("-pP:").append(lostPrestigePoints);
+
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This is a ShamanicRitual Event Card: when resolved, the player with the most amount of starts gains")
+                .append(gainedPrestigePoints).append(" pP, the one with the least amount loses ")
+                .append(lostPrestigePoints).append("pP").toString();
     }
 }

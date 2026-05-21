@@ -20,7 +20,7 @@ public class FinalBoost implements IF_Event {
 
     @Override
     public void handleEvent(Player player) {
-        int tot= nCharacter(player) * multiplier;
+        int tot = nCharacter(player) * multiplier;
         player.updateStats(Parameter.PRESTIGE_POINTS,tot);
     }
     private int nCharacter (Player player){ //return how many character of the same type of the target has the player
@@ -30,8 +30,15 @@ public class FinalBoost implements IF_Event {
 
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
-        str1.append("fnlBoost");
-        str3.append("Role:" + target).append("x" + multiplier);
+        str1.append("RoleMultiplier");
+        str3.append("Role:").append(target).append("x").append(multiplier);
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This Building gives x").append(multiplier).append(" pP for #").append(target)
+                .append(" Characters once the game has ende.")
+                .toString();
     }
     @Override
     public String getArt(){

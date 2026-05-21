@@ -66,4 +66,9 @@ public class ShamanBoost implements IF_Event {
         str1.append("shmnBoost");
         str3.append("pP: " + eventPrestigePoints);
     }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("IDK").toString();
+    }
 }

@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,9 +29,16 @@ class TuiTest {
     void setUp() {
         streamOut = new ByteArrayOutputStream(); //different output stream must be used
         System.setOut(new PrintStream(streamOut));
-
         tui = new Tui();
-        tui.refresh(vBoard); //needed to reset tui with vBoard mock
+
+        lenient().when(vBoard.getUpperRow()).thenReturn(new ArrayList<>());
+        lenient().when(vBoard.getUpperBuildings()).thenReturn(new ArrayList<>());
+        lenient().when(vBoard.getLowerRow()).thenReturn(new ArrayList<>());
+        lenient().when(vBoard.getLowerBuildings()).thenReturn(new ArrayList<>());
+        lenient().when(vBoard.getTiles()).thenReturn(new ArrayList<>());
+        lenient().when(vBoard.getPlayers()).thenReturn(new ArrayList<>());
+
+        tui.setvModel(vBoard); //needed to reset tui with vBoard mock
     }
 
     @AfterEach
