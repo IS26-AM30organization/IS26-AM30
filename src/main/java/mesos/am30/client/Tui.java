@@ -11,10 +11,7 @@ import mesos.am30.common.GamePhase;
 import mesos.am30.common.Move;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,6 +24,7 @@ import static mesos.am30.common.GamePhase.*;
 public class Tui implements IF_GameUI {
 	ViewModel vBoard;
 	VirtualView vView;
+	private int[] tileBoost;
 
 	private final ExecutorService clientExecutor = Executors.newFixedThreadPool(1);
 	volatile GamePhase gPhase;
@@ -108,6 +106,7 @@ public class Tui implements IF_GameUI {
 	 */
 	public void printEnd() {
 		printMessage(TColors.GREEN + "Game is ended - Thank you for playing." + TColors.RESET);
+		displayScoreboard();
 		gPhase = END;
 
 		clientExecutor.shutdown();
@@ -416,6 +415,9 @@ public class Tui implements IF_GameUI {
 		}
 		System.out.println("\n");
 
+		if (tileBoost == null) decideTileBoost();
+		displayTileBoost();
+
 		System.out.println(TColors.GREEN_B + "\n\n--- UPPER-ROW --------------" + TColors.RESET);
 		displayRows(upRow);
 
@@ -545,6 +547,35 @@ public class Tui implements IF_GameUI {
 		printMessage("\n[ERROR]: player does not exists.");
 	}
 
+	private void displayScoreboard() {
+		int i = 0;
+		StringBuilder score = new StringBuilder();
+		List<Player> finalPlayerList = vBoard.getPlayers().stream().
+				sorted(Comparator.comparing(p -> p.getParameters().get(Parameter.PRESTIGE_POINTS))).toList();
+
+		for(Player p : finalPlayerList) {
+			i++;
+			printMessage(score.append(i).append("° ").append(p.getNickname()).toString());
+		}
+	}
+
+	private void decideTileBoost() {
+		tileBoost = switch(vBoard.getPlayers().size()){
+			case 2 -> new int[]{1,-1};
+			case 3 -> new int[]{2,0,-1};
+			case 4 -> new int[]{2,1,0,-1};
+			case 5 -> new int[]{3,1,0,0,-1};
+			default -> new int[]{};
+		};
+	}
+
+	private void displayTileBoost() {
+		System.out.println(TColors.YELLOW + "\n\n--- FOOD TILES --------------" + TColors.RESET);
+		for (int j = 0; j < tileBoost.length; j++) {
+            System.out.println(TColors.ORANGE + "Tile: " + tileBoost[j] + (tileBoost[j]>0 ? " Food" : (tileBoost[j]<0 ? " pP" : "")) + TColors.RESET);
+        }
+
+	}
 }
 
 
