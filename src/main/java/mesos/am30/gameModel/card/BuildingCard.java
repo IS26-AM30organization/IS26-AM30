@@ -53,23 +53,11 @@ public class BuildingCard extends Card {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        BuildingCard that = (BuildingCard) o;
-        return foodCost == that.foodCost && ppGain == that.ppGain && Objects.equals(event, that.event) && eventType == that.eventType;
-    }
-
-    @Override
     public void discard(Board board) {
         if(board.getLowerBuildings().contains(this))
             board.getLowerBuildings().remove(this);
         else if (board.getUpperBuildings().contains(this))
             board.getUpperBuildings().remove(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(event, eventType, foodCost, ppGain);
     }
 
     @Override

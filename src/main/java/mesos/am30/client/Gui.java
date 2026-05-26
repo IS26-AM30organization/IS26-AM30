@@ -12,6 +12,7 @@ import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class Gui extends Application implements IF_GameUI {
     VirtualView vView;
@@ -69,11 +70,6 @@ public class Gui extends Application implements IF_GameUI {
         little.show();
     }
 
-    @Override
-    public void askPlayersNumber() {
-        menu.askPlayersNumber();
-    }
-
     public void ready() {
         ready = true;
         notifyAll();
@@ -82,6 +78,32 @@ public class Gui extends Application implements IF_GameUI {
     @Override
     public void askNickname() {
         menu.askNickname();
+    }
+
+    /**
+     * Shows the available lobbies the User can join
+     *
+     * @param availableLobbies map of lobby codes to their current number of players
+     */
+    @Override
+    public void showLobbies(Map<String, Integer> availableLobbies) {
+
+    }
+
+    /**
+     * Notifies the User that the connection to the Server has been established
+     */
+    @Override
+    public void confirmConnection() {
+
+    }
+
+    /**
+     * Notifies the User that they have successfully joined the lobby
+     */
+    @Override
+    public void confirmLobbyJoined() {
+
     }
 
     @Override
@@ -114,6 +136,16 @@ public class Gui extends Application implements IF_GameUI {
     @Override
     public void printEnd() {
         game.printEnd();
+    }
+
+    @Override
+    public void setvView(VirtualView view) {
+
+    }
+
+    @Override
+    public void setvModel(ViewModel vBoard) {
+
     }
 
     public void setStage(Stage stagee) {
