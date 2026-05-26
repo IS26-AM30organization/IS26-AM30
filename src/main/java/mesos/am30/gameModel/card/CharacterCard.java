@@ -84,6 +84,16 @@ public class CharacterCard extends Card {
         for (int x = pp.length(); x < maxWidth; x++) rowPP.append(" ");
     }
 
+    @Override
+    public String getArt(){
+        return new String(role.name().toLowerCase().charAt(0) + (id % 2 == 0 ? "f" : "m"));
+    }
+
+    @Override
+    public String getFrame(){
+        return new String(prestigePoints+""+role.name().toLowerCase().charAt(0)+""+(value<0 ? value*(-1) : value));
+    }
+
     /**
      * Based on the card's role, the item must be specified to be displayed on terminal
      */

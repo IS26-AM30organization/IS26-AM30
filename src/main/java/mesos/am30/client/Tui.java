@@ -66,28 +66,29 @@ public class Tui implements IF_GameUI {
 	/**
 	 * @return nickname inserted after server's invoice
 	 */
-	public String askNickname() {
+	public void askNickname() {
 		synchronized (tuiLock) {
 			System.out.print("Inserisci nickname > ");
 			System.out.flush();
 		}
-		return actionScanner.nextLine();
+        vView.answerNickname(actionScanner.nextLine());
 	}
 
 	/**
 	 * @return playerNumber inserted after server's invoice
 	 */
 	@Override
-	public int askPlayersNumber() {
+	public void askPlayersNumber() {
 		synchronized (tuiLock) {
 			System.out.print("Inserisci playerNum > ");
 			System.out.flush();
 		}
 		try {
-			return Integer.parseInt(actionScanner.nextLine());
+			vView.answerPlayersNumber(Integer.parseInt(actionScanner.nextLine()));
 		} catch (NumberFormatException e) {
 			printMessage("[ERROR]: invalid");
-			return 0;
+            vView.answerPlayersNumber(0);
+			return;
 		}
 	}
 

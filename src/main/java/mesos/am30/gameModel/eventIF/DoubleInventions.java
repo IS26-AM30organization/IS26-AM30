@@ -41,6 +41,11 @@ public class DoubleInventions implements IF_Event {
     }
 
     @Override
+    public String getArt(){
+        return new String("di");
+    }
+
+    @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("dblInv");
         str2.append("food:" + foodGain);

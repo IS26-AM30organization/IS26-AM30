@@ -39,6 +39,14 @@ public abstract class Card implements Serializable {
         return false;
     }
 
+    public String getArt() {
+        return "";
+    }
+
+    public String getFrame() {
+        return "";
+    }
+
     public void drawUp(Board board){}
 
     public void drawDown(Board board){}

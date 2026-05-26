@@ -66,4 +66,9 @@ public class EventCard extends Card {
         ln3.append(str3);
         for (int x = str3.length(); x < maxWidth; x++) ln3.append(" ");
     }
+
+    @Override
+    public String getArt(){
+        return event.getArt();
+    }
 }

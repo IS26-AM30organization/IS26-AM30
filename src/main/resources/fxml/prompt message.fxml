@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="68.0" prefWidth="496.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox alignment="CENTER" prefHeight="68.0" prefWidth="496.0">
+         <children>
+            <Label fx:id="request" text="You're the first one! How many players for this match?  " />
+            <TextField fx:id="number" onAction="#setNumber">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </TextField>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

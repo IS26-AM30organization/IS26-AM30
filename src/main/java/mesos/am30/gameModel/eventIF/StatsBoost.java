@@ -9,13 +9,13 @@ public class StatsBoost implements IF_Event {
     private final EventType type;
     private final int food;
     private final Integer prestigePoints = 0;
-    private Parameter tribeType;
+    private Parameter role;
     private int alreadyDiscounted = 0;
 
     public StatsBoost(int food, int prestigePoints, Parameter role, EventType type) {
         this.food = food;
         //this.prestigePoints = prestigePoints;
-        this.tribeType= role;
+        this.role= role;
         this.type = type;
     }
     public StatsBoost(int food, Parameter role, EventType type) {
@@ -23,7 +23,7 @@ public class StatsBoost implements IF_Event {
     }
 
     public Parameter getRole() {
-        return tribeType;
+        return role;
     }
     public EventType getType() {
         return type;
@@ -32,7 +32,7 @@ public class StatsBoost implements IF_Event {
     @Override
     public void handleEvent(Player player) {
         //player's parameters contains 'discounted' statistics; if counted for a previous Event, only additional character must be considered
-        int multiplier = player.getCharacterType(tribeType).size() - alreadyDiscounted;
+        int multiplier = player.getCharacterType(role).size() - alreadyDiscounted;
         alreadyDiscounted = alreadyDiscounted + multiplier;
 
         if (food!=0 && multiplier!=0) player.updateStats(Parameter.FOOD, food*multiplier);
@@ -42,9 +42,14 @@ public class StatsBoost implements IF_Event {
     }
 
     @Override
+    public String getArt(){
+        return new String(role.name().toLowerCase().charAt(0)+"s");
+    }
+
+    @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("statsBoost");
         str2.append("Event: " + type);
-        str3.append("food: "+ food).append("tribeRole: " + tribeType);
+        str3.append("food: "+ food).append("tribeRole: " + role);
     }
 }

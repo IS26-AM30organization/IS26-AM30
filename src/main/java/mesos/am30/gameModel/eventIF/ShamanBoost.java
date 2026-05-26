@@ -57,6 +57,11 @@ public class ShamanBoost implements IF_Event {
     }
 
     @Override
+    public String getArt(){
+        return new String("s"+(firstOrLast ? "2" : "0")+"b");
+    }
+
+    @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("shmnBoost");
         str3.append("pP: " + eventPrestigePoints);

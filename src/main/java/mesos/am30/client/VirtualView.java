@@ -1,10 +1,7 @@
 package mesos.am30.client;
 
 import mesos.am30.gameModel.*;
-import mesos.am30.gameModel.card.BuildingCard;
-import mesos.am30.gameModel.card.Card;
-import mesos.am30.gameModel.card.CharacterCard;
-import mesos.am30.gameModel.card.Tile;
+import mesos.am30.gameModel.card.*;
 import mesos.am30.common.Choice;
 import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
@@ -88,7 +85,10 @@ public abstract class VirtualView implements IF_GameView {
                 model.setDefault();
                 toController(Choice.CHOOSE_TILE, choice);
             } else notifyError(ErrorType.WRONG_TILE);
-        } else notifyError(ErrorType.NOT_YOUR_TURN);
+        } else {
+            notifyError(ErrorType.NOT_YOUR_TURN);
+            System.out.println("I'm " + nickname + " and " + model.getCurrentUser().getNickname() + " is current with " + model.getCurrentMove());
+        }
     }
 
     /**
@@ -112,7 +112,10 @@ public abstract class VirtualView implements IF_GameView {
                 model.setDefault();
                 toController(Choice.CHOOSE_CHARACTER, choice);
             } else notifyError(ErrorType.WRONG_CARD);
-        } else notifyError(ErrorType.NOT_YOUR_TURN);
+        } else {
+            notifyError(ErrorType.NOT_YOUR_TURN);
+            System.out.println(model.getCurrentUser().getNickname() + "is current with" + model.getCurrentMove());
+        }
     }
 
     // get the correct Character Cards
@@ -122,21 +125,21 @@ public abstract class VirtualView implements IF_GameView {
             // picked Character from upper/lower row
             case PICK_ANY_CARD -> {
                 List<Card> upperRow = model.getUpperRow().stream()
-                        .filter(Card::isPickable)
+                        .filter(card -> card instanceof CharacterCard)
                         .toList();
                 List<Card> lowerRow = model.getLowerRow().stream()
-                        .filter(Card::isPickable)
+                        .filter(card -> card instanceof CharacterCard)
                         .toList();
                 row = new ArrayList<>(upperRow);
                 row.addAll(lowerRow);
             }
             // picked Character from upper row
             case PICK_FROM_UP -> row = model.getUpperRow().stream()
-                    .filter(Card::isPickable)
+                    .filter(card -> card instanceof CharacterCard)
                     .toList();
             // picked Character from lower row
             case PICK_FROM_DOWN -> row = model.getLowerRow().stream()
-                    .filter(Card::isPickable)
+                    .filter(card -> card instanceof CharacterCard)
                     .toList();
         }
         return row;
@@ -165,7 +168,10 @@ public abstract class VirtualView implements IF_GameView {
                     toController(Choice.CHOOSE_BUILDING, choice);
                 } else notifyError(ErrorType.NOT_ENOUGH_FOOD);
             } else notifyError(ErrorType.WRONG_CARD);
-        } else notifyError(ErrorType.NOT_YOUR_TURN);
+        } else {
+            notifyError(ErrorType.NOT_YOUR_TURN);
+            System.out.println(model.getCurrentUser().getNickname() + "is current with" + model.getCurrentMove());
+        }
     }
 
     // get the correct Building Cards
@@ -192,8 +198,13 @@ public abstract class VirtualView implements IF_GameView {
      */
     @Override
     public synchronized void askPlayersNumber() throws IOException {
-        int playersNumber = userInterface.askPlayersNumber();
-        toController(Choice.PLAYERS_NUMBER, playersNumber);
+        userInterface.askPlayersNumber();
+    }
+
+    public synchronized void answerPlayersNumber(int playersNumber) {
+        try {            toController(Choice.PLAYERS_NUMBER, playersNumber); } catch (IOException e) {
+            return;
+        }
     }
 
     /**
@@ -201,8 +212,14 @@ public abstract class VirtualView implements IF_GameView {
      */
     @Override
     public synchronized void askNickname() throws IOException {
-        nickname = userInterface.askNickname();
-        toController(Choice.NICKNAME, nickname);
+        userInterface.askNickname();
+    }
+
+    public synchronized void answerNickname(String nickname) {
+        this.nickname = nickname;
+        try{ toController(Choice.NICKNAME, nickname); } catch (IOException e) {
+            return;
+        }
     }
 
     /**
