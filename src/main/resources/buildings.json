@@ -51,6 +51,7 @@
     "eventType":        "SUSTENANCE",
     "event": {
       "eventClass":     "StatsBoost",
+      "type":           "SUSTENANCE",
       "food":           1,
       "prestigePoints": 0,
       "role":           "GATHERER"
@@ -64,6 +65,7 @@
     "eventType":        "SUSTENANCE",
     "event": {
       "eventClass":     "StatsBoost",
+      "type":           "SUSTENANCE",
       "food":           1,
       "prestigePoints": 0,
       "role":           "ARTIST"
@@ -111,6 +113,7 @@
     "eventType":        "HUNT",
     "event": {
       "eventClass":     "StatsBoost",
+      "type":           "HUNT",
       "food":           1,
       "prestigePoints": 1,
       "role":           "HUNTER"
@@ -124,6 +127,7 @@
     "eventType":        "CAVE_PAINTINGS",
     "event": {
       "eventClass":     "StatsBoost",
+      "type":           "CAVE_PAINTINGS",
       "food":           1,
       "prestigePoints": 0,
       "role":           "ARTIST"
@@ -148,6 +152,7 @@
     "eventType":        "SUSTENANCE",
     "event": {
       "eventClass":     "StatsBoost",
+      "type":           "SUSTENANCE",
       "food":           1,
       "prestigePoints": 0,
       "role":           "INVENTOR"
@@ -243,8 +248,9 @@
     "ppGain":           0,
     "eventType":        "FINAL",
     "event": {
-      "eventClass":     "FinalPPBoost",
-      "ppGain":         25
+      "eventClass":     "OneTimeBoost",
+      "ppGain":         25,
+      "target":         "PRESTIGE_POINTS"
     }
   }
 ]

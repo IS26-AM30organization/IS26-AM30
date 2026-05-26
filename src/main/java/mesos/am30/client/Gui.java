@@ -5,6 +5,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import mesos.am30.client.gui.MenuGui;
+import mesos.am30.client.gui.TableGui;
+import mesos.am30.client.gui.TribeGui;
 import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
 
@@ -53,10 +56,14 @@ public class Gui extends Application implements IF_GameUI {
             big.setFullScreen(true);
         } catch (IOException e) {
             System.out.println("Error loading graphic interface");
+            e.printStackTrace();
         }
 
         game = loader.getController();
         game.setView(vView);
+        game.setStage(big);
+
+        TribeGui.set(table, table.getRoot());
 
         this.little = little;
         little.show();
@@ -106,7 +113,7 @@ public class Gui extends Application implements IF_GameUI {
 
     @Override
     public void printEnd() {
-
+        game.printEnd();
     }
 
     public void setStage(Stage stagee) {

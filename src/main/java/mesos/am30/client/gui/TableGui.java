@@ -1,4 +1,4 @@
-package mesos.am30.client;
+package mesos.am30.client.gui;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -8,10 +8,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import mesos.am30.client.ViewModel;
+import mesos.am30.client.VirtualView;
 import mesos.am30.common.Move;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
@@ -20,15 +23,16 @@ import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-public class TableGui extends Gui {
+import static java.util.stream.Collectors.toList;
+
+public class TableGui {
     ViewModel vBoard;
     String nickname;
     VirtualView vView;
+
+    @FXML    private AnchorPane gameTable;
 
     @FXML    private Button upper1;
     @FXML    private Button upper2;
@@ -63,6 +67,8 @@ public class TableGui extends Gui {
     @FXML    private Label eraLabel;
 
     @FXML    private HBox tiles;
+    @FXML    private VBox rows;
+    @FXML    private HBox playersRow;
 
     @FXML    private VBox player1;
     @FXML    private VBox player2;
@@ -154,14 +160,13 @@ public class TableGui extends Gui {
     @FXML    private HBox invlist3;
     @FXML    private HBox invlist4;
     @FXML    private HBox invlist5;
+    @FXML    private Button exitButton;
 
     private List<Button> uppers;
     private List<Button> lowers;
     private List<Button> upBs;
     private List<Button> downBs;
-    private HashMap<String, Image> arts;
-    private HashMap<String, Image> frames;
-    private HashMap<Player, String> colors;
+    public static HashMap<Player, String> colors;
     private VBox[] players;
     private Label[] pNames;
     private Label[] pPts;
@@ -181,15 +186,16 @@ public class TableGui extends Gui {
     private Label[] pHunts;
     private HBox[] pInvlists;
 
+    private TribeGui tribeController;
+    private Scene tribe;
+    private Stage big;
 
     @FXML
-    public void initialize(){
+    public void initialize() throws IOException {
         uppers = new ArrayList<>(List.of(upper1,upper2,upper3,upper4,upper5,upper6,upper7,upper8,upper9));
         lowers = new ArrayList<>(List.of(lower1,lower2,lower3,lower4,lower5,lower6,lower7,lower8,lower9));
         upBs = new ArrayList<>(List.of(upB1,upB2,upB3,upB4,upB5));
         downBs = new ArrayList<>(List.of(downB1,downB2,downB3,downB4,downB5));
-        arts = new HashMap<>();
-        frames = new HashMap<>();
         players = new VBox[]{player1, player2, player3, player4, player5};
         pNames = new Label[]{name1,name2,name3,name4,name5};
         pPts = new Label[]{pt1,pt2,pt3,pt4,pt5};
@@ -208,6 +214,12 @@ public class TableGui extends Gui {
         pHuntnums = new Label[]{huntnum1,huntnum2,huntnum3,huntnum4};
         pHunts = new Label[]{hunt1,hunt2,hunt3,hunt4,hunt5};
         pInvlists = new HBox[]{invlist1,invlist2,invlist3,invlist4, invlist5};
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/tribe.fxml"));
+        loader.load();
+        tribeController = loader.getController();
+
+        exitButton.setManaged(false);
     }
 
     public void setBoard(ViewModel vBoard) {
@@ -238,10 +250,10 @@ public class TableGui extends Gui {
                 uppers.get(i).setVisible(true);
                 uppers.get(i).setManaged(true);
                 Card card = vBoard.getUpperRow().get(i);
-                ((ImageView) ((StackPane) uppers.get(i).getGraphic()).getChildren().get(0)).setImage(loadArt(card));
+                ((ImageView) ((StackPane) uppers.get(i).getGraphic()).getChildren().get(0)).setImage(ImageLoader.loadArt(card));
                 if (card.isPickable()) {
                     ((StackPane) uppers.get(i).getGraphic()).getChildren().get(1).setVisible(true);
-                    ((ImageView) ((StackPane) uppers.get(i).getGraphic()).getChildren().get(1)).setImage(loadFrame(card));
+                    ((ImageView) ((StackPane) uppers.get(i).getGraphic()).getChildren().get(1)).setImage(ImageLoader.loadFrame(card));
                 } else
                     ((StackPane) uppers.get(i).getGraphic()).getChildren().get(1).setVisible(false);
             }
@@ -257,10 +269,10 @@ public class TableGui extends Gui {
                 lowers.get(i).setVisible(true);
                 lowers.get(i).setManaged(true);
                 Card card = vBoard.getLowerRow().get(i);
-                ((ImageView) ((StackPane) lowers.get(i).getGraphic()).getChildren().get(0)).setImage(loadArt(card));
+                ((ImageView) ((StackPane) lowers.get(i).getGraphic()).getChildren().get(0)).setImage(ImageLoader.loadArt(card));
                 if (card.isPickable()) {
                     ((StackPane) lowers.get(i).getGraphic()).getChildren().get(1).setVisible(true);
-                    ((ImageView) ((StackPane) lowers.get(i).getGraphic()).getChildren().get(1)).setImage(loadFrame(card));
+                    ((ImageView) ((StackPane) lowers.get(i).getGraphic()).getChildren().get(1)).setImage(ImageLoader.loadFrame(card));
                 } else
                     ((StackPane) lowers.get(i).getGraphic()).getChildren().get(1).setVisible(false);
             }
@@ -276,7 +288,7 @@ public class TableGui extends Gui {
                 upBs.get(i).setVisible(true);
                 upBs.get(i).setManaged(true);
                 BuildingCard card = vBoard.getUpperBuildings().get(i);
-                ((ImageView) ((StackPane) upBs.get(i).getGraphic()).getChildren().get(0)).setImage(loadArt(card));
+                ((ImageView) ((StackPane) upBs.get(i).getGraphic()).getChildren().get(0)).setImage(ImageLoader.loadArt(card));
                 ((StackPane) upBs.get(i).getGraphic()).getChildren().get(1).setVisible(false);
             }
         }
@@ -291,7 +303,7 @@ public class TableGui extends Gui {
                 downBs.get(i).setVisible(true);
                 downBs.get(i).setManaged(true);
                 BuildingCard card = vBoard.getLowerBuildings().get(i);
-                ((ImageView) ((StackPane) downBs.get(i).getGraphic()).getChildren().get(0)).setImage(loadArt(card));
+                ((ImageView) ((StackPane) downBs.get(i).getGraphic()).getChildren().get(0)).setImage(ImageLoader.loadArt(card));
                 ((StackPane) downBs.get(i).getGraphic()).getChildren().get(1).setVisible(false);
             }
         }
@@ -306,6 +318,7 @@ public class TableGui extends Gui {
         }
 
         //setting era
+        if (!vBoard.getUpperRow().isEmpty() && vBoard.getUpperRow().size()>0)
         eraLabel.setText("ERA " +
                 (switch (Math.max(vBoard.getUpperRow().getLast().getEra(), vBoard.getUpperRow().get(vBoard.getUpperRow().size() - 2).getEra())) {
                     default -> "0";
@@ -517,22 +530,49 @@ public class TableGui extends Gui {
         }
     }
 
-    private Image loadArt(Card card){
-        String art = card.getArt();
-        System.out.println(art);
-        if (!arts.containsKey(art))
-            arts.put(art,new Image(getClass().getResource("/images/"+ art + ".png").toExternalForm()));
+    @FXML
+    public void showTribe1() { showTribe(0);}
 
-            return arts.get(art);
-        }
+    @FXML
+    public void showTribe2() { showTribe(1);}
 
-    private Image loadFrame(Card card){
-        String frame = card.getFrame();
-        System.out.println(frame);
-        if(!frames.containsKey(frame))
-            frames.put(frame, new Image(getClass().getResource("/images/"+ frame + ".png").toExternalForm()));
+    @FXML
+    public void showTribe3() { showTribe(2);}
 
-        return frames.get(frame);
+    @FXML
+    public void showTribe4() { showTribe(3);}
+
+    @FXML
+    public void showTribe5() { showTribe(4);}
+
+    private void showTribe(int i) {tribeController.show(vBoard.getPlayers().get(i), i);}
+
+    public void setStage(Stage big){
+        this.big = big;
     }
 
+    public void printEnd(){
+        Platform.runLater(() -> {
+        rows.setVisible(false);
+        List<Player> finalPlayerList = vBoard.getPlayers().stream().
+                sorted(Comparator.comparing(p -> p.getParameters().get(Parameter.PRESTIGE_POINTS))).toList();
+        for(int i = 0; i < vBoard.getPlayers().size(); i++){
+            playersRow.getChildren().get(i).setStyle("-fx-translate-y: " + (-100-50*finalPlayerList.indexOf(vBoard.getPlayers().get(i))) + "; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #F15C3E; -fx-border-radius: 18; -fx-border-width: 2;");
+        }
+        eraLabel.setText("GAME ENDED");
+        if (finalPlayerList.getLast().getParameters().get(Parameter.PRESTIGE_POINTS) ==
+        finalPlayerList.get(finalPlayerList.size()-2).getParameters().get(Parameter.PRESTIGE_POINTS)){
+            turnLabel.setText("IT'S A TIE!");
+        } else
+        turnLabel.setText(finalPlayerList.getLast().getNickname().toUpperCase() + " WON!");
+        exitButton.setManaged(true);
+        exitButton.setVisible(true);
+        exitButton.setDisable(false);
+        });
+    }
+
+    @FXML
+    public void exit(){
+        Platform.exit();
+    }
 }

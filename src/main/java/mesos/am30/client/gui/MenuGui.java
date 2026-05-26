@@ -1,4 +1,4 @@
-package mesos.am30.client;
+package mesos.am30.client.gui;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import mesos.am30.client.VirtualView;
 
 import java.io.IOException;
 

@@ -50,6 +50,6 @@ public class StatsBoost implements IF_Event {
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
         str1.append("statsBoost");
         str2.append("Event: " + type);
-        str3.append("food: "+ food).append("tribeRole: " + tribeType);
+        str3.append("food: "+ food).append("tribeRole: " + role);
     }
 }

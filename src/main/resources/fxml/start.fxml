@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="551.0" maxWidth="551.0" minHeight="551.0" minWidth="551.0" prefHeight="551.0" prefWidth="551.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mesos.am30.client.MenuGui">
+<AnchorPane maxHeight="551.0" maxWidth="551.0" minHeight="551.0" minWidth="551.0" prefHeight="551.0" prefWidth="551.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mesos.am30.client.gui.MenuGui">
    <children>
       <ImageView fitHeight="580.0" fitWidth="551.0" pickOnBounds="true" preserveRatio="true">
          <image>

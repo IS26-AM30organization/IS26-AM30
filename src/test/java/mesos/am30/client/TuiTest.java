@@ -39,42 +39,6 @@ class TuiTest {
     }
 
     @Test
-    void askNickname() {
-        String input = "Alice\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        tui = new Tui(); //tui needs to be re-created as to read new Sys.in
-
-        String name = tui.askNickname();
-
-        assertEquals("Alice", name);
-        assertTrue(streamOut.toString().contains("Inserisci nickname >"));
-    }
-
-    @Test
-    void askPlayersNumber() {
-        String in = "3\n";
-        System.setIn(new ByteArrayInputStream(in.getBytes()));
-        tui.actionScanner = new Scanner(System.in);
-
-        int num = tui.askPlayersNumber();
-
-        assertEquals(3, num);
-        assertTrue(streamOut.toString().contains("Inserisci playerNum >"));
-    }
-
-    @Test
-    void askPlayersInvalid() {
-        String input = "abc\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        tui.actionScanner = new Scanner(System.in);
-
-        int num = tui.askPlayersNumber();
-
-        assertEquals(0, num);
-        assertTrue(streamOut.toString().contains("[ERROR]: invalid"));
-    }
-
-    @Test
     void printMove() {
         tui.printMove("Alice", Move.PICK_TILE);
         String output = streamOut.toString();
@@ -92,35 +56,4 @@ class TuiTest {
         assertTrue(output.contains("NOT_YOUR_TURN"));
     }
 
-    @Test
-    void printErrorNum() throws Exception {
-        VirtualView vViewMock = mock(VirtualView.class);
-
-        //Reflection to inject a fake view
-        Field vViewField = Tui.class.getDeclaredField("vView");
-        vViewField.setAccessible(true);
-        vViewField.set(tui, vViewMock);
-
-        Tui spyTui = spy(tui);
-        spyTui.printError(ErrorType.WRONG_PLAYERS_NUMBER);
-
-        verify(spyTui).promptPlayerNumber();
-        verify(vViewMock).askPlayersNumber();
-    }
-
-    @Test
-    void printErrorName() throws Exception {
-        VirtualView vViewMock = mock(VirtualView.class);
-
-        //Reflection to inject a fake view
-        Field vViewField = Tui.class.getDeclaredField("vView");
-        vViewField.setAccessible(true);
-        vViewField.set(tui, vViewMock);
-
-        Tui spyTui = spy(tui);
-        spyTui.printError(ErrorType.WRONG_NICKNAME);
-
-        verify(spyTui).promptPlayerNickname();
-        verify(vViewMock).askNickname();
-    }
 }

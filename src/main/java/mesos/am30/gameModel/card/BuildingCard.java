@@ -69,12 +69,6 @@ public class BuildingCard extends Card {
     }
 
     @Override
-    public void displayCard() {
-        System.out.println(String.format("%-10s | %-5d | %-5d",
-                eventType, foodCost, ppGain));
-    }
-
-    @Override
     public void createRow(StringBuilder eventRole, StringBuilder ln2, StringBuilder ln3) {
         StringBuilder str1 = new StringBuilder();
         StringBuilder str2 = new StringBuilder();
