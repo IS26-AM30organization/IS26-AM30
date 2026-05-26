@@ -1,5 +1,7 @@
 package mesos.am30.client;
 
+import javafx.application.Application;
+
 import java.io.IOException;
 
 public class ClientMain {
@@ -16,8 +18,7 @@ public class ClientMain {
         if (args[1].equalsIgnoreCase("tui")) {
             userInterface = new Tui();
         } else if (args[1].equalsIgnoreCase("gui")) {
-            //userInterface = new GUI();
-            System.err.println("[Wrong argument] : GUI not ready yet!!!");
+            Application.launch(Gui.class, args);
             System.exit(1);
         } else {
             System.err.println("[Wrong argument] : " + args[1] + "is not valid!!! Use 'tui' or 'gui'!!!");

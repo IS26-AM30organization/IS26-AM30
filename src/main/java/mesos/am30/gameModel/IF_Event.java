@@ -20,6 +20,6 @@ public interface IF_Event extends Serializable {
     default String getCardInfo(StringBuilder info) {
         return "";
     }
-    default void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {return;};
+
     String getArt();
 }

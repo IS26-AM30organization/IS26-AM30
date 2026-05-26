@@ -106,11 +106,11 @@ public class MenuGui {
     }
 
     @FXML
-    public void setNumber(){
+    public void setNumber() throws IOException {
         String bernardo = number.getText();
         if (bernardo.matches("[1-5]")) {
             numAsked = false;
-            vView.answerPlayersNumber(Integer.parseInt(bernardo));
+            vView.createLobby(Integer.parseInt(bernardo), "");
             Platform.runLater(() -> {number.getScene().getWindow().hide();});
         } else {
             Platform.runLater(() -> request.setText("I TOLD YOU TO INSERT A NUMBER (between 1 and 5): "));
@@ -118,7 +118,7 @@ public class MenuGui {
     }
 
     @FXML
-    public void setName() {
+    public void setName() throws IOException {
         if (numAsked) {
             quickMessage.setText("Please create a lobby first");
             askPlayersNumber();
