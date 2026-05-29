@@ -4,5 +4,6 @@ public enum GamePhase {
     MENU,
     LOBBY,
     GAME,
+    END_SCREEN,
     END
 }

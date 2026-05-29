@@ -1,6 +1,7 @@
 package mesos.am30.client;
 
 import mesos.am30.common.TColors;
+import mesos.am30.db.GameResultDAO;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
@@ -11,6 +12,7 @@ import mesos.am30.common.GamePhase;
 import mesos.am30.common.Move;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,11 +70,14 @@ public class Tui implements IF_GameUI {
                         printMessage("[ERROR]: error on transmitting player's Nickname.");
                     }
                 }
-                case GAME -> matchCMDs(plAction); //GAME Phase: game phase
+				case GAME -> matchCMDs(plAction); //GAME Phase: game phase
+				case END_SCREEN -> endScreenCMDs(plAction);
                 default -> {}
             }
         }
-        printEnd();
+		printMessage(TColors.GREEN + "Game is ended - Thank you for playing." + TColors.RESET);
+		clientExecutor.shutdown();
+		System.exit(0);
     }
 
 	/**
@@ -105,12 +110,10 @@ public class Tui implements IF_GameUI {
 	 * Handles end-game screen
 	 */
 	public void printEnd() {
-		printMessage(TColors.GREEN + "Game is ended - Thank you for playing." + TColors.RESET);
 		displayScoreboard();
-		gPhase = END;
 
-		clientExecutor.shutdown();
-		System.exit(0);
+		gPhase = END_SCREEN;
+		printMessage(TColors.GREEN_B + "Would you like to see/reload the Leaderboard? [y/n]: " + TColors.RESET);
 	}
 
 	@Override
@@ -316,6 +319,30 @@ public class Tui implements IF_GameUI {
 				throw new RuntimeException(e);
 			}
 		} else printMessage("Invalid Command, type -h or -help to show all available commands.");
+	}
+
+	private void endScreenCMDs(String[] plAction) {
+		String action = plAction[0];
+		int cmdSize = plAction.length;
+
+		if (cmdSize > 1) {
+			printMessage("Invalid Command, either type y or n.");
+		}
+
+		try {
+			switch (action) {
+				case "y" -> {
+					List<Map<String, String>> ranking = GameResultDAO.queryGlobalRanking(vBoard.getPlayers().size());
+					displayLeaderboard(ranking);
+				}
+				case "n" -> {
+					gPhase = END;
+					printMessage("Shutting down...");
+				}
+			}
+		} catch (SQLException | IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	//PRIVATE METHODS USED TO DISPLAY CARDS/MESSAGES
@@ -557,6 +584,23 @@ public class Tui implements IF_GameUI {
 			i++;
 			printMessage(score.append(i).append("° ").append(p.getNickname()).toString());
 		}
+	}
+
+	private void displayLeaderboard(List<Map<String, String>> ranking) {
+		if (ranking.isEmpty()) {
+			printSysMessage("[System]: no leaderboard to display for this game settings");
+			return;
+		}
+
+		System.out.println("--- CLASSIFICA GLOBALE ---");
+		for (Map<String, String> row : ranking) {
+			String rank = row.get("RANK");
+			String nickname = row.get("Nickname");
+			String score = row.get("Score");
+
+			System.out.println(rank + "° | Player: " + nickname + " | Points: " + score);
+		}
+		return;
 	}
 
 	private void decideTileBoost() {
