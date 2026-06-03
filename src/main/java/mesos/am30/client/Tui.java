@@ -1,7 +1,7 @@
 package mesos.am30.client;
 
 import mesos.am30.common.TColors;
-import mesos.am30.db.GameResultDAO;
+import mesos.am30.db.GameResultsDAO;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
@@ -332,7 +332,7 @@ public class Tui implements IF_GameUI {
 		try {
 			switch (action) {
 				case "y" -> {
-					List<Map<String, String>> ranking = GameResultDAO.queryGlobalRanking(vBoard.getPlayers().size());
+					List<Map<String, String>> ranking = GameResultsDAO.queryGlobalRanking(vBoard.getPlayers().size());
 					displayLeaderboard(ranking);
 				}
 				case "n" -> {

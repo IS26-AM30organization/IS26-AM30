@@ -6,7 +6,7 @@ import java.util.Map;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class GameResultDAO {
+public class GameResultsDAO {
     public static List<Map<String, String>> queryGlobalRanking(int playersNumber) throws IOException, SQLException {
         return new ArrayList<>();
     }
