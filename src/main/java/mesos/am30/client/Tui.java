@@ -31,7 +31,7 @@ public class Tui implements IF_GameUI {
 	private final ExecutorService clientExecutor = Executors.newFixedThreadPool(1);
 	volatile GamePhase gPhase;
 	final Object tuiLock = new Object();
-	boolean isMatchRunning = false;
+	volatile boolean isMatchRunning = false;
 
 	Scanner actionScanner = new Scanner(System.in);
 
@@ -203,7 +203,7 @@ public class Tui implements IF_GameUI {
 	 * Returns the wanted BuildingCard, if existing
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
-	private BuildingCard wantedBuild(Move move, int cIndex) throws IndexOutOfBoundsException {
+	private BuildingCard wantedBuild(Move move, int cIndex) throws IndexOutOfBoundsException, IOException {
 		switch (move) {
 			case PICK_FROM_UP -> {
 				return vBoard.getUpperBuildings().get(cIndex);
@@ -212,7 +212,7 @@ public class Tui implements IF_GameUI {
 				return vBoard.getLowerBuildings().get(cIndex);
 			}
 			default -> {
-				return null;
+				throw new IOException("Unknown Move");
 			}
 		}
 	}
@@ -327,6 +327,7 @@ public class Tui implements IF_GameUI {
 
 		if (cmdSize > 1) {
 			printMessage("Invalid Command, either type y or n.");
+			return;
 		}
 
 		try {
@@ -341,7 +342,8 @@ public class Tui implements IF_GameUI {
 				}
 			}
 		} catch (SQLException | IOException e) {
-			throw new RuntimeException(e);
+			printMessage("[ERROR]: No Connection to database found.\nShutting down...");
+			gPhase = END;
 		}
 	}
 
@@ -411,16 +413,10 @@ public class Tui implements IF_GameUI {
 	}
 
 	/**
-	 * Method clears the TUI
+	 * Method clears the TUI - it outputs blank lines
 	 */
 	private void clearTUI() {
-		try {
-			for (int i = 0; i < 20; ++i) System.out.println("\n");
-		} catch (Exception e) {
-			for (int i = 0; i < 20; ++i) System.out.println("\n");
-			System.out.print("\033[H\033[2J");
-			System.out.flush();
-		}
+		for (int i = 0; i < 20; ++i) System.out.println("\n");
 	}
 
 	// METHODS TO PRINT CARDS ON TERMINAL
@@ -582,17 +578,19 @@ public class Tui implements IF_GameUI {
 
 		for(Player p : finalPlayerList) {
 			i++;
-			printMessage(score.append(i).append("° ").append(p.getNickname()).toString());
+			score.append("\n").append(i).append("° ").append(p.getNickname()).append("\n");
 		}
+
+		printMessage(score.toString());
 	}
 
 	private void displayLeaderboard(List<Map<String, String>> ranking) {
 		if (ranking.isEmpty()) {
-			printSysMessage("[System]: no leaderboard to display for this game settings");
+			printSysMessage("[System]: no leaderboard to display for this game settings\nWould you like to see/reload the Leaderboard? [y/n]: ");
 			return;
 		}
 
-		System.out.println("--- CLASSIFICA GLOBALE ---");
+		System.out.println("--- GLOBAL RANKING ---");
 		for (Map<String, String> row : ranking) {
 			String rank = row.get("RANK");
 			String nickname = row.get("Nickname");
@@ -600,7 +598,6 @@ public class Tui implements IF_GameUI {
 
 			System.out.println(rank + "° | Player: " + nickname + " | Points: " + score);
 		}
-		return;
 	}
 
 	private void decideTileBoost() {

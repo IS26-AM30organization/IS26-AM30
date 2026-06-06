@@ -3,6 +3,12 @@ package mesos.am30.client;
 import mesos.am30.common.ErrorType;
 import mesos.am30.common.GamePhase;
 import mesos.am30.common.Move;
+import mesos.am30.gameModel.Parameter;
+import mesos.am30.gameModel.Player;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
+import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,11 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,10 +53,11 @@ class TuiTest {
 
     @AfterEach
     void tearDown() {
-        System.setIn(rstIn); //sysstem input is reset
+        System.setIn(rstIn); //system input is reset
     }
 
-    //HELPER METHODS -> SIMULATES USERS INPUT
+    //HELPER METHODS -> SIMULATES USERS INPUT ------------------------
+
     private void simInput(String data) {
         InputStream in = new ByteArrayInputStream(data.getBytes());
         System.setIn(in);
@@ -64,7 +67,6 @@ class TuiTest {
     /**
      * Executes plInputReader in a thread and waits for 500ms.
      * @param inputString user input
-     * @throws InterruptedException
      */
     private void runReaderWithTimeout(String inputString) throws InterruptedException {
         simInput(inputString);
@@ -79,9 +81,37 @@ class TuiTest {
         return streamOut.toString();
     }
 
+    // HERPER METHODS -> USED TO SIMPLIFY MOCK CREATION FOR DISPLAY TESTS
 
+    private Player mockPlayer(String nickname, int prestigePoints) {
+        Player p = mock(Player.class);
+        when(p.getNickname()).thenReturn(nickname);
+        Map<Parameter, Integer> params = new HashMap<>();
+        params.put(Parameter.PRESTIGE_POINTS, prestigePoints);
+        when(p.getParameters()).thenReturn(params);
+        return p;
+    }
 
-    //askNickname
+    private CharacterCard mockCharCard() {
+        CharacterCard c = mock(CharacterCard.class);
+        when(c.isPickable()).thenReturn(true);
+        when(c.getRole()).thenReturn(Parameter.INVENTOR);
+        when(c.getValue()).thenReturn(66);
+        return c;
+    }
+
+    private BuildingCard mockBuildCard() {
+        return mock(BuildingCard.class);
+    }
+
+    private Tile mockTile() {
+        return mock(Tile.class);
+    }
+
+    //---------------------------------- TESTS BEGIN ------------------------
+
+    //askNickname ------------------------
+
     @Test
     void askNickname_checks() throws IOException {
         tui.askNickname();
@@ -89,7 +119,8 @@ class TuiTest {
         assertEquals(GamePhase.LOBBY, tui.gPhase);
     }
 
-    //printMove
+    //printMove ------------------------
+
     @Test
     void printMove_containsNickname() {
         tui.printMove("Alice", Move.PICK_TILE);
@@ -123,7 +154,8 @@ class TuiTest {
         assertTrue(output().contains("Carlo"));
     }
 
-    //printError
+    //printError ------------------------
+
     @Test
     void printError() {
         tui.printError(ErrorType.NOT_YOUR_TURN);
@@ -131,7 +163,7 @@ class TuiTest {
     }
 
     @Test
-    void printError_wrongName() throws Exception {
+    void printError_wrongName() {
         tui.printError(ErrorType.WRONG_NICKNAME);
         assertTrue(output().contains("Insert nickname: "));
         assertEquals(GamePhase.LOBBY, tui.gPhase);
@@ -144,7 +176,8 @@ class TuiTest {
         assertTrue(output().contains("WRONG_PLAYERS_NUMBER"));
     }
 
-    //printEnd
+    //printEnd ------------------------
+
     @Test
     void printEnd_EndScreen() {
         tui.printEnd();
@@ -157,7 +190,8 @@ class TuiTest {
         assertTrue(output().contains("Would you like to see/reload the Leaderboard?"));
     }
 
-    //connection Conformations
+    //connection Conformations ------------------------
+
     @Test
     void confirmConnection_setsMenuPhase() {
         tui.confirmConnection();
@@ -173,7 +207,8 @@ class TuiTest {
         assertTrue(output().contains("Lobby joined!"));
     }
 
-    //lobbies
+    //lobbies ------------------------
+
     @Test
     void showLobbies_noLobbies() {
         tui.showLobbies(new HashMap<>());
@@ -200,7 +235,8 @@ class TuiTest {
         assertTrue(out.contains("BBB"));
     }
 
-    //MENU PHASE - menuCMDs
+    //MENU PHASE - menuCMDs ------------------------
+
     @Test
     void menu_helpCommands() throws InterruptedException {
         tui.gPhase = GamePhase.MENU;
@@ -231,7 +267,38 @@ class TuiTest {
         assertTrue(output().contains("Invalid Command"));
     }
 
-    //MATCH PHASE - matchCMDs
+    @Test
+    void menu_createCommand() throws Exception {
+        when(vView.getLobbyCode()).thenReturn("123");
+        tui.gPhase = GamePhase.MENU;
+        runReaderWithTimeout("create 4");
+        verify(vView).createLobby(4, "123");
+    }
+
+
+    @Test
+    void menu_createCommandTooLong() throws Exception {
+        tui.gPhase = GamePhase.MENU;
+        runReaderWithTimeout("create 4 123");
+        verify(vView).createLobby(4, "123");
+    }
+
+    @Test
+    void menu_joinCommand() throws Exception {
+        tui.gPhase = GamePhase.MENU;
+        runReaderWithTimeout("join 123");
+        verify(vView).joinLobby("123");
+    }
+
+    @Test
+    void menu_createCommandInvalid() throws InterruptedException {
+        tui.gPhase = GamePhase.MENU;
+        runReaderWithTimeout("create invalidLobbyCode");
+        assertTrue(output().contains("Invalid number"));
+    }
+
+    //MATCH PHASE - matchCMDs -----------------------------
+
     @Test
     void match_gameNotStarted() throws InterruptedException {
         tui.gPhase = GamePhase.GAME;
@@ -273,12 +340,180 @@ class TuiTest {
         assertTrue(output().contains("Invalid number"));
     }
 
-    //END PHASE - endCMDs
+    @Test
+    void match_showCommand() throws InterruptedException {
+        tui.gPhase = GamePhase.GAME;
+        tui.isMatchRunning = true;
+        runReaderWithTimeout("show Alice");
+        assertTrue(output().contains("[ERROR]: player does not exists."));
+    }
+
+    @Test
+    void match_tileValidIndex() throws Exception {
+        Tile mockTile = mock(Tile.class);
+        when(vBoard.getTiles()).thenReturn(new ArrayList<>(List.of(mockTile)));
+        tui.gPhase = GamePhase.GAME;
+        tui.isMatchRunning = true;
+        runReaderWithTimeout("tile 0");
+        verify(vView).checkTile(mockTile);
+    }
+
+    @Test
+    void match_drawUpValidIndex() throws Exception {
+        CharacterCard mockCC = mock(CharacterCard.class);
+        when(mockCC.isPickable()).thenReturn(true);
+        when(vBoard.getUpperRow()).thenReturn(new ArrayList<>(List.of(mockCC)));
+        tui.gPhase = GamePhase.GAME;
+        tui.isMatchRunning = true;
+        runReaderWithTimeout("draw up 0");
+        verify(vView).checkCharacterCard(mockCC);
+    }
+
+    @Test
+    void match_drawDownValidIndex() throws Exception {
+        CharacterCard mockCC = mock(CharacterCard.class);
+        when(mockCC.isPickable()).thenReturn(true);
+        when(vBoard.getLowerRow()).thenReturn(new ArrayList<>(List.of(mockCC)));
+        tui.gPhase = GamePhase.GAME;
+        tui.isMatchRunning = true;
+        runReaderWithTimeout("draw down 0");
+        verify(vView).checkCharacterCard(mockCC);
+    }
+
+    @Test
+    void match_buyUpValidIndex() throws Exception {
+        BuildingCard mockBC = mock(BuildingCard.class);
+        when(vBoard.getUpperBuildings()).thenReturn(new ArrayList<>(List.of(mockBC)));
+        tui.gPhase = GamePhase.GAME;
+        tui.isMatchRunning = true;
+        runReaderWithTimeout("buy up 0");
+        verify(vView).checkBuildingCard(mockBC);
+    }
+
+    @Test
+    void match_drawUpOutOfBound() throws InterruptedException {
+        tui.gPhase = GamePhase.GAME;
+        tui.isMatchRunning = true;
+        runReaderWithTimeout("draw up 66");
+        assertTrue(output().contains("Invalid number"));
+    }
+
+    @Test
+    void match_nonNumericIndex() throws InterruptedException {
+        tui.gPhase = GamePhase.GAME;
+        tui.isMatchRunning = true;
+        runReaderWithTimeout("tile abc");
+        assertTrue(output().contains("Invalid number"));
+    }
+
+    //END PHASE - endCMDs ------------------------
+
     @Test
     void endScreen_commandIsTooLong() throws InterruptedException {
         tui.gPhase = GamePhase.END_SCREEN;
         runReaderWithTimeout("y invalidCommand");
         assertTrue(output().contains("Invalid Command"));
     }
+
+    @Test
+    void endScreen_unknownCommand_noPhaseChange() throws InterruptedException {
+        tui.gPhase = GamePhase.END_SCREEN;
+        runReaderWithTimeout("neitherY/N");
+        assertEquals(GamePhase.END_SCREEN, tui.gPhase);
+    }
+
+    //LOBBY PHASE ------------------------
+
+    @Test
+    void lobby_validNickname() throws Exception {
+        tui.gPhase = GamePhase.LOBBY;
+        runReaderWithTimeout("Alice");
+        verify(vView).answerNickname("alice");
+    }
+
+    @Test
+    void plInputReader_unknownPhase() {
+        tui.gPhase = GamePhase.LOBBY;
+        assertDoesNotThrow(() -> runReaderWithTimeout(""));
+    }
+
+    // DISPLAY METHODS ------------------------
+
+    @Test
+    void printCards_emptyBoard_noThrow() {
+        assertDoesNotThrow(() -> tui.printMove("Alice", Move.PICK_TILE));
+    }
+
+    @Test
+    void printCards_currentUserNull_noThrow() {
+        when(vBoard.getCurrentUser()).thenReturn(null);
+        assertDoesNotThrow(() -> tui.printMove("", Move.PICK_TILE));
+    }
+
+    @Test
+    void printCards_withUpperBuilds_noThrow() {
+        when(vBoard.getUpperBuildings()).thenReturn(List.of(mockBuildCard()));
+        assertDoesNotThrow(() -> tui.printMove("", Move.PICK_TILE));
+    }
+
+    @Test
+    void printCards_withLowerBuilds_noThrow() {
+        when(vBoard.getLowerBuildings()).thenReturn(List.of(mockBuildCard()));
+        assertDoesNotThrow(() -> tui.printMove("", Move.PICK_TILE));
+    }
+
+    @Test
+    void printCards_withTiles_noThrow() {
+        when(vBoard.getTiles()).thenReturn(List.of(mockTile()));
+        assertDoesNotThrow(() -> tui.printMove("", Move.PICK_TILE));
+    }
+
+    // displayScoreboard
+
+    @Test
+    void displayScoreboard_emptyPlayerList_noThrow() {
+        assertDoesNotThrow(() -> tui.printEnd());
+    }
+
+    @Test
+    void displayScoreboard_withPlayers() {
+        Player p1 = mockPlayer("Alice", 5);
+        Player p2 = mockPlayer("Bob", 10);
+        when(vBoard.getPlayers()).thenReturn(List.of(p1, p2));
+        tui.printEnd();
+        assertTrue(output().contains("Alice"));
+        assertTrue(output().contains("Bob"));
+    }
+
+    // displayChosenPlayer
+
+    @Test
+    void displayChosenPlayer_playerNotFound() throws InterruptedException {
+        tui.gPhase = GamePhase.GAME;
+        tui.isMatchRunning = true;
+        runReaderWithTimeout("show wrongName");
+        assertTrue(output().contains("[ERROR]: player does not exists."));
+    }
+
+    // display cards
+
+    @Test
+    void displayRows_singleCCard() {
+        when(vBoard.getUpperRow()).thenReturn(List.of(new CharacterCard(1,Parameter.INVENTOR, 3, 1,0)));
+        tui.printMove("Alice", Move.PICK_TILE);
+        assertTrue(output().contains("INVENTOR"));
+        assertTrue(output().contains("Invention:"));
+    }
+
+    @Test
+    void displayRows_sevenCardsInRow() {
+        List<Card> sevenCards = new ArrayList<>();
+        for (int i = 0; i < 6; i++) sevenCards.add(new CharacterCard(1,Parameter.BUILDER, i + 1, 0,0));
+        sevenCards.add(new CharacterCard(1,Parameter.SHAMAN, 1, 1,0));
+        when(vBoard.getUpperRow()).thenReturn(sevenCards);
+        tui.printMove("Alice", Move.PICK_TILE);
+        assertTrue(output().contains("SHAMAN"));
+    }
+
 }
 
