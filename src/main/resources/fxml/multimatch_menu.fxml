@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="menu-background" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mesos.am30.client.gui.MMMGui">
+   <children>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label styleClass="title" stylesheets="@../css/style.css" text="MESOS" />
+            <Button fx:id="playButton" mnemonicParsing="false" onAction="#play" prefHeight="50.0" prefWidth="300.0" style="-fx-background-color: #ffbb2f; -fx-background-radius: 25; -fx-font-size: 18;" text="PLAY" />
+            <ScrollPane fx:id="existingLobbies" maxWidth="300.0" prefWidth="300.0" stylesheets="@../css/style.css">
+               <content>
+                  <VBox fx:id="lobbyList" prefWidth="298.0" style="-fx-background-color: transparent; -fx-background-radius: 25;">
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="300.0" styleClass="lobby_button" stylesheets="@../css/style.css" text="Button" />
+                     </children>
+                  </VBox>
+               </content></ScrollPane>
+            <HBox fx:id="newLobby" maxWidth="300.0" prefWidth="200.0" spacing="5.0">
+               <children>
+                  <Button maxHeight="50.0" maxWidth="50.0" minWidth="50.0" mnemonicParsing="false" onAction="#refresh" prefHeight="50.0" style="-fx-font-weight: bold; -fx-background-radius: 25; -fx-background-color: #654321; -fx-text-fill: white; -fx-font-size: 18;" stylesheets="@../css/style.css" text="↻" />
+                  <HBox style="-fx-background-color: #654321; -fx-background-radius: 25;">
+                     <children>
+                        <TextField fx:id="newLobbyCode" prefHeight="40.0" prefWidth="300.0" promptText="NEW LOBBY" style="-fx-background-radius: 20 0 0 20; -fx-background-color: white; -fx-font-family: ChristmasChalk;" />
+                        <ChoiceBox fx:id="newLobbyPlayers" maxHeight="39.0" minWidth="60.0" prefHeight="40.0" prefWidth="80.0" style="-fx-background-radius: 0 20 20 0; -fx-background-color: #ffbb2f;" />
+                        <Button minWidth="50.0" mnemonicParsing="false" onAction="#createLobby" prefHeight="40.0" style="-fx-background-radius: 0 20 20 0; -fx-background-color: transparent; -fx-font-size: 15; -fx-text-fill: white;" text="+" />
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </HBox>
+            <HBox fx:id="nicknameBox" maxWidth="300.0" style="-fx-background-color: #ffbb2f; -fx-background-radius: 25;">
+               <children>
+                  <TextField fx:id="name" onAction="#answerNickname" prefHeight="40.0" prefWidth="300.0" promptText="CHOOSE A NICKNAME" style="-fx-background-radius: 20; -fx-background-color: white; -fx-font-family: ChristmasChalk;" />
+                  <Button minWidth="50.0" mnemonicParsing="false" onAction="#answerNickname" prefHeight="40.0" style="-fx-background-radius: 0 20 20 0; -fx-background-color: transparent; -fx-font-size: 15; -fx-text-fill: white;" text="→" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+            <Label fx:id="errorLabel" styleClass="text" stylesheets="@../css/style.css" text="MARGARA!" visible="false" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

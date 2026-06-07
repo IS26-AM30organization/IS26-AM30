@@ -12,20 +12,37 @@
     -fx-background-size: auto 100%; 
 }
 
-@font-face {
-    font-family: 'ChristmasChalk';
-    src: url("../fonts/ChristmasChalk.ttf");
-}
-
 .text {
     -fx-font-family: "ChristmasChalk";
-    -fx-font-fill: white;
+    -fx-text-fill: white;
+}
+
+.title{
+    -fx-font-family: "VagabundoMedium";
+    -fx-font-size: 36px;
+    -fx-text-fill: white;
 }
 
 .card:disabled {
     -fx-opacity: 0.8;
     -fx-scale-x: 0.9;
     -fx-scale-y: 0.9;
+}
+
+.lobby_button{
+    -fx-background-color:  #654321;
+    -fx-background-radius: 25;
+    -fx-text-fill: white;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
 }
 
 .card:hover {
@@ -44,4 +61,12 @@
 .tile:hover {
     -fx-cursor: hand;
     -fx-translate-y: -3px;
+}
+
+.menu-background
+{
+    -fx-background-image: url("../images/menu_cover.png");
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover; 
 }
