@@ -5,6 +5,8 @@ import javafx.application.Application;
 import java.io.IOException;
 
 public class ClientMain {
+    private static Boolean isItRMI;
+    private static String IP;
 
     static void main(String[] args) {
         // check arguments
@@ -12,6 +14,9 @@ public class ClientMain {
             System.err.println("[Wrong arguments] : You must add the arguments as follows: \"java -jar am30-client.jar 'ip' 'tui/gui' 'socket/rmi'\"");
             return;
         }
+
+        isItRMI = args[2].equalsIgnoreCase("rmi");
+        IP = args[0];
 
         // get User Interface
         IF_GameUI userInterface = null;
@@ -44,5 +49,13 @@ public class ClientMain {
             System.err.println("[ERROR: ] " + exception.getMessage());
             System.exit(1);
         }
+    }
+
+    public static Boolean getRMI() {
+        return isItRMI;
+    }
+
+    public static String getIP() {
+        return IP;
     }
 }
