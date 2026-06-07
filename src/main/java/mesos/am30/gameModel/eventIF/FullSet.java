@@ -15,8 +15,8 @@ import java.util.Map;
  * <br/>If the Player completes a full set of Character Cards, he gains food.
  */
 public class FullSet implements IF_Event {
-    private final Map<Parameter, Integer> collectedSets = new HashMap<>();
-    private final Map<Parameter,Integer> prevAmount = new HashMap<>(); //saves each characterType amount prior to drawing a new card
+    private Map<Parameter, Integer> collectedSets;
+    private Map<Parameter,Integer> prevAmount; //saves each characterType amount prior to drawing a new card
     private final int foodGain;
 
     /**
@@ -45,6 +45,9 @@ public class FullSet implements IF_Event {
      */
     @Override
     public void handleEvent(Player player) {
+        if(collectedSets == null) collectedSets = new HashMap<>();
+        if(prevAmount == null) prevAmount = new HashMap<>();
+
         CharacterCard newestCard = getLatestPickedCard(player);
         if (newestCard == null) return;
         int m = collectedSets.getOrDefault(newestCard.getRole(),0);

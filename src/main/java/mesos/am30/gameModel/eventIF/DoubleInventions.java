@@ -15,7 +15,7 @@ import java.util.Set;
  * <br/>If the Player get two identical inventions, he gains food.
  */
 public class DoubleInventions implements IF_Event {
-    private final Set<Integer> uniqueInventions = new HashSet<>(10);
+    private Set<Integer> uniqueInventions;
     private final int foodGain;
 
     /**
@@ -50,6 +50,8 @@ public class DoubleInventions implements IF_Event {
      */
     @Override
     public void handleEvent(Player player) {
+        if(uniqueInventions == null) uniqueInventions = new HashSet<>(10);
+
         Integer latestInvention = getLatestInvention(player);
 
         if(uniqueInventions.contains(latestInvention)){
@@ -64,6 +66,8 @@ public class DoubleInventions implements IF_Event {
     // get the latest added invention
     private Integer getLatestInvention(Player player){
         List<CharacterCard> inventors = player.getCharacterType(Parameter.INVENTOR);
+
+        if (inventors.isEmpty()) return 0;
         return inventors.getLast().getValue(); //inventors.size()!=0 always, as this class is called as an Inventor is chosen.
     }
 
