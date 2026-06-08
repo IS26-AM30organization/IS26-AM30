@@ -83,7 +83,7 @@ public class GameManager {
     protected void sendClientEnd() throws IOException {
         updateState();
         for (IF_GameView view : views) {
-            view.end();
+            view.askShowRankings();
         }
     }
 

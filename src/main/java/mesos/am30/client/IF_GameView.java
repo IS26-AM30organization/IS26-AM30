@@ -93,6 +93,25 @@ public interface IF_GameView extends Remote {
     void update(ViewParameter toUpdate, List<Object> parameters) throws IOException;
 
     /**
+     * Ask the Client for showing the Rankings.
+     * <br>This method asks the Client if it wants to show the Rankings.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    void askShowRankings() throws IOException;
+
+    /**
+     * Show the Rankings.
+     * <br>This method is called in order to show the Rankings.
+     *
+     * @param playerRank Rank of the Player.
+     * @param globalRankings Ranking of all the Players.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    void showRankings(Map<String, String> playerRank, List<Map<String, String>> globalRankings) throws IOException;
+
+    /**
      * End of the Game.
      * <br>This method is called in order to end the Game Client-side.
      *

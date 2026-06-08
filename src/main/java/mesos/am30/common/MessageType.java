@@ -12,6 +12,8 @@ public enum MessageType {
     CHOOSE,
     ERROR,
     UPDATE,
+    RANKINGS,
+    SHOW_RANKINGS,
     PING,
     END
 }

@@ -2,9 +2,11 @@ package mesos.am30.gameModel.board;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.sql.SQLException;
 import java.util.*;
 
 import com.google.gson.reflect.TypeToken;
+import mesos.am30.db.GameResultsDAO;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.card.*;
 import mesos.am30.gameModel.eventIF.Sustenance;
@@ -288,6 +290,21 @@ public class Board implements IF_GameModel {
         lowerRow.clear();
         upperBuildings.clear();
         lowerBuildings.clear();
+
+        // update the DB
+        try {
+            List<Map<String, String>> results = new ArrayList<>();
+            for (Player player : players) {
+                Map<String, String> playerResult = new LinkedHashMap<>(2);
+                playerResult.put("Nickname", player.getNickname());
+                playerResult.put("Score", String.valueOf(player.getParameters().get(Parameter.PRESTIGE_POINTS)));
+                results.add(playerResult);
+            }
+            GameResultsDAO.addNewResults(results);
+            System.out.println("[GAME LOG] successful DB update");
+        } catch (IOException | SQLException exception) {
+            System.out.println("[GAME LOG] failed DB update");
+        }
     }
 
     //player's actions:
