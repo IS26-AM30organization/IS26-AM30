@@ -89,6 +89,7 @@ public class RMIView extends VirtualView {
             case CHOOSE_TILE        -> asynchronousServerCall(() -> controller.chooseTile(nickname,(Tile) parameter));
             case CHOOSE_BUILDING    -> asynchronousServerCall(() -> controller.chooseBuilding(nickname, (BuildingCard) parameter));
             case CHOOSE_CHARACTER   -> asynchronousServerCall(() -> controller.chooseCharacter(nickname, (CharacterCard) parameter));
+            case RANKINGS           -> asynchronousServerCall(() -> controller.showRankings(nickname, (boolean) parameter));
         }
     }
 

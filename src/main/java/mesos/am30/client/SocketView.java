@@ -119,6 +119,13 @@ public class SocketView extends VirtualView {
                                 ModelUpdateMessage updateMessage = (ModelUpdateMessage) message;
                                 update(updateMessage.getToUpdate(), updateMessage.getParameters());
                             }
+                            // choose to show Rankings
+                            case RANKINGS -> askShowRankings();
+                            // show the Rankings
+                            case SHOW_RANKINGS -> {
+                                RankingMessage rankingMessage = (RankingMessage) message;
+                                showRankings(rankingMessage.getPlayerRank(),  rankingMessage.getGlobalRankings());
+                            }
                             // end of the Game
                             case END -> end();
                             // heartbeat

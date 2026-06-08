@@ -1,5 +1,6 @@
 package mesos.am30.server;
 
+import mesos.am30.db.GameResultsDAO;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.board.Board;
 import mesos.am30.gameModel.IF_GameModel;
@@ -13,10 +14,8 @@ import mesos.am30.common.Move;
 
 import java.io.IOException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.sql.SQLException;
+import java.util.*;
 
 
 public class Controller extends UnicastRemoteObject implements IF_GameController {
@@ -209,5 +208,20 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
 
     private void reSendCurrentMove() throws IOException {
         sendMove(board.getCurrentPlayer(), board.getCurrentMove());
+    }
+
+    @Override
+    public void showRankings(String nickname, boolean response) throws IOException {
+        IF_GameView connection = connections.get(getPlayerByNickname(nickname));
+        if (response) {
+            try {
+                connection.showRankings(
+                        GameResultsDAO.queryPlayerRank(numPlayers, nickname),
+                        GameResultsDAO.queryGlobalRanking(numPlayers)
+                );
+            } catch (SQLException exception) {
+                connection.notifyError(ErrorType.DB_ERROR);
+            }
+        } else connection.end();
     }
 }

@@ -10,5 +10,6 @@ public enum Choice {
     // game phase
     CHOOSE_TILE,
     CHOOSE_CHARACTER,
-    CHOOSE_BUILDING
+    CHOOSE_BUILDING,
+    RANKINGS
 }

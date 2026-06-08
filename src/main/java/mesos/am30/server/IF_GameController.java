@@ -11,4 +11,5 @@ public interface IF_GameController extends Remote {
     void chooseTile(String nickname, Tile tile) throws IOException;
     void chooseCharacter(String nickname, CharacterCard characterCard) throws IOException;
     void chooseBuilding(String nickname, BuildingCard buildingCard) throws IOException;
+    void showRankings(String nickname, boolean response) throws IOException;
 }
