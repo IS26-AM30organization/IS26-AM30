@@ -87,8 +87,10 @@ class SocketProxy implements IF_GameView {
                                             controller.chooseCharacter(choiceMessage.getIdentifier(), (CharacterCard) choiceMessage.getParameter());
                                     case CHOOSE_BUILDING ->
                                             controller.chooseBuilding(choiceMessage.getIdentifier(), (BuildingCard) choiceMessage.getParameter());
-                                    case RANKINGS ->
+                                    case RANKINGS -> {
+                                        connectionOpen = false;
                                         controller.showRankings(choiceMessage.getIdentifier(), (boolean) choiceMessage.getParameter());
+                                    }
                                 }
                             } else {
                                 // connection phase

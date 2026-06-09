@@ -28,12 +28,11 @@ public class GameResultsDAO {
     private static final String INSERT_GAME = "INSERT INTO GAMES " +
             "(PlayersNumber) " +
             "VALUES (?)";
-    private static final String QUERY_GAMEID = "SELECT max(GameID) " +
+    private static final String QUERY_GAMEID = "SELECT max(GameID) AS LASTID " +
             "FROM GAMES";
     private static final String INSERT_RESULTS = "INSERT INTO RESULTS " +
             "(GameID, Nickname, Score) " +
             "VALUES (?, ?, ?)";
-
     /**
      * Query the Global Ranking for games with N Players.
      * <br>This static method works by querying the DB, in order to get the Global Ranking of all Players (identified by the field "Nickname")
@@ -126,7 +125,7 @@ public class GameResultsDAO {
             // got GameID
             statement = connection.prepareStatement(QUERY_GAMEID);
             List<Map<String, String>> rows = DBConnection.getResults(statement);
-            int gameID = Integer.parseInt(rows.getFirst().get("MAX(GAMEID)"));
+            int gameID = Integer.parseInt(rows.getFirst().get("LASTID"));
 
             // add new Results
             statement = connection.prepareStatement(INSERT_RESULTS);

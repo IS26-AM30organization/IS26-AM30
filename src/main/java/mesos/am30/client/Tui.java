@@ -1,14 +1,11 @@
 package mesos.am30.client;
 
-import mesos.am30.common.TColors;
+import mesos.am30.common.*;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.Tile;
-import mesos.am30.common.ErrorType;
-import mesos.am30.common.GamePhase;
-import mesos.am30.common.Move;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -72,13 +69,10 @@ public class Tui implements IF_GameUI {
                     }
                 }
 				case GAME -> matchCMDs(plAction); //GAME Phase: game phase
-				case END_SCREEN -> endScreenCMDs(plAction);
+				case END_SCREEN -> endScreenCMDs(plAction); //END_SCREEN Phase: db request
                 default -> {}
             }
         }
-		printMessage(TColors.GREEN + "Game is ended - Thank you for playing." + TColors.RESET);
-		clientExecutor.shutdown();
-		System.exit(0);
     }
 
 	/**
@@ -108,13 +102,54 @@ public class Tui implements IF_GameUI {
 	}
 
 	/**
-	 * Handles end-game screen
+	 * Asks player whether it wants to see the Leaderboard or not
 	 */
-	public void printEnd() {
+	public void askShowRankings() {
 		displayScoreboard();
 
 		gPhase = END_SCREEN;
 		printMessage(TColors.GREEN_B + "Would you like to see/reload the Leaderboard? [y/n]: " + TColors.RESET);
+	}
+
+	/**
+	 * Displays Leaderboard after inspecting the DB
+	 */
+	public void showRankings(Map<String,String> playerMap, List<Map<String, String>> ranking) {
+		if (ranking == null || ranking.isEmpty()) {
+			printSysMessage("[System]: no leaderboard to display for this game settings\nWould you like to see/reload the Leaderboard? [y/n]: ");
+			return;
+		}
+
+		System.out.println("--- GLOBAL RANKING ---");
+		for (Map<String, String> row : ranking) {
+			String rank = row.get("RANK");
+			String nickname = row.get("Nickname");
+			String score = row.get("Score");
+
+			System.out.println(rank + "° | Player: " + nickname + " | Points: " + score);
+		}
+
+		System.out.println("----------------------");
+
+		if (playerMap != null && !playerMap.isEmpty()) {
+			String playerRank = playerMap.get("RANK");
+			String playerNick = playerMap.get("Nickname");
+			String playerScore = playerMap.get("Score");
+
+			System.out.println("Your Rank: " + playerRank + "° | Player: " + playerNick + " | Points: " + playerScore + "\n");
+		} else {
+			System.out.println("You are not in the ranking for this game mode yet.\n");
+		}
+	}
+
+	/**
+	 * Handles end-game screen
+	 */
+	public void printEnd() {
+		gPhase = END;
+		displayScoreboard();
+
+		endGame();
 	}
 
 	@Override
@@ -354,19 +389,17 @@ public class Tui implements IF_GameUI {
 		try {
 			switch (action) {
 				case "y" -> {
-					// FUTURE CALL TO DB QUERY
-					List<Map<String, String>> ranking = new ArrayList<>();
-					displayLeaderboard(ranking);
+					vView.answerShowRankings(true);
 				}
 				case "n" -> {
-					gPhase = END;
+					vView.answerShowRankings(false);
 					printMessage("Shutting down...");
 				}
 			}
 		} catch (Exception e) {
 			printMessage("[ERROR]: No Connection to database found.\nShutting down...");
-			gPhase = END;
 		}
+		gPhase = END;
 	}
 
 	//PRIVATE METHODS USED TO DISPLAY CARDS/MESSAGES
@@ -604,31 +637,14 @@ public class Tui implements IF_GameUI {
 		List<Player> finalPlayerList = vBoard.getPlayers().stream().
 				sorted(Comparator.comparing(p -> p.getParameters().get(Parameter.PRESTIGE_POINTS))).toList();
 
+		score.append("\n").append(TColors.BLUE).append("----- SCOREBOARD -----").append(TColors.RESET);
+
 		for(Player p : finalPlayerList) {
 			i++;
-			score.append("\n").append(i).append("° ").append(p.getNickname()).append("\n");
+			score.append(TColors.GOLD).append("\n").append(i).append("° ").append(p.getNickname()).append(TColors.RESET);
 		}
 
 		printMessage(score.toString());
-	}
-
-	/**
-	 * Displays Leaderboard after inspecting the DB
-	 */
-	private void displayLeaderboard(List<Map<String, String>> ranking) {
-		if (ranking.isEmpty()) {
-			printSysMessage("[System]: no leaderboard to display for this game settings\nWould you like to see/reload the Leaderboard? [y/n]: ");
-			return;
-		}
-
-		System.out.println("--- GLOBAL RANKING ---");
-		for (Map<String, String> row : ranking) {
-			String rank = row.get("RANK");
-			String nickname = row.get("Nickname");
-			String score = row.get("Score");
-
-			System.out.println(rank + "° | Player: " + nickname + " | Points: " + score);
-		}
 	}
 
 	/**
@@ -653,6 +669,15 @@ public class Tui implements IF_GameUI {
             System.out.println(TColors.ORANGE + "Tile: " + tileBoost[j] + (tileBoost[j]>0 ? " Food" : (tileBoost[j]<0 ? " pP" : "")) + TColors.RESET);
         }
 
+	}
+
+	/**
+	 * Shuts down the thread and terminates the client.
+	 */
+	private void endGame() {
+		printMessage(TColors.GREEN + "Game is ended - Thank you for playing." + TColors.RESET);
+		clientExecutor.shutdown();
+		System.exit(0);
 	}
 }
 

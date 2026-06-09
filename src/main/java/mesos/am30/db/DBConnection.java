@@ -93,7 +93,7 @@ class DBConnection {
             while (result.next()) {
                 Map<String, String> row = new LinkedHashMap<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    row.put(meta.getColumnName(i), result.getString(i));
+                    row.put(meta.getColumnLabel(i), result.getString(i));
                 }
                 rows.add(row);
             }
