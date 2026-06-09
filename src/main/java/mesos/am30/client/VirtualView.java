@@ -384,7 +384,6 @@ public abstract class VirtualView implements IF_GameView {
     @Override
     public void showRankings(Map<String, String> playerRank, List<Map<String, String>> globalRankings) throws IOException {
         userInterface.showRankings(playerRank, globalRankings);
-        this.end();
     }
 
     /**

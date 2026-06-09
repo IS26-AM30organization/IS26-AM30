@@ -272,6 +272,24 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     public void ping() throws IOException {}
 
     /**
+     * Disconnects a Player without crashes.
+     * <br>This method disconnects a Player without causing crashes for the other ones in the lobby; this is used at the end of the game.
+     * <br><strong>Pre:</strong> view != null
+     *
+     * @param view The Client instance of the IF_GameView to disconnect.
+     */
+    public synchronized void disconnectPlayerGracefully(IF_GameView view) {
+        String code = findLobbyCodeOf(view);
+        if (code != null) {
+            lobbyViews.get(code).remove(view);
+            if (lobbyViews.get(code).isEmpty()) {
+                lobbies.remove(code);
+                lobbyViews.remove(code);
+            }
+        }
+    }
+
+    /**
      * Handle a Client Disconnection.
      * <br>This method notifies all the other clients when a disconnection happens that the Game has come to an end.
      * <br><strong>Pre:</strong> disconnected != null

@@ -21,6 +21,7 @@ public class RMIView extends VirtualView {
     private IF_Server remoteServer;
     private IF_GameController controller;
     private Registry registry;
+    private volatile boolean connectionOpen = true;
 
     public RMIView(IF_GameUI userInterface) throws RemoteException {
         super(userInterface);
@@ -58,15 +59,14 @@ public class RMIView extends VirtualView {
             try {
                 while(true) {
                     Thread.sleep(1000);
-                    server.ping();
+                    if (connectionOpen) server.ping();
+                    else return;
                 }
             } catch (IOException | InterruptedException crashed) {
                 try {
                     notifyError(ErrorType.CONNECTION_CRASHED);
                     end();
-                } catch (IOException ignored) {
-
-                }
+                } catch (IOException ignored) { /* ignored */ }
             }
         }).start();
     }
@@ -109,6 +109,7 @@ public class RMIView extends VirtualView {
 
     @Override
     public void end() throws IOException {
+        connectionOpen = false;
         userInterface.printEnd();
         UnicastRemoteObject.unexportObject(this, true);
     }

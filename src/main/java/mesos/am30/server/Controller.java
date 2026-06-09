@@ -101,7 +101,6 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
         if (tryPickedCard(currentPlayer, card)) {
             if (board.pickCard(requestingPlayer, card)) {
                 if (board.nextRound()) {
-                    sendEnd();
                 }
             }
         }
@@ -121,9 +120,10 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
                 handleError(requestingPlayer, ErrorType.NOT_ENOUGH_FOOD);
                 return;
             }
-            if (board.pickCard(requestingPlayer, card))
-                if (board.nextRound())
-                    sendEnd();
+            if (board.pickCard(requestingPlayer, card)) {
+                if (board.nextRound()) {
+                }
+            }
         }
     }
 
@@ -222,6 +222,12 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
             } catch (SQLException exception) {
                 connection.notifyError(ErrorType.DB_ERROR);
             }
-        } else connection.end();
+        }
+
+        // disconnect the Player
+        Server.getInstance().disconnectPlayerGracefully(connection);
+        try {
+            connection.end();
+        } catch (Exception ignored) { /* ignored */ }
     }
 }
