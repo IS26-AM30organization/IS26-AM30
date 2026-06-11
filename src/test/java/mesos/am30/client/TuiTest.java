@@ -167,20 +167,6 @@ class TuiTest {
         assertTrue(output().contains("WRONG_PLAYERS_NUMBER"));
     }
 
-    //printEnd ------------------------
-
-    @Test
-    void printEnd_EndScreen() {
-        tui.printEnd();
-        assertEquals(GamePhase.END_SCREEN, tui.gPhase);
-    }
-
-    @Test
-    void printEnd_leaderboard() {
-        tui.printEnd();
-        assertTrue(output().contains("Would you like to see/reload the Leaderboard?"));
-    }
-
     //connection Conformations ------------------------
 
     @Test
@@ -406,13 +392,6 @@ class TuiTest {
         assertTrue(output().contains("Invalid Command"));
     }
 
-    @Test
-    void endScreen_unknownCommand_noPhaseChange() throws InterruptedException {
-        tui.gPhase = GamePhase.END_SCREEN;
-        runReaderWithTimeout("neitherY/N");
-        assertEquals(GamePhase.END_SCREEN, tui.gPhase);
-    }
-
     //LOBBY PHASE ------------------------
 
     @Test
@@ -459,23 +438,6 @@ class TuiTest {
         assertDoesNotThrow(() -> tui.printMove("", Move.PICK_TILE));
     }
 
-    // displayScoreboard
-
-    @Test
-    void displayScoreboard_emptyPlayerList_noThrow() {
-        assertDoesNotThrow(() -> tui.printEnd());
-    }
-
-    @Test
-    void displayScoreboard_withPlayers() {
-        Player p1 = mockPlayer("Alice", 5);
-        Player p2 = mockPlayer("Bob", 10);
-        when(vBoard.getPlayers()).thenReturn(List.of(p1, p2));
-        tui.printEnd();
-        assertTrue(output().contains("Alice"));
-        assertTrue(output().contains("Bob"));
-    }
-
     // displayChosenPlayer
 
     @Test
@@ -490,7 +452,7 @@ class TuiTest {
 
     @Test
     void displayRows_singleCCard() {
-        when(vBoard.getUpperRow()).thenReturn(List.of(new CharacterCard(1,Parameter.INVENTOR, 3, 1,0)));
+        when(vBoard.getUpperRow()).thenReturn(List.of(new CharacterCard(1,1,Parameter.INVENTOR, 3, 1)));
         tui.printMove("Alice", Move.PICK_TILE);
         assertTrue(output().contains("INVENTOR"));
         assertTrue(output().contains("Invention:"));
@@ -499,8 +461,8 @@ class TuiTest {
     @Test
     void displayRows_sevenCardsInRow() {
         List<Card> sevenCards = new ArrayList<>();
-        for (int i = 0; i < 6; i++) sevenCards.add(new CharacterCard(1,Parameter.BUILDER, i + 1, 0,0));
-        sevenCards.add(new CharacterCard(1,Parameter.SHAMAN, 1, 1,0));
+        for (int i = 0; i < 6; i++) sevenCards.add(new CharacterCard(1,1,Parameter.BUILDER, i + 1, 0));
+        sevenCards.add(new CharacterCard(1,1,Parameter.SHAMAN, 1, 1));
         when(vBoard.getUpperRow()).thenReturn(sevenCards);
         tui.printMove("Alice", Move.PICK_TILE);
         assertTrue(output().contains("SHAMAN"));

@@ -133,7 +133,7 @@ class BuildingCardTest {
     void canBeBought_True() {
         Map<Parameter, Integer> parameters = new HashMap<>();
         parameters.put(Parameter.FOOD, 6);
-        parameters.put(Parameter.BUILDER, 5);
+        parameters.put(Parameter.BUILDER, -5);
 
         when(player.getParameters()).thenReturn(parameters);
 
@@ -144,7 +144,7 @@ class BuildingCardTest {
     void canBeBought_False() {
         Map<Parameter, Integer> params = new HashMap<>();
         params.put(Parameter.FOOD, 4);
-        params.put(Parameter.BUILDER, 3);
+        params.put(Parameter.BUILDER, -3);
 
         when(player.getParameters()).thenReturn(params);
 

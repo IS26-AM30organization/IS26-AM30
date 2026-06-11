@@ -177,7 +177,8 @@ public abstract class VirtualView implements IF_GameView {
             // check if valid Building
             List<BuildingCard> row = getBuildingCards(currentMove);
             if (row.contains(choice)) {
-                if (model.getCurrentUser().getParameters().get(Parameter.FOOD) >= choice.getFoodCost()) {
+                if (model.getCurrentUser().getParameters().get(Parameter.FOOD)
+                        - model.getCurrentUser().getParameters().get(Parameter.BUILDER) >= choice.getFoodCost()) {
                     model.setDefault();
                     toController(Choice.CHOOSE_BUILDING, choice);
                 } else notifyError(ErrorType.NOT_ENOUGH_FOOD);

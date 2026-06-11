@@ -48,7 +48,7 @@ public class Sustenance implements IF_Event {
         for (Parameter p : player.getTribe().keySet()) {
             foodCost += player.getTribe().get(p).size();
         }
-        foodCost -= player.getParameters().get(Parameter.GATHERER);
+        foodCost += player.getParameters().get(Parameter.GATHERER);
         // pay for the Characters
         if (foodCost > 0) {
             int foodAvailable = player.getParameters().get(Parameter.FOOD);

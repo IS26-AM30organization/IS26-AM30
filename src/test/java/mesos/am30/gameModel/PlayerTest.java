@@ -175,7 +175,7 @@ class PlayerTest {
     @Test
     void addBuilding() {
         player.getParameters().put(Parameter.FOOD, 10);
-        player.getParameters().put(Parameter.BUILDER, 3);
+        player.getParameters().put(Parameter.BUILDER, -3);
 
         when(mockBuild.getFoodCost()).thenReturn(5);
 
@@ -189,7 +189,7 @@ class PlayerTest {
     @Test
     void addBuilding_FullDiscount() {
         player.getParameters().put(Parameter.FOOD, 10);
-        player.getParameters().put(Parameter.BUILDER, 6);
+        player.getParameters().put(Parameter.BUILDER, -6);
 
         when(mockBuild.getFoodCost()).thenReturn(5);
 

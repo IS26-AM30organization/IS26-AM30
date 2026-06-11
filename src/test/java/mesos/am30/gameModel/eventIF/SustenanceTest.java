@@ -59,7 +59,7 @@ class SustenanceTest {
         when(mockPlayer.getTribe()).thenReturn(setTribe());
         int foodDiscount = mockPlayer.getTribe().get(Parameter.GATHERER).size() * 3;
         when(mockPlayer.getParameters()).thenReturn(Map.of(
-                Parameter.GATHERER, foodDiscount,
+                Parameter.GATHERER, -foodDiscount,
                 Parameter.FOOD, 10,
                 Parameter.PRESTIGE_POINTS, 10
         ));
@@ -82,7 +82,7 @@ class SustenanceTest {
         when(mockPlayer.getTribe()).thenReturn(setTribe());
         int foodDiscount = mockPlayer.getTribe().get(Parameter.GATHERER).size() * 3;
         when(mockPlayer.getParameters()).thenReturn(Map.of(
-                Parameter.GATHERER, foodDiscount,
+                Parameter.GATHERER, -foodDiscount,
                 Parameter.FOOD, 4,
                 Parameter.PRESTIGE_POINTS, 10
         ));
@@ -101,7 +101,7 @@ class SustenanceTest {
         when(mockPlayer.getTribe()).thenReturn(setTribe());
         int foodDiscount = mockPlayer.getTribe().get(Parameter.GATHERER).size() * 3;
         when(mockPlayer.getParameters()).thenReturn(Map.of(
-                Parameter.GATHERER, foodDiscount,
+                Parameter.GATHERER, -foodDiscount,
                 Parameter.FOOD, 2,
                 Parameter.PRESTIGE_POINTS, 10
         ));
@@ -123,7 +123,7 @@ class SustenanceTest {
         // set the Mock Player
         when(mockPlayer.getTribe()).thenReturn(setTribe());
         when(mockPlayer.getParameters()).thenReturn(Map.of(
-                Parameter.GATHERER, 12,
+                Parameter.GATHERER, -12,
                 Parameter.FOOD, 2,
                 Parameter.PRESTIGE_POINTS, 10
         ));
@@ -144,10 +144,10 @@ class SustenanceTest {
 
         // set the Mock Player
         when(mockPlayer.getTribe()).thenReturn(setTribe());
-        int foodDiscount = mockPlayer.getTribe().get(Parameter.GATHERER).size() * 3;
+        int foodDiscount = -mockPlayer.getTribe().get(Parameter.GATHERER).size() * 3;
         when(mockPlayer.getBuildings()).thenReturn(List.of(mockBuilding));
         when(mockPlayer.getParameters()).thenReturn(Map.of(
-                Parameter.GATHERER, foodDiscount,
+                Parameter.GATHERER,-foodDiscount,
                 Parameter.FOOD, 2,
                 Parameter.PRESTIGE_POINTS, 10
         ));
@@ -175,7 +175,7 @@ class SustenanceTest {
         int foodDiscount = mockPlayer.getTribe().get(Parameter.GATHERER).size() * 3;
         when(mockPlayer.getBuildings()).thenReturn(List.of(mockBuilding));
         when(mockPlayer.getParameters()).thenReturn(Map.of(
-                Parameter.GATHERER, foodDiscount,
+                Parameter.GATHERER, -foodDiscount,
                 Parameter.FOOD, 2,
                 Parameter.PRESTIGE_POINTS, 10
         ));

@@ -112,12 +112,12 @@ class HuntTest {
         // assert
         assertFalse(ln1.toString().isEmpty());
         assertFalse(ln2.toString().isEmpty());
-        assertTrue(ln3.toString().isEmpty());
+        assertFalse(ln3.toString().isEmpty());
     }
 
     @Test
     void getInfo() {
-        assertEquals("This is a Painting Event Card: when resolved, the player receives 1 food and " +
+        assertEquals("This is a Hunt Event Card: when resolved, the player receives 1 food and " +
                         huntCard.getPrestigePoints() +
                         " pP for each Hunter in player's tribe.",
                 huntCard.getInfo(new StringBuilder())

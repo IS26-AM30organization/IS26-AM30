@@ -165,6 +165,6 @@ public class BuildingCard extends Card {
      */
     public boolean canBeBought(Player player) {
         return player.getParameters().get(Parameter.FOOD)
-                + player.getParameters().get(Parameter.BUILDER) >= foodCost;
+                - player.getParameters().get(Parameter.BUILDER) >= foodCost;
     }
 }

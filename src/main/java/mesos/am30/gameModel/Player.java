@@ -228,8 +228,8 @@ public class Player implements Serializable {
     public void addBuilding(BuildingCard card){
         buildings.add(card);
         updateStats(
-                Parameter.FOOD, card.getFoodCost()>parameters.get(Parameter.BUILDER) ?
-                        parameters.get(Parameter.BUILDER)-card.getFoodCost()
+                Parameter.FOOD, card.getFoodCost()>-parameters.get(Parameter.BUILDER) ?
+                        -parameters.get(Parameter.BUILDER)-card.getFoodCost()
                         : 0);
     }
 
@@ -262,7 +262,7 @@ public class Player implements Serializable {
         int updatedValue = currentValue + sum;
         if(updatedValue < 0) {
             if (stat == Parameter.FOOD) updateStats(Parameter.PRESTIGE_POINTS, 2*updatedValue);
-            if (stat != Parameter.PRESTIGE_POINTS) updatedValue = 0;
+            if (stat != Parameter.PRESTIGE_POINTS && stat != Parameter.BUILDER && stat != Parameter.GATHERER) updatedValue = 0;
         }
 
         this.parameters.put(stat, updatedValue);

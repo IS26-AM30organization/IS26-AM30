@@ -55,7 +55,10 @@ public class Tui implements IF_GameUI {
         String action = "";
 
         while (gPhase != END) {
-            String plInput = actionScanner.nextLine();
+            String plInput;
+			try {
+				plInput = actionScanner.nextLine();
+			} catch (Exception ignore){break;}
             String[] plAction = plInput.toLowerCase().split("\\s+"); //input is divided in words.
 
             switch (gPhase) {

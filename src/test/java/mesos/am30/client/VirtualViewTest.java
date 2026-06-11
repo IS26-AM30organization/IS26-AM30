@@ -342,7 +342,10 @@ class VirtualViewTest {
     void checkBuildingCard_Not_Enough_Food() throws IOException {
         // set up VirtualView
         when(mockPlayer.getNickname()).thenReturn("nickname");
-        when(mockPlayer.getParameters()).thenReturn(Map.of(Parameter.FOOD, 1));
+        when(mockPlayer.getParameters()).thenReturn(Map.of(
+                Parameter.FOOD, 1,
+                Parameter.BUILDER, 0
+        ));
         when(mockBuildingCard.getFoodCost()).thenReturn(2);
         virtualView.setNickname("nickname");
         ViewModel viewModel = virtualView.getModel();
@@ -358,7 +361,7 @@ class VirtualViewTest {
         assertEquals(virtualView.nickname, viewModel.getCurrentUser().getNickname());
         assertEquals(Move.PICK_ANY_CARD, viewModel.getCurrentMove());
         assertTrue(viewModel.getLowerBuildings().contains(mockBuildingCard));
-        assertFalse(mockPlayer.getParameters().get(Parameter.FOOD) >= mockBuildingCard.getFoodCost());
+        assertFalse(mockPlayer.getParameters().get(Parameter.FOOD) - mockPlayer.getParameters().get(Parameter.BUILDER) >= mockBuildingCard.getFoodCost());
         verify(mockUI).printError(ErrorType.NOT_ENOUGH_FOOD);
     }
 
@@ -366,7 +369,10 @@ class VirtualViewTest {
     void checkBuildingCard_Correct() throws IOException {
         // set up VirtualView
         when(mockPlayer.getNickname()).thenReturn("nickname");
-        when(mockPlayer.getParameters()).thenReturn(Map.of(Parameter.FOOD, 2));
+        when(mockPlayer.getParameters()).thenReturn(Map.of(
+                Parameter.FOOD, 2,
+                Parameter.BUILDER, 0
+        ));
         when(mockBuildingCard.getFoodCost()).thenReturn(2);
         virtualView.setNickname("nickname");
         ViewModel viewModel = virtualView.getModel();
@@ -382,7 +388,7 @@ class VirtualViewTest {
         assertNull(viewModel.getCurrentUser());
         assertNull(viewModel.getCurrentMove());
         assertTrue(viewModel.getLowerBuildings().contains(mockBuildingCard));
-        assertTrue(mockPlayer.getParameters().get(Parameter.FOOD) >= mockBuildingCard.getFoodCost());
+        assertTrue(mockPlayer.getParameters().get(Parameter.FOOD) - mockPlayer.getParameters().get(Parameter.BUILDER)>= mockBuildingCard.getFoodCost());
     }
 
     @Test
