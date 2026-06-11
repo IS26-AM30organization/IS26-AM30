@@ -7,16 +7,16 @@ import java.rmi.Remote;
 
 /**
  * Server's Interface for ModelViewController pattern.
- * <br>Interface for the methods that the Views call directly in order to establish the connection with the Controller.
+ * <br/>Interface for the methods that the Views call directly in order to establish the connection with the Controller.
  */
 public interface IF_Server extends Remote {
 
     /**
      * Handle a Client connection.
-     * <br>This method is called by the Clients in order to inform the Server of their connection.
-     * <br>If a Client is the first connected to the lobby, the Server asks first for the number of players, otherwise it
+     * <br/>This method is called by the Clients in order to inform the Server of their connection.
+     * <br/>If a Client is the first connected to the lobby, the Server asks first for the number of players, otherwise it
      * asks directly for its nickname.
-     * <br><strong>Pre:</strong> view != null
+     * <br/><strong>Pre:</strong> view != null
      *
      * @param view The Client instance of the IF_GameView.
      *
@@ -26,9 +26,9 @@ public interface IF_Server extends Remote {
 
     /**
      * Request to create a Lobby.
-     * <br>This method is called by the Client in order to create a Lobby.
-     * <br>the Server check if the number of Players and the Lobby Code are valid.
-     * <br><strong>Pre:</strong> view != null && lobbyCode != null
+     * <br/>This method is called by the Client in order to create a Lobby.
+     * <br/>the Server check if the number of Players and the Lobby Code are valid.
+     * <br/><strong>Pre:</strong> view != null && lobbyCode != null
      *
      * @param view The Client instance of the IF_GameView.
      * @param playersNumber Number of Players for the Lobby.
@@ -40,8 +40,8 @@ public interface IF_Server extends Remote {
 
     /**
      * Request to show the available Lobbies.
-     * <br>This method is called by the Client in order to get the available Lobbies to join.
-     * <br><strong>Pre:</strong> view != null
+     * <br/>This method is called by the Client in order to get the available Lobbies to join.
+     * <br/><strong>Pre:</strong> view != null
      *
      * @param view The Client instance of the IF_GameView.
      *
@@ -51,8 +51,8 @@ public interface IF_Server extends Remote {
 
     /**
      * Request to join a Lobby.
-     * <br>This method is called by the Client in order to join a Lobby.
-     * <br><strong>Pre:</strong> view != null && lobbyCode != null
+     * <br/>This method is called by the Client in order to join a Lobby.
+     * <br/><strong>Pre:</strong> view != null && lobbyCode != null
      *
      * @param view The Client instance of the IF_GameView.
      * @param lobbyCode Code of the Lobby to join.
@@ -63,11 +63,11 @@ public interface IF_Server extends Remote {
 
     /**
      * Check the nickname of a Client.
-     * <br>This method is invocated from each Client connecting to the lobby, and works as the Server-side counterpart to
+     * <br/>This method is invocated from each Client connecting to the lobby, and works as the Server-side counterpart to
      * the method view.askNickname().
-     * <br> If the nickname is valid (no duplicates), the Server connects the Client to the lobby.
-     * <br><strong>Pre:</strong> view != null && nickname != null
-     * <br><strong>Post:</strong> !\old(lobby.getClients().keySet().contains(nickname)) ==> lobby.getClients().keySet().contains(nickname)
+     * <br/> If the nickname is valid (no duplicates), the Server connects the Client to the lobby.
+     * <br/><strong>Pre:</strong> view != null && nickname != null
+     * <br/><strong>Post:</strong> !\old(lobby.getClients().keySet().contains(nickname)) ==> lobby.getClients().keySet().contains(nickname)
      *
      * @param view The Client instance of the IF_GameView.
      * @param nickname Nickname of the Client.
@@ -78,7 +78,7 @@ public interface IF_Server extends Remote {
 
     /**
      * Heartbeat for the Server.
-     * <br>This method is called by the Client in order to verify if the Server is still connected.
+     * <br/>This method is called by the Client in order to verify if the Server is still connected.
      *
      * @throws IOException The connection is no more established.
      */

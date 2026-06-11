@@ -22,10 +22,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,6 +89,7 @@ class SocketProxyTest {
         clientSocket.close();
 
         // Assert Proxy
+        Thread.sleep(2000);
         verifyNoInteractions(mockServer);
         verifyNoInteractions(mockController);
         assertFalse(proxy.isConnectionOpen());
@@ -237,6 +235,19 @@ class SocketProxyTest {
     }
 
     @Test
+    void startListeningThread_RANKINGS() throws IOException, InterruptedException {
+        // Act
+        proxy.setController(mockController);
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.RANKINGS, "nickname", true));
+        clientOut.flush();
+
+        // Assert
+        Thread.sleep(2000);
+        verifyNoInteractions(mockServer);
+        verify(mockController).showRankings("nickname", true);
+    }
+
+    @Test
     void confirmConnection() throws IOException, InterruptedException, ClassNotFoundException {
         // Act
         proxy.confirmConnection();
@@ -332,6 +343,41 @@ class SocketProxyTest {
             players.add((Player) parameter);
         }
         assertEquals(players, modelUpdateMessage.getParameters());
+    }
+
+    @Test
+    void askShowRankings() throws IOException, InterruptedException, ClassNotFoundException {
+        // Act
+        proxy.askShowRankings();
+
+        // Assert
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.RANKINGS, message.getType());
+    }
+
+    @Test
+    void showRankings() throws IOException, InterruptedException, ClassNotFoundException {
+        // set up Mock Rankings
+        List<Map<String, String>> rankings = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Map<String, String> ranking = new LinkedHashMap<>();
+            ranking.put("NICKNAME", "nickname");
+            ranking.put("SCORE", String.valueOf(100 - (i + 5)));
+            ranking.put("RANK", String.valueOf(i));
+            rankings.add(ranking);
+        }
+
+        // Act
+        proxy.showRankings(rankings.getLast(), rankings);
+
+        // Assert
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.SHOW_RANKINGS, message.getType());
+        RankingMessage rankingMessage = (RankingMessage) message;
+        assertEquals(rankings.getLast(), rankingMessage.getPlayerRank());
+        assertEquals(rankings, rankingMessage.getGlobalRankings());
     }
 
     @Test
