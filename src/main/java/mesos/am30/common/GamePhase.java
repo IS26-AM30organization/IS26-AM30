@@ -1,12 +1,23 @@
 package mesos.am30.common;
 
 /**
- * This class defines which are the allowed game phases within a game.
+ * Enumeration for the Game Phases.
+ * <br/>This enumeration is used by the TUI in order to identify a given Game Phase (and so the valid commands).
  */
 public enum GamePhase {
-    MENU,               //to connect or create a lobby
-    LOBBY,              //inserting a valid name
-    GAME,               //match phase
-    END_SCREEN,         //database interaction
-    END                 //game is ended
+
+    /// Menu for connecting to / creating a Lobby.
+    MENU,
+
+    /// Waiting for a valid nickname.
+    LOBBY,
+
+    /// Playing the Game.
+    GAME,
+
+    /// End screen and DB interaction.
+    END_SCREEN,
+
+    /// End of the Game.
+    END
 }

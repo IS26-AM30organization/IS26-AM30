@@ -4,21 +4,17 @@ import java.io.Serializable;
 
 /**
  * Message between Client-Server.
- * <br>This Class implements a basic Message, used for Socket communication between Client and Server.
- *
- * @author LoreDN - Lorenzo Di Napoli
- * @version 1.0
- * @since 1.0
+ * <br/>This Class implements a basic Message, used for Socket communication between Client and Server.
  */
 public class Message implements Serializable {
     private final MessageType type;
 
     /**
      * Constructor for Message.
-     * <br><strong>Pre:</strong> type != null
-     * <br><strong>Post:</strong> this.type = type
+     * <br/><strong>Pre:</strong> type != null
+     * <br/><strong>Post:</strong> this.type = type
      *
-     * @param type Type of message
+     * @param type Type of message.
      */
     public Message(MessageType type) {
         this.type = type;
@@ -27,7 +23,7 @@ public class Message implements Serializable {
     /**
      * Getter for the attribute "type".
      *
-     * @return Type of message
+     * @return Type of message.
      */
     public MessageType getType() {
         return type;

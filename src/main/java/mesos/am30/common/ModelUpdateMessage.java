@@ -4,12 +4,8 @@ import java.util.List;
 
 /**
  * Model Update Message between Client-Server.
- * <br>This Class implements a Model Update Message, used for Socket communication between Client and Server.
- * <br>This type of message is expected to be sent only from the Controller to the Client.
- *
- *  @author LoreDN - Lorenzo Di Napoli
- *  @version 1.0
- *  @since 1.0
+ * <br/>This Class implements a Model Update Message, used for Socket communication between Client and Server.
+ * <br/>This type of message is expected to be sent only from the Controller to the Client.
  */
 public class ModelUpdateMessage extends Message {
     private final ViewParameter toUpdate;
@@ -17,12 +13,12 @@ public class ModelUpdateMessage extends Message {
 
     /**
      * Constructor for ModelUpdateMessage.
-     * <br><strong>Pre:</strong> type != null && toUpdate != null && parameters != null
-     * <br><strong>Post:</strong> this.type = type && this.toUpdate = toUpdate && this.parameters = parameters
+     * <br/><strong>Pre:</strong> type != null && toUpdate != null && parameters != null
+     * <br/><strong>Post:</strong> this.type = type && this.toUpdate = toUpdate && this.parameters = parameters
      *
-     * @param type Type of message
-     * @param toUpdate Field to update
-     * @param parameters Updated parameters
+     * @param type          Type of message.
+     * @param toUpdate      Field to update.
+     * @param parameters    Updated parameters.
      */
     public ModelUpdateMessage(MessageType type, ViewParameter toUpdate, List<Object> parameters) {
         super(type);
@@ -33,7 +29,7 @@ public class ModelUpdateMessage extends Message {
     /**
      * Getter for the attribute "toUpdate".
      *
-     * @return Field to update
+     * @return Field to update.
      */
     public ViewParameter getToUpdate() {
         return toUpdate;
@@ -42,7 +38,7 @@ public class ModelUpdateMessage extends Message {
     /**
      * Getter for the attribute "parameters".
      *
-     * @return Updated parameters
+     * @return Updated parameters.
      */
     public List<Object> getParameters() {
         return parameters;
