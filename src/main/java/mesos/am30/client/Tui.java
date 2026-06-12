@@ -8,7 +8,6 @@ import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.Tile;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -95,6 +94,8 @@ public class Tui implements IF_GameUI {
 	/**
 	 * Shows on TUI actions made by any player
 	 * On first call it starts the terminal executor.
+	 * @param nickname player's nickname
+	 * @param move player's action
 	 */
 	public void printMove(String nickname, Move move) {
 		boardRender();
@@ -116,6 +117,8 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Displays Leaderboard after inspecting the DB
+	 * @param ranking db data for played game mode
+	 * @param playerMap player's data from db
 	 */
 	public void showRankings(Map<String,String> playerMap, List<Map<String, String>> ranking) {
 		if (ranking == null || ranking.isEmpty()) {
@@ -123,13 +126,13 @@ public class Tui implements IF_GameUI {
 			return;
 		}
 
-		System.out.println("--- GLOBAL RANKING ---");
+		printMessage(TColors.GOLD + "--- GLOBAL RANKING ---" + TColors.RESET);
 		for (Map<String, String> row : ranking) {
 			String rank = row.get("RANK");
 			String nickname = row.get("Nickname");
 			String score = row.get("Score");
 
-			System.out.println(rank + "° | Player: " + nickname + " | Points: " + score);
+			printMessage(TColors.CYAN + rank + "° | Player: " + nickname + " | Points: " + score + TColors.RESET);
 		}
 
 		System.out.println("----------------------");
@@ -139,9 +142,9 @@ public class Tui implements IF_GameUI {
 			String playerNick = playerMap.get("Nickname");
 			String playerScore = playerMap.get("Score");
 
-			System.out.println("Your Rank: " + playerRank + "° | Player: " + playerNick + " | Points: " + playerScore + "\n");
+			printMessage(TColors.GREEN + "Your Rank: " + playerRank + "° | Player: " + playerNick + " | Points: " + playerScore + "\n" + TColors.RESET);
 		} else {
-			System.out.println("You are not in the ranking for this game mode yet.\n");
+			printMessage(TColors.MAGENTA_B + "You are not in the ranking for this game mode yet.\n" + TColors.RESET);
 		}
 	}
 
@@ -163,6 +166,7 @@ public class Tui implements IF_GameUI {
 	/**
 	 * Shows on TUI any errors sent by the server/view model for incorrect player's actions
 	 * if the wrong nickname was inserted, client gets prompted again
+	 * @param errorMessage occurred error
 	 */
     public void printError(ErrorType errorMessage) {
         printMessage(TColors.RED_B + "[Error]: " + errorMessage + TColors.RESET);
@@ -212,6 +216,7 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Returns the wanted Tile, if existing
+	 * @param tileIndex index chosen by player
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
 	private Tile wantedTile(int tileIndex) throws IndexOutOfBoundsException {
@@ -230,6 +235,8 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Returns the wanted Card, if existing
+	 * @param move player's action
+	 * @param cIndex card index inserted by player
 	 * @throws IOException if move is unknown
 	 */
 	private Card wantedCard(Move move,int cIndex) throws IOException {
@@ -240,9 +247,7 @@ public class Tui implements IF_GameUI {
 			case PICK_FROM_DOWN -> {
 				return vBoard.getLowerRow().get(cIndex);
 			}
-			default -> {
-				 throw new IOException("Unknown Move");
-			}
+			default -> throw new IOException("Unknown Move");
 		}
 	}
 
@@ -260,9 +265,7 @@ public class Tui implements IF_GameUI {
 			case PICK_FROM_DOWN -> {
 				return vBoard.getLowerBuildings().get(cIndex);
 			}
-			default -> {
-				throw new IOException("Unknown Move");
-			}
+			default -> throw new IOException("Unknown Move");
 		}
 	}
     /**
@@ -372,7 +375,7 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Defines which are the correct commands for the ongoing game phase - asking for DB
-	 * @param plAction
+	 * @param plAction player input
 	 */
 	private void endScreenCMDs(String[] plAction) {
 		String action = plAction[0];
@@ -387,16 +390,19 @@ public class Tui implements IF_GameUI {
 			switch (action) {
 				case "y" -> {
 					vView.answerShowRankings(true);
+					gPhase = END;
 				}
 				case "n" -> {
 					vView.answerShowRankings(false);
 					printMessage("Shutting down...");
+					gPhase = END;
 				}
+				default -> printMessage("Invalid Command, either type y or n.");
 			}
 		} catch (Exception e) {
 			printMessage("[ERROR]: No Connection to database found.\nShutting down...");
+			gPhase = END;
 		}
-		gPhase = END;
 	}
 
 	//PRIVATE METHODS USED TO DISPLAY CARDS/MESSAGES
@@ -405,6 +411,7 @@ public class Tui implements IF_GameUI {
 	 * Method to print on TUI - Holds a lock on tuiLock to prevent other methods to change
 	 * TUI graphic simultaneously
 	 * ALL messages should be printed using this method, otherwise remind yourself to synchronize with tuiLock
+	 * @param message text to be printed
 	 */
 	private void printMessage(String message) {
 		synchronized (tuiLock) {
@@ -416,7 +423,7 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Method to print on TUI - Prints all [System] messages green
-	 * @param message string to be printed
+	 * @param message text to be printed
 	 */
 	private void printSysMessage(String message) {
 		synchronized (tuiLock) {
@@ -436,7 +443,7 @@ public class Tui implements IF_GameUI {
 				draw down #num-> draw a Card (d d\s
 				buy up #num -> buy a Building (b u)\s
 				buy down #num -> chose a Building (b d)\s
-				show #plName -> shows tribe of player 
+				show #plName -> shows tribe of player\s
 				info cUp/cDown/bUp/bDown #num -> shows info on selected card (i cu/cd/bu/bd)
 				-h or -help #num -> to show available commands\s
 			\t""" + TColors.RESET);
@@ -517,7 +524,9 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Used to print each line
-	 * @param ln1 @param ln2 @param ln3: each represents a line on the terminal
+	 * @param ln1 represents a line on the terminal
+	 * @param ln2 represents a line on the terminal
+	 * @param ln3 represents a line on the terminal
 	 */
 	private void displayRows(StringBuilder ln1, StringBuilder ln2, StringBuilder ln3) {
 		System.out.println(ln1);
@@ -561,6 +570,7 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Displays buildings info
+	 * @param builds player's buildings
 	 */
 	private void displayBuilds(List<BuildingCard> builds) {
 		if (builds.isEmpty()) return;
@@ -580,6 +590,7 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Displays tiles info
+	 * @param tiles tiles to be displayed
 	 */
 	private void displayTiles(List<Tile> tiles) {
 		if (tiles.isEmpty()) return;
@@ -601,6 +612,7 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Displays player's info
+	 * @param p selected player
 	 */
 	private void displayPlayer(Player p) {
         System.out.println(TColors.GREEN_B + "\n--- TRIBE OF " + TColors.CYAN_B + p.getNickname() + TColors.GREEN_B + " ---" + TColors.RESET);
@@ -610,6 +622,7 @@ public class Tui implements IF_GameUI {
 
 	/**
 	 * Displays player's info
+	 * @param nickname player's nickname
 	 */
 	private void displayChosenPlayer(String nickname) {
 		synchronized (tuiLock) {
