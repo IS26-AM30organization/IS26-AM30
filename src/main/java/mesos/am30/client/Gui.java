@@ -211,18 +211,18 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * @see IF_GameUI#setvView(VirtualView)
+     * @see IF_GameUI#setVView(VirtualView)
      */
     @Override
-    public void setvView(VirtualView view) {
+    public void setVView(VirtualView view) {
         this.vView = view;
     }
 
     /**
-     * @see IF_GameUI#setvModel(ViewModel)
+     * @see IF_GameUI#setVModel(ViewModel)
      */
     @Override
-    public void setvModel(ViewModel vBoard) {
+    public void setVModel(ViewModel vBoard) {
         this.vBoard = vBoard;
     }
 }

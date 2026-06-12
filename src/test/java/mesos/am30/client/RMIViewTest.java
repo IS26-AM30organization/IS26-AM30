@@ -105,6 +105,7 @@ class RMIViewTest {
         verify(mockServer, never()).setNickname(any(), any(), any());
         verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
+        verify(mockController, never()).showRankings(anyString(), anyBoolean());
     }
 
     @Test
@@ -120,6 +121,7 @@ class RMIViewTest {
         verify(mockServer, never()).setNickname(any(),any(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
+        verify(mockController, never()).showRankings(anyString(), anyBoolean());
     }
 
     @Test
@@ -134,6 +136,23 @@ class RMIViewTest {
         verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockServer, never()).setNickname(any(),any(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
+        verify(mockController, never()).chooseBuilding(anyString(), any());
+        verify(mockController, never()).showRankings(anyString(), anyBoolean());
+    }
+
+    @Test
+    void toController_RoutesShowRankingsCorrectly() throws Exception {
+        rmiView.setController(mockController);
+        rmiView.setNickname("Lore");
+
+        rmiView.toController(Choice.RANKINGS, true);
+
+        // verify
+        verify(mockController, timeout(1000).times(1)).showRankings("Lore", true);
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
+        verify(mockServer, never()).setNickname(any(),any(), any());
+        verify(mockController, never()).chooseTile(anyString(), any());
+        verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
     }
 
@@ -151,6 +170,7 @@ class RMIViewTest {
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
+        verify(mockController, never()).showRankings(anyString(), anyBoolean());
     }
 
     @Test
@@ -166,6 +186,7 @@ class RMIViewTest {
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
+        verify(mockController, never()).showRankings(anyString(), anyBoolean());
     }
 
     @Test
@@ -198,6 +219,19 @@ class RMIViewTest {
         // Assert
         Thread.sleep(1500);
         verify(mockServer, atLeastOnce()).ping();
+        verify(mockUI, never()).printError(ErrorType.CONNECTION_CRASHED);
+        verify(mockUI, never()).printEnd();
+    }
+
+    @Test
+    void endHeartbeatCorrect() throws IOException, InterruptedException {
+        // Act
+        rmiView.startHeartbeat(mockServer);
+
+        // Assert
+        rmiView.closeConnection();
+        Thread.sleep(1500);
+        verify(mockServer, never()).ping();
         verify(mockUI, never()).printError(ErrorType.CONNECTION_CRASHED);
         verify(mockUI, never()).printEnd();
     }

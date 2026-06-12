@@ -17,27 +17,45 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * RMI communication handler View-side.
+ * <br/>This Class works as the communication logic for the VirtualView Class, handling all the View commands and sending them to the Controller.
+ * <br/>It implements the communication protocol via RMI.
+ */
 public class RMIView extends VirtualView {
     private IF_Server remoteServer;
     private IF_GameController controller;
     private Registry registry;
     private volatile boolean connectionOpen = true;
 
+    /**
+     * Constructor for RMIView.
+     *
+     * @see VirtualView Everything ensured by VirtualView constructor is ensured here too.
+     */
     public RMIView(IF_GameUI userInterface) throws RemoteException {
         super(userInterface);
         UnicastRemoteObject.exportObject(this, 0);
         this.registry = null;
     }
 
+    // Test setter for the attribute "remoteServer"
     void setRemoteServer(IF_Server remoteServer) {
         this.remoteServer = remoteServer;
     }
 
+    // Test setter for the attribute "connectionOpen" as false
+    void closeConnection() {
+        this.connectionOpen = false;
+    }
+
     /**
-     * Open the connection to the Server
-     * @param path URL of the server
-     * @param port Port opened by the Server
-     * @throws IOException The connection cannot be established correctly
+     * Open the connection to the Server.
+     * <br/>This method handles the RMI connection between this View and the Server.
+     * <br/><strong>Pre:</strong> path != null
+     * <br/><strong>Post:</strong> registry = LocateRegistry.getRegistry(path, port) && remoteServer = registry.lookup("server")
+     *
+     * @see VirtualView Deeper description of this method in the VirtualView abstract Class.
      */
     @Override
     public void findServer(String path, int port) throws IOException {
@@ -102,11 +120,17 @@ public class RMIView extends VirtualView {
         }).start();
     }
 
+    /**
+     * @see IF_GameView Implementation Client-Side via RMI of the setController method.
+     */
     @Override
     public void setController(IF_GameController controller) throws IOException {
         this.controller = controller;
     }
 
+    /**
+     * @see IF_GameView Implementation Client-Side via RMI of the end method.
+     */
     @Override
     public void end() throws IOException {
         connectionOpen = false;

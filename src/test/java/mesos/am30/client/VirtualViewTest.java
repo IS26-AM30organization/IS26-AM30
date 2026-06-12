@@ -50,13 +50,13 @@ class VirtualViewTest {
     private List<Object> mockList;
 
     private Choice capturedServerChoice;
-    private String capturedLobbyCode;
+    private String capturedIdentifier;
     private Object capturedParameter;
 
     @BeforeEach
     void setUp() {
         capturedServerChoice = null;
-        capturedLobbyCode = null;
+        capturedIdentifier = null;
         capturedParameter = null;
 
         // set up anonymous VirtualView
@@ -67,12 +67,16 @@ class VirtualViewTest {
             @Override
             protected void toServer(Choice choice, String lobbyCode, Object parameter) {
                 capturedServerChoice = choice;
-                capturedLobbyCode = lobbyCode;
+                capturedIdentifier = lobbyCode;
                 capturedParameter = parameter;
             }
 
             @Override
-            protected void toController(Choice choice, Object parameter) {}
+            protected void toController(Choice choice, Object parameter) {
+                capturedServerChoice = choice;
+                capturedIdentifier = virtualView.getNickname();
+                capturedParameter = parameter;
+            }
 
             @Override
             public void setController(IF_GameController controller) {}
@@ -80,6 +84,13 @@ class VirtualViewTest {
             @Override
             public void end() {}
         };
+    }
+
+    @Test
+    void getLobbyCode() throws IOException {
+        assertEquals("", virtualView.getLobbyCode());
+        virtualView.createLobby(2,"123456");
+        assertEquals("123456", virtualView.getLobbyCode());
     }
 
     @Test
@@ -551,7 +562,7 @@ class VirtualViewTest {
         assertEquals("123456", virtualView.lobbyCode);
         assertEquals(3, virtualView.playersNumber);
         assertEquals(Choice.CREATE_LOBBY, capturedServerChoice);
-        assertEquals("123456", capturedLobbyCode);
+        assertEquals("123456", capturedIdentifier);
     }
 
     @Test
@@ -565,13 +576,43 @@ class VirtualViewTest {
     }
 
     @Test
+    void createLobby_EmptyCode_NormalizesToEmpty() throws IOException {
+        // Act
+        virtualView.createLobby(3, "");
+
+        // Assert
+        assertEquals("", virtualView.lobbyCode);
+        assertEquals(Choice.CREATE_LOBBY, capturedServerChoice);
+    }
+
+    @Test
+    void createLobby_BiggerCode() throws IOException {
+        // Act
+        virtualView.createLobby(3, "1234567");
+
+        // Assert
+        assertEquals("123456", virtualView.lobbyCode);
+        assertEquals(Choice.CREATE_LOBBY, capturedServerChoice);
+    }
+
+    @Test
+    void createLobby_SmallerCode() throws IOException {
+        // Act
+        virtualView.createLobby(3, "123");
+
+        // Assert
+        assertEquals("123000", virtualView.lobbyCode);
+        assertEquals(Choice.CREATE_LOBBY, capturedServerChoice);
+    }
+
+    @Test
     void requestAvailableLobbies() throws IOException {
         // Act
         virtualView.requestAvailableLobbies();
 
         // Assert
         assertEquals(Choice.GET_AVAILABLE_LOBBIES, capturedServerChoice);
-        assertNull(capturedLobbyCode);
+        assertNull(capturedIdentifier);
         assertNull(capturedParameter);
     }
 
@@ -583,7 +624,7 @@ class VirtualViewTest {
         // Assert
         assertEquals("123456", virtualView.lobbyCode);
         assertEquals(Choice.JOIN_LOBBY, capturedServerChoice);
-        assertEquals("123456", capturedLobbyCode);
+        assertEquals("123456", capturedIdentifier);
     }
 
     @Test
@@ -596,7 +637,48 @@ class VirtualViewTest {
 
         // Assert
         assertEquals(Choice.NICKNAME, capturedServerChoice);
-        assertEquals("123456", capturedLobbyCode);
+        assertEquals("123456", capturedIdentifier);
         assertEquals("Lorenzo", capturedParameter);
+    }
+
+    @Test
+    void askShowRankings() throws IOException {
+        // Act
+        virtualView.askShowRankings();
+
+        // Assert
+        verify(mockUI).askShowRankings();
+    }
+
+    @Test
+    void answerShowRankings() throws IOException {
+        // Act
+        virtualView.nickname = "nickname";
+        virtualView.answerShowRankings(true);
+
+        // Assert
+        assertEquals(Choice.RANKINGS, capturedServerChoice);
+        assertEquals("nickname", capturedIdentifier);
+        assertEquals(true, capturedParameter);
+    }
+
+    @Test
+    void showRankings() throws IOException {
+        // Act
+        virtualView.showRankings(anyMap(), anyList());
+
+        // Assert
+        verify(mockUI).showRankings(anyMap(), anyList());
+    }
+
+    @Test
+    void ping() throws IOException {
+        // Act
+        virtualView.ping();
+
+        // Assert
+        assertNull(capturedServerChoice);
+        assertNull(capturedIdentifier);
+        assertNull(capturedParameter);
     }
 }

@@ -10,8 +10,8 @@ import java.net.Socket;
 
 /**
  * Socket communication handler View-side.
- * <br>This Class works as the communication logic for the VirtualView Class, handling all the View commands and sending them to the Controller.
- * <br>It implements the communication protocol via Socket.
+ * <br/>This Class works as the communication logic for the VirtualView Class, handling all the View commands and sending them to the Controller.
+ * <br/>It implements the communication protocol via Socket.
  */
 public class SocketView extends VirtualView {
     private Socket socket = null;
@@ -51,9 +51,9 @@ public class SocketView extends VirtualView {
 
     /**
      * Open the connection to the Server.
-     * <br>This method manages the Socket connection between this View and the Server.
-     * <br><strong>Pre:</strong> path != null
-     * <br><strong>Post:</strong> socket = Socket(path, port) && outputStream = socket.getOutputStream && inputStream = socket.getInputStream
+     * <br/>This method manages the Socket connection between this View and the Server.
+     * <br/><strong>Pre:</strong> path != null
+     * <br/><strong>Post:</strong> socket = Socket(path, port) && outputStream = socket.getOutputStream && inputStream = socket.getInputStream
      *
      * @see VirtualView Deeper description of this method in the VirtualView abstract Class.
      */
@@ -143,10 +143,6 @@ public class SocketView extends VirtualView {
         }).start();
     }
 
-    // never called on SocketView (used Server-side via SocketProxy)
-    @Override
-    public void setController(IF_GameController controller) { /* never called on SocketView */ }
-
     // invoke Server methods
     @Override
     protected synchronized void toServer(Choice choice, String lobbyCode, Object parameter) throws IOException {
@@ -160,6 +156,10 @@ public class SocketView extends VirtualView {
         outputStream.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, choice, nickname, parameter));
         outputStream.flush();
     }
+
+    // never called on SocketView (used Server-side via SocketProxy)
+    @Override
+    public void setController(IF_GameController controller) { /* never called on SocketView */ }
 
     /**
      * @see IF_GameView Implementation Client-Side via Socket of the end method.

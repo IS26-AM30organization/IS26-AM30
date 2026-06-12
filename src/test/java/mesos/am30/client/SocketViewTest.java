@@ -23,10 +23,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,9 +37,6 @@ class SocketViewTest {
 
     @Mock
     private IF_GameUI mockUI;
-
-    public SocketViewTest() {
-    }
 
     @BeforeEach
     void setUp() throws IOException, InterruptedException {
@@ -256,6 +250,41 @@ class SocketViewTest {
     }
 
     @Test
+    void startListeningThread_RANKINGS() throws IOException, InterruptedException {
+        // Act
+        view.startListeningThread();
+        proxyOut.writeObject(new Message(MessageType.RANKINGS));
+        proxyOut.flush();
+
+        // Assert
+        Thread.sleep(200);
+        verify(mockUI).askShowRankings();
+    }
+
+
+    @Test
+    void startListeningThread_SHOW_RANKINGS() throws IOException, InterruptedException {
+        // set up Mock Rankings
+        List<Map<String, String>> rankings = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Map<String, String> ranking = new LinkedHashMap<>();
+            ranking.put("NICKNAME", "nickname");
+            ranking.put("SCORE", String.valueOf(100 - (i + 5)));
+            ranking.put("RANK", String.valueOf(i));
+            rankings.add(ranking);
+        }
+
+        // Act
+        view.startListeningThread();
+        proxyOut.writeObject(new RankingMessage(MessageType.SHOW_RANKINGS, rankings.getLast(), rankings));
+        proxyOut.flush();
+
+        // Assert
+        Thread.sleep(200);
+        verify(mockUI).showRankings(rankings.getLast(), rankings);
+    }
+
+    @Test
     void startListeningThread_END() throws IOException, InterruptedException {
         // Act
         view.startListeningThread();
@@ -276,7 +305,9 @@ class SocketViewTest {
 
         // Assert
         Thread.sleep(200);
-        verifyNoInteractions(mockUI);
+        verify(mockUI, times(1)).setVView(any());
+        verify(mockUI, times(1)).setVModel(any());
+        verifyNoMoreInteractions(mockUI);
     }
 
     @Test
@@ -312,6 +343,8 @@ class SocketViewTest {
     @Test
     void setController() {
         view.setController(mock(IF_GameController.class));
-        verifyNoInteractions(mockUI);
+        verify(mockUI, times(1)).setVView(any());
+        verify(mockUI, times(1)).setVModel(any());
+        verifyNoMoreInteractions(mockUI);
     }
 }

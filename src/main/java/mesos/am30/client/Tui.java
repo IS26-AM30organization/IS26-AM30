@@ -37,7 +37,7 @@ public class Tui implements IF_GameUI {
 		gPhase = GamePhase.MENU;
 	}
 
-	public void setvModel(ViewModel vBoard){
+	public void setVModel(ViewModel vBoard){
 		this.vBoard = vBoard;
 	}
 
@@ -81,7 +81,7 @@ public class Tui implements IF_GameUI {
 	/**
 	 * Invoked by virtualView to prompt the player to insert its name
 	 */
-    public void askNickname() throws IOException {
+    public void askNickname() {
             gPhase = GamePhase.LOBBY;
             printMessage("Insert nickname: ");
     }
@@ -156,7 +156,7 @@ public class Tui implements IF_GameUI {
 	}
 
 	@Override
-	public void setvView(VirtualView view) {
+	public void setVView(VirtualView view) {
 		this.vView=view;
 	}
 
@@ -169,13 +169,7 @@ public class Tui implements IF_GameUI {
 
         switch (errorMessage) {
             case WRONG_PLAYERS_NUMBER -> printMessage("Type: create #plNum, to create a lobby.");
-            case WRONG_NICKNAME -> {
-                try {
-                    askNickname();
-                } catch (IOException e) {
-                    printMessage("[Error]: error on setting player's nickname");
-                }
-            }
+            case WRONG_NICKNAME -> askNickname();
         }
     }
 

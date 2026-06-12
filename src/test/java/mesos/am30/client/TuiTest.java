@@ -47,8 +47,8 @@ class TuiTest {
         lenient().when(vBoard.getTiles()).thenReturn(new ArrayList<>());
         lenient().when(vBoard.getPlayers()).thenReturn(new ArrayList<>());
 
-        tui.setvModel(vBoard); //needed to reset tui with vBoard mock
-        tui.setvView(vView);
+        tui.setVModel(vBoard); //needed to reset tui with vBoard mock
+        tui.setVView(vView);
     }
 
     @AfterEach
