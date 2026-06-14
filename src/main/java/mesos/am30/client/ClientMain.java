@@ -3,6 +3,7 @@ package mesos.am30.client;
 import javafx.application.Application;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class ClientMain {
     private static Boolean isItRMI;
@@ -38,8 +39,11 @@ public class ClientMain {
                 view = new SocketView(userInterface);
                 port = 12345;
             } else if (args[2].equalsIgnoreCase("rmi")) {
-                view = new RMIView(userInterface);
                 port = 1099;
+                try (Socket s = new Socket(IP, port)) {
+                    System.setProperty("java.rmi.server.hostname", s.getLocalAddress().getHostAddress());
+                }
+                view = new RMIView(userInterface);
             } else {
                 System.err.println("[Wrong argument] : " + args[2] + "is not valid!!! Use 'socket' or 'rmi'!!!");
                 System.exit(1);

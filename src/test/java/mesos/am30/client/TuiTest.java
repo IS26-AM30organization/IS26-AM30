@@ -4,7 +4,6 @@ import mesos.am30.common.ErrorType;
 import mesos.am30.common.GamePhase;
 import mesos.am30.common.Move;
 import mesos.am30.gameModel.Parameter;
-import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
@@ -82,15 +81,6 @@ class TuiTest {
 
     // HERPER METHODS -> USED TO SIMPLIFY MOCK CREATION FOR DISPLAY TESTS
 
-    private Player mockPlayer(String nickname, int prestigePoints) {
-        Player p = mock(Player.class);
-        when(p.getNickname()).thenReturn(nickname);
-        Map<Parameter, Integer> params = new HashMap<>();
-        params.put(Parameter.PRESTIGE_POINTS, prestigePoints);
-        when(p.getParameters()).thenReturn(params);
-        return p;
-    }
-
     private BuildingCard mockBuildCard() {
         return mock(BuildingCard.class);
     }
@@ -104,7 +94,7 @@ class TuiTest {
     //askNickname ------------------------
 
     @Test
-    void askNickname_checks() throws IOException {
+    void askNickname_checks() {
         tui.askNickname();
         assertTrue(output().contains("Insert nickname: "));
         assertEquals(GamePhase.LOBBY, tui.gPhase);

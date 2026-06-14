@@ -43,7 +43,7 @@ public class Tui implements IF_GameUI {
 	/**
 	 * Starts executor service for terminal reading
 	 */
-	public void startCLient() {
+	public void startClient() {
 		clientExecutor.submit(this::plInputReader);
 	}
 
@@ -51,8 +51,6 @@ public class Tui implements IF_GameUI {
 	 * Allows execution of available commands based on gamePhase
 	 */
     public void plInputReader() {
-        String action = "";
-
         while (gPhase != END) {
             String plInput;
 			try {
@@ -200,7 +198,7 @@ public class Tui implements IF_GameUI {
 	public void confirmConnection() {
 		printSysMessage(TColors.GREEN_B + "[System]: Connected! Type -h or -help to show available commands at anytime." + TColors.RESET);
 		gPhase = GamePhase.MENU;
-		startCLient();
+		startClient();
 	}
 
 	/**
@@ -273,11 +271,10 @@ public class Tui implements IF_GameUI {
      * @param plAction contains terminal player's input
      */
     private void menuCMDs(String[] plAction) {
-        String action = " ";
         int numOne = -1;
         String numTwo = "";
 
-        action = plAction[0];
+        String action = plAction[0];
         int cmdSize = plAction.length;
 
         if (cmdSize <= 3) {
@@ -330,10 +327,9 @@ public class Tui implements IF_GameUI {
 			return;
 		}
 
-		String action = " ";
 		int cIndex = -1;
 
-		action = plAction[0];
+		String action = plAction[0];
 		int cmdSize = plAction.length;
 
 		if (cmdSize <= 3) {
@@ -675,8 +671,8 @@ public class Tui implements IF_GameUI {
 	 */
 	private void displayTileBoost() {
 		System.out.println(TColors.YELLOW + "\n\n--- FOOD TILES --------------" + TColors.RESET);
-		for (int j = 0; j < tileBoost.length; j++) {
-            System.out.println(TColors.ORANGE + "Tile: " + tileBoost[j] + (tileBoost[j]>0 ? " Food" : (tileBoost[j]<0 ? " pP" : "")) + TColors.RESET);
+        for (int i : tileBoost) {
+            System.out.println(TColors.ORANGE + "Tile: " + i + (i > 0 ? " Food" : (i < 0 ? " pP" : "")) + TColors.RESET);
         }
 
 	}

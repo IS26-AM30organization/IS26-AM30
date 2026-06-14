@@ -71,13 +71,15 @@ public class Server extends UnicastRemoteObject implements IF_Server {
      */
     public static void main(String[] args) throws IOException {
         String ip = (args.length >= 1) ? args[0] : "localhost";
+
+        System.setProperty("java.rmi.server.hostname", ip);
+
         Server server = Server.getInstance();
         if (startRmiServer(server, 1099, ip)) startSocketServer(server, 12345);
     }
 
     // package-private for testing
     static boolean startRmiServer(Server server, int port, String ip) throws IOException {
-        System.setProperty("java.rmi.server.hostname", ip);
         try {
             registry = LocateRegistry.createRegistry(port);
             registry.bind("server", server);
