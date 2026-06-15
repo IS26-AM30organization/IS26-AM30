@@ -3,9 +3,12 @@ package mesos.am30.client.gui;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import mesos.am30.client.ClientMain;
 import mesos.am30.client.VirtualView;
+import mesos.am30.common.ErrorType;
 
 import java.io.IOException;
 import java.util.Map;
@@ -13,6 +16,7 @@ import java.util.Map;
 public class MMMGui {
     String nickname;
     VirtualView vView;
+    int port;
 
     @FXML    ScrollPane existingLobbies;
     @FXML    HBox newLobby;
@@ -23,9 +27,15 @@ public class MMMGui {
     @FXML    ChoiceBox<Integer> newLobbyPlayers;
     @FXML    HBox nicknameBox;
     @FXML    TextField name;
+    @FXML    AnchorPane loading;
+    @FXML    Label connectedText;
+    @FXML    Label title;
 
     public void setView (VirtualView vView){
         this.vView = vView;
+    }
+    public void setPort (int port){
+        this.port = port;
     }
 
     @FXML
@@ -37,10 +47,23 @@ public class MMMGui {
         newLobbyPlayers.getItems().addAll(2,3,4,5);
         nicknameBox.setVisible(false);
         nicknameBox.setManaged(false);
+        connectedText.setVisible(false);
+        connectedText.setManaged(false);
     }
 
     @FXML
     public void play(){
+        errorLabel.setText("CONNECTING...");
+        errorLabel.setVisible(true);
+        try {
+            vView.findServer(ClientMain.getIP(), port);
+        } catch (IOException exception) {
+            errorLabel.setText("CHECK YOUR CONNECTION!");
+        }
+    }
+
+    public void confirmConnection() {
+        errorLabel.setVisible(false);
         existingLobbies.setVisible(true);
         newLobby.setVisible(true);
         existingLobbies.setManaged(true);
@@ -49,6 +72,17 @@ public class MMMGui {
         playButton.setVisible(false);
         playButton.setManaged(false);
         refresh();
+    }
+
+    public void confirmLobbyJoined() {
+        Platform.runLater(() ->{
+            errorLabel.setVisible(false);
+            connectedText.setVisible(true);
+            connectedText.setManaged(true);
+            title.setText(vView.getLobbyCode());
+            nicknameBox.setVisible(false);
+            nicknameBox.setManaged(false);
+        });
     }
 
     @FXML
@@ -61,8 +95,8 @@ public class MMMGui {
             });
         } catch (IOException e) {
             Platform.runLater(()->{
-            errorLabel.setText("CANNOT RELOAD! CHECK YOUR CONNECTION AND TRY AGAIN");
-            errorLabel.setVisible(true);
+                errorLabel.setText("CANNOT RELOAD! CHECK YOUR CONNECTION AND TRY AGAIN");
+                errorLabel.setVisible(true);
             });
         }
     }
@@ -83,7 +117,7 @@ public class MMMGui {
                 });
                 lobbyList.getChildren().add(button);
             }
-            });
+        });
     }
 
     private void joinLobby(String lobbyName){
@@ -141,7 +175,41 @@ public class MMMGui {
         });
     }
 
+    public void loading(){
+        loading.setVisible(true);
+    }
+
     public String getNickname(){
         return nickname;
+    }
+
+    public void printError(ErrorType errorType) {
+        Platform.runLater(()->{
+            errorLabel.setVisible(true);
+            switch (errorType) {
+                case WRONG_IP -> {
+                    errorLabel.setText("CANNOT FIND A SERVER FOR THIS IP!");
+                }
+                case ALREADY_EXISTING_LOBBY -> {
+                    errorLabel.setText("THERE'S ALREADY A LOBBY WITH THIS CODE!");
+                }
+                case NOT_EXISTING_LOBBY ->  {
+                    errorLabel.setText("COULN'T FIND THAT LOBBY! RELOADING...");
+                    refresh();
+                }
+                case WRONG_PLAYERS_NUMBER ->  {
+                    errorLabel.setText("CHOOSE BETWEEN 2 AND 5 PLAYERS!");
+                }
+                case INVALID_LOBBY_CODE ->  {
+                    errorLabel.setText("INVALID LOBBY CODE!");
+                }
+                case WRONG_NICKNAME ->   {
+                    errorLabel.setText("CHOOSE ANOTHER NICKNAME FOR THIS MATCH!");
+                }
+                case FULL_LOBBY -> {
+                    errorLabel.setText("THE CHOSEN LOBBY IS ALREADY FULL!");
+                }
+            }
+        });
     }
 }

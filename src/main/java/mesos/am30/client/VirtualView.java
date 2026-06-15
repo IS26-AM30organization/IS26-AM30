@@ -56,7 +56,7 @@ public abstract class VirtualView implements IF_GameView {
         return nickname;
     }
 
-    String getLobbyCode() {
+    public String getLobbyCode() {
         return lobbyCode;
     }
 
