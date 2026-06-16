@@ -1,39 +1,60 @@
 package mesos.am30.client.gui;
 
 import javafx.scene.image.Image;
-import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.Card;
 
 import java.util.HashMap;
+import java.util.Objects;
 
+/**
+ * Utility for loading and caching JavaFX images from application resources.
+ * <br/>Images are loaded on first access and cached to avoid redundant I/O.
+ */
 public class ImageLoader {
-    private static HashMap<String, Image> arts = new HashMap<>();
-    private static HashMap<String, Image> frames = new HashMap<>();
-    private static HashMap<String, Image> totems = new HashMap<>();
+    private static final HashMap<String, Image> arts = new HashMap<>();
+    private static final HashMap<String, Image> frames = new HashMap<>();
+    private static final HashMap<String, Image> totems = new HashMap<>();
 
-    public static Image loadArt(Card card){
+    /**
+     * Loads and caches the art image for the given card.
+     * <br/><strong>Pre:</strong> card != null
+     *
+     * @param card The card whose art image to load.
+     * @return The card's art image.
+     */
+    public static Image loadArt(Card card) {
         String art = card.getArt();
-        System.out.println(art);
         if (!arts.containsKey(art))
-            arts.put(art,new Image(ImageLoader.class.getResource("/images/"+ art + ".png").toExternalForm()));
+            arts.put(art, new Image(Objects.requireNonNull(ImageLoader.class.getResourceAsStream("/images/" + art + ".png"))));
 
         return arts.get(art);
     }
 
-    public static Image loadArt(Player p, int i){
-        String art = "/icons/player"+(i+1)+".png";
-        System.out.println(art);
+    /**
+     * Loads and caches the totem image for the player at the given index.
+     *
+     * @param i The player's index (0-based), used to select the icon.
+     * @return The player's totem image.
+     */
+    public static Image loadArt(int i) {
+        String art = "/icons/player" + (i + 1) + ".png";
         if (!totems.containsKey(art))
-            totems.put(art,new Image(ImageLoader.class.getResource(art).toExternalForm()));
+            totems.put(art, new Image(Objects.requireNonNull(ImageLoader.class.getResourceAsStream(art))));
 
         return totems.get(art);
     }
 
-    public static Image loadFrame(Card card){
+    /**
+     * Loads and caches the frame image for the given card.
+     * <br/><strong>Pre:</strong> card != null
+     *
+     * @param card The card whose frame image to load.
+     * @return The card's frame image.
+     */
+    public static Image loadFrame(Card card) {
         String frame = card.getFrame();
-        System.out.println(frame);
-        if(!frames.containsKey(frame))
-            frames.put(frame, new Image(ImageLoader.class.getResource("/images/"+ frame + ".png").toExternalForm()));
+        if (!frames.containsKey(frame))
+            frames.put(frame, new Image(Objects.requireNonNull(ImageLoader.class.getResourceAsStream("/images/" + frame + ".png"))));
 
         return frames.get(frame);
     }

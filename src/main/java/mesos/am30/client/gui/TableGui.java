@@ -7,13 +7,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import mesos.am30.client.ViewModel;
 import mesos.am30.client.VirtualView;
 import mesos.am30.common.ErrorType;
@@ -27,14 +24,16 @@ import mesos.am30.gameModel.card.CharacterCard;
 import java.io.IOException;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
 
+/**
+ * Controller for the main game table scene.
+ * <br/>Manages card rows, buildings, tiles, and player panels.
+ * <br/>Delegates tribe and leaderboard views to {@link TribeGui} and {@link LeaderboardGui}.
+ */
 public class TableGui {
     ViewModel vBoard;
     String nickname;
     VirtualView vView;
-
-    @FXML    private AnchorPane gameTable;
 
     @FXML    private Button upper1;
     @FXML    private Button upper2;
@@ -192,13 +191,15 @@ public class TableGui {
 
     private TribeGui tribeController;
     private LeaderboardGui leaderboardController;
-    private Scene tribe;
-    private Stage big;
+
+    private Map<String, String> cachedPlayerRank;
+    private List<Map<String, String>> cachedGlobalRankings;
 
     @FXML   VBox infoBox;
     @FXML   StackPane infoPreview;
     @FXML   Label infoLabel;
 
+    /** Initializes UI component arrays and loads tribe and leaderboard sub-controllers. */
     @FXML
     public void initialize() throws IOException {
         uppers = new ArrayList<>(List.of(upper1,upper2,upper3,upper4,upper5,upper6,upper7,upper8,upper9));
@@ -239,14 +240,32 @@ public class TableGui {
         infoPreview.setVisible(false);
     }
 
+    /**
+     * Sets the view model for the game table.
+     * <br/><strong>Pre:</strong> vBoard != null
+     *
+     * @param vBoard The view model to set.
+     */
     public void setBoard(ViewModel vBoard) {
         this.vBoard = vBoard;
     }
 
+    /**
+     * Sets the virtual view used to send actions to the server.
+     * <br/><strong>Pre:</strong> view != null
+     *
+     * @param view The virtual view to set.
+     */
     public void setView(VirtualView view){
         this.vView = view;
     }
 
+    /**
+     * Updates all UI components to reflect the current game state.
+     * <br/><strong>Pre:</strong> viewModel != null
+     *
+     * @param viewModel The updated view model.
+     */
     public void refresh(ViewModel viewModel) {
         vBoard = viewModel;
 
@@ -322,19 +341,19 @@ public class TableGui {
         for (int i = 0; i<vBoard.getTiles().size(); i++){
             Optional<Player> p = vBoard.getTiles().get(i).getCurrentPlayer();
             if (p.isPresent() && colors.get(p.get())!=null){
-                ((Button) tiles.getChildren().get(i)).setStyle("-fx-background-color: #" +colors.get(p.get()));
+                tiles.getChildren().get(i).setStyle("-fx-background-color: #" +colors.get(p.get()));
             } else
-                ((Button) tiles.getChildren().get(i)).setStyle("");
+                tiles.getChildren().get(i).setStyle("");
         }
 
         //setting era
-        if (!vBoard.getUpperRow().isEmpty() && vBoard.getUpperRow().size()>0)
+        if (!vBoard.getUpperRow().isEmpty())
             eraLabel.setText("ERA " +
                     (switch (Math.max(vBoard.getUpperRow().getLast().getEra(), vBoard.getUpperRow().get(vBoard.getUpperRow().size() - 2).getEra())) {
-                        default -> "0";
                         case 1 -> "I";
                         case 2 -> "II";
                         case 3 -> "III";
+                        default -> "0";
                     }));
 
         //setting players
@@ -378,7 +397,7 @@ public class TableGui {
         }
 
         colors = new HashMap<>();
-        List<String> colorsToPickFrom = new ArrayList<String>(List.of("F15C3E","00A1C1","FFCD28","410B2C","EDEDEC"));
+        List<String> colorsToPickFrom = new ArrayList<>(List.of("F15C3E","00A1C1","FFCD28","410B2C","EDEDEC"));
         int i = 0;
         for(Player p : vBoard.getPlayers()){
             colors.put(p, colorsToPickFrom.get(i));
@@ -386,10 +405,24 @@ public class TableGui {
         }
     }
 
+    /**
+     * Sets the local player's nickname.
+     * <br/><strong>Pre:</strong> nickname != null
+     *
+     * @param nickname The player's nickname.
+     */
     public void setName(String nickname){
         this.nickname = nickname;
     }
 
+    /**
+     * Updates the turn label to show which player must make which move.
+     * <br/><strong>Pre:</strong> nickname != null
+     * <br/><strong>Pre:</strong> move != null
+     *
+     * @param nickname The acting player's nickname.
+     * @param move The move type required.
+     */
     public void printMove(String nickname, Move move){
         Platform.runLater(() -> {
             if (nickname.equals(this.nickname)) {
@@ -399,7 +432,7 @@ public class TableGui {
         });
     }
 
-    private String getMove(Move move, Boolean me){
+    private String getMove(Move move, boolean me){
         Platform.runLater(() -> {
             for (Button card : uppers){ card.setDisable(true); card.setOpacity(0.8);}
             for (Button card : lowers){ card.setDisable(true); card.setOpacity(0.8);}
@@ -407,20 +440,20 @@ public class TableGui {
             for (Button card : downBs){ card.setDisable(true); card.setOpacity(0.8);}
             tiles.setDisable(true); tiles.setOpacity(0.9);
             switch (move){
-                case move.PICK_FROM_DOWN -> {
+                case Move.PICK_FROM_DOWN -> {
                     for (Button card : lowers){
                         if(lowers.indexOf(card)>=vBoard.getLowerRow().size() || vBoard.getLowerRow().get(lowers.indexOf(card)).isPickable())
                         card.setDisable(!me); else card.setDisable(false);
-                                ; if(me) card.setOpacity(1);}
+                        if(me) card.setOpacity(1);}
                     for (Button card : downBs){ card.setDisable(!me); if(me) card.setOpacity(1);}
                 }
-                case move.PICK_FROM_UP -> {
+                case Move.PICK_FROM_UP -> {
                     for (Button card : uppers){
                         if(uppers.indexOf(card)>=vBoard.getUpperRow().size() ||vBoard.getUpperRow().get(uppers.indexOf(card)).isPickable())
                         card.setDisable(!me); else card.setDisable(false); if(me) card.setOpacity(1);}
                     for (Button card : upBs){ card.setDisable(!me); if(me) card.setOpacity(1);}
                 }
-                case move.PICK_ANY_CARD ->  {
+                case Move.PICK_ANY_CARD ->  {
                     for (Button card : uppers){
                         if(uppers.indexOf(card)>=vBoard.getUpperRow().size() || vBoard.getUpperRow().get(uppers.indexOf(card)).isPickable())
                         card.setDisable(!me); else card.setDisable(false); if(me) card.setOpacity(1);}
@@ -430,32 +463,39 @@ public class TableGui {
                     for (Button card : upBs){ card.setDisable(!me); if(me) card.setOpacity(1);}
                     for (Button card : downBs){ card.setDisable(!me); if(me) card.setOpacity(1);}
                 }
-                case move.PICK_TILE ->  {
+                case Move.PICK_TILE ->  {
                     tiles.setDisable(!me); tiles.setOpacity(1);
                 }
-            };
+            }
         });
         return switch (move) {
-            case move.PICK_FROM_DOWN -> "PICK FROM DOWN";
-            case move.PICK_FROM_UP -> "PICK FROM UP";
-            case move.PICK_ANY_CARD -> "PICK ANY CARD";
-            case move.PICK_TILE -> "CHOOSE A TILE";
+            case Move.PICK_FROM_DOWN -> "PICK FROM DOWN";
+            case Move.PICK_FROM_UP -> "PICK FROM UP";
+            case Move.PICK_ANY_CARD -> "PICK ANY CARD";
+            case Move.PICK_TILE -> "CHOOSE A TILE";
         };
     }
 
+    /**
+     * Configures tile and player visibility then sets the game table as the scene root.
+     * <br/><strong>Pre:</strong> scene != null
+     * <br/><strong>Pre:</strong> root != null
+     *
+     * @param scene The main scene.
+     * @param root The game table root node.
+     */
     public void createTable(Scene scene, Parent root){
         ViewModel tempBoard = vBoard;
         for(int i = 0; i<7; i++){
-            System.out.println(i + "/" + tempBoard.getTiles().size());
+            //System.out.println(i + "/" + tempBoard.getTiles().size());
             if (i>=tempBoard.getTiles().size()) {
                 tiles.getChildren().get(i).setVisible(false);
                 tiles.getChildren().get(i).setManaged(false);
-                //System.out.println(tiles.getChildren().get(i));
             }
             else {
                 if (tempBoard.getTiles().get(i).getFood() == null) {
-                    ((HBox) ((Button) tiles.getChildren().get(i)).getGraphic()).getChildren().get(0).setVisible(false);
-                    ((HBox) ((Button) tiles.getChildren().get(i)).getGraphic()).getChildren().get(0).setManaged(false);
+                    ((HBox) ((Button) tiles.getChildren().get(i)).getGraphic()).getChildren().getFirst().setVisible(false);
+                    ((HBox) ((Button) tiles.getChildren().get(i)).getGraphic()).getChildren().getFirst().setManaged(false);
                 }
                 if (tempBoard.getTiles().get(i).getUpArrows() < 1) {
                     ((HBox) ((Button) tiles.getChildren().get(i)).getGraphic()).getChildren().get(1).setVisible(false);
@@ -489,40 +529,75 @@ public class TableGui {
         scene.setRoot(root);
     }
 
+    /** Handles click on upper character card slot 1. */
     @FXML public void up1() {upcCard(1);}
+    /** Handles click on upper character card slot 2. */
     @FXML public void up2() {upcCard(2);}
+    /** Handles click on upper character card slot 3. */
     @FXML public void up3() {upcCard(3);}
+    /** Handles click on upper character card slot 4. */
     @FXML public void up4() {upcCard(4);}
+    /** Handles click on upper character card slot 5. */
     @FXML public void up5() {upcCard(5);}
+    /** Handles click on upper character card slot 6. */
     @FXML public void up6() {upcCard(6);}
+    /** Handles click on upper character card slot 7. */
     @FXML public void up7() {upcCard(7);}
+    /** Handles click on upper character card slot 8. */
     @FXML public void up8() {upcCard(8);}
+    /** Handles click on upper character card slot 9. */
     @FXML public void up9() {upcCard(9);}
+    /** Handles click on lower character card slot 1. */
     @FXML public void down1() {downcCard(1);}
+    /** Handles click on lower character card slot 2. */
     @FXML public void down2() {downcCard(2);}
+    /** Handles click on lower character card slot 3. */
     @FXML public void down3() {downcCard(3);}
+    /** Handles click on lower character card slot 4. */
     @FXML public void down4() {downcCard(4);}
+    /** Handles click on lower character card slot 5. */
     @FXML public void down5() {downcCard(5);}
+    /** Handles click on lower character card slot 6. */
     @FXML public void down6() {downcCard(6);}
+    /** Handles click on lower character card slot 7. */
     @FXML public void down7() {downcCard(7);}
+    /** Handles click on lower character card slot 8. */
     @FXML public void down8() {downcCard(8);}
+    /** Handles click on lower character card slot 9. */
     @FXML public void down9() {downcCard(9);}
+    /** Handles click on upper building card slot 1. */
     @FXML public void upb1() {upbCard(1);}
+    /** Handles click on upper building card slot 2. */
     @FXML public void upb2() {upbCard(2);}
+    /** Handles click on upper building card slot 3. */
     @FXML public void upb3() {upbCard(3);}
+    /** Handles click on upper building card slot 4. */
     @FXML public void upb4() {upbCard(4);}
+    /** Handles click on upper building card slot 5. */
     @FXML public void upb5() {upbCard(5);}
+    /** Handles click on lower building card slot 1. */
     @FXML public void downb1() {downbCard(1);}
+    /** Handles click on lower building card slot 2. */
     @FXML public void downb2() {downbCard(2);}
+    /** Handles click on lower building card slot 3. */
     @FXML public void downb3() {downbCard(3);}
+    /** Handles click on lower building card slot 4. */
     @FXML public void downb4() {downbCard(4);}
+    /** Handles click on lower building card slot 5. */
     @FXML public void downb5() {downbCard(5);}
+    /** Handles click on tile slot 1. */
     @FXML public void til1() {tile(1);}
+    /** Handles click on tile slot 2. */
     @FXML public void til2() {tile(2);}
+    /** Handles click on tile slot 3. */
     @FXML public void til3() {tile(3);}
+    /** Handles click on tile slot 4. */
     @FXML public void til4() {tile(4);}
+    /** Handles click on tile slot 5. */
     @FXML public void til5() {tile(5);}
+    /** Handles click on tile slot 6. */
     @FXML public void til6() {tile(6);}
+    /** Handles click on tile slot 7. */
     @FXML public void til7() {tile(7);}
 
     private void upcCard(int i){
@@ -585,27 +660,31 @@ public class TableGui {
         });
     }
 
+    /** Shows the tribe detail for player 1. */
     @FXML
     public void showTribe1() { showTribe(0);}
 
+    /** Shows the tribe detail for player 2. */
     @FXML
     public void showTribe2() { showTribe(1);}
 
+    /** Shows the tribe detail for player 3. */
     @FXML
     public void showTribe3() { showTribe(2);}
 
+    /** Shows the tribe detail for player 4. */
     @FXML
     public void showTribe4() { showTribe(3);}
 
+    /** Shows the tribe detail for player 5. */
     @FXML
     public void showTribe5() { showTribe(4);}
 
     private void showTribe(int i) {tribeController.show(vBoard.getPlayers().get(i), i);}
 
-    public void setStage(Stage big){
-        this.big = big;
-    }
-
+    /**
+     * Shows the end-game overlay with final standings and enables the exit button.
+     */
     public void printEnd(){
         Platform.runLater(() -> {
             rows.setVisible(false);
@@ -615,8 +694,8 @@ public class TableGui {
                 playersRow.getChildren().get(i).setStyle("-fx-translate-y: " + (-100-50*finalPlayerList.indexOf(vBoard.getPlayers().get(i))) + "; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #F15C3E; -fx-border-radius: 18; -fx-border-width: 2;");
             }
             eraLabel.setText("GAME ENDED");
-            if (finalPlayerList.getLast().getParameters().get(Parameter.PRESTIGE_POINTS) ==
-                    finalPlayerList.get(finalPlayerList.size()-2).getParameters().get(Parameter.PRESTIGE_POINTS)){
+            if (finalPlayerList.getLast().getParameters().get(Parameter.PRESTIGE_POINTS).equals(
+                    finalPlayerList.get(finalPlayerList.size()-2).getParameters().get(Parameter.PRESTIGE_POINTS))){
                 turnLabel.setText("IT'S A TIE!");
             } else
                 turnLabel.setText(finalPlayerList.getLast().getNickname().toUpperCase() + " WON!");
@@ -626,64 +705,87 @@ public class TableGui {
         });
     }
 
+    /** Exits the application. */
     @FXML
     public void exit(){
         Platform.exit();
     }
 
+    /**
+     * Shows an error message based on the given error type.
+     * <br/><strong>Pre:</strong> errorType != null
+     *
+     * @param errorType The type of error to display.
+     */
     public void printError(ErrorType errorType){
         Platform.runLater(()->{
             errorLabel.setVisible(true);
             switch (errorType) {
-                case NOT_YOUR_TURN -> {
-                    errorLabel.setText("WAIT FOR YOUR TURN!");
-                }
-                case WRONG_TILE -> {
-                    errorLabel.setText("CANNOT PICK THIS TILE!");
-                }
-                case WRONG_CARD -> {
-                    errorLabel.setText("CANNOT DRAW THIS CARD!");
-                }
-                case NOT_ENOUGH_FOOD -> {
-                    errorLabel.setText("YOU DON'T HAVE ENOUGH FOOD!");
-                }
-                case END_FOR_DISCONNECTION -> {
-                    errorLabel.setText("A PLAYER DISCONNECTED!");
-                }
-                case CONNECTION_CRASHED -> {
-                    errorLabel.setText("CONNECTION LOST!");
-                }
+                case NOT_YOUR_TURN -> errorLabel.setText("WAIT FOR YOUR TURN!");
+                case WRONG_TILE -> errorLabel.setText("CANNOT PICK THIS TILE!");
+                case WRONG_CARD -> errorLabel.setText("CANNOT DRAW THIS CARD!");
+                case NOT_ENOUGH_FOOD -> errorLabel.setText("YOU DON'T HAVE ENOUGH FOOD!");
+                case END_FOR_DISCONNECTION -> errorLabel.setText("A PLAYER DISCONNECTED!");
+                case CONNECTION_CRASHED -> errorLabel.setText("CONNECTION LOST!");
             }
         });
     }
     
-    @FXML   void rightUp1(){ rightClick(vBoard.getUpperRow().get(0)); }
+    /** Shows card preview for upper character card slot 1 on right-click. */
+    @FXML   void rightUp1(){ rightClick(vBoard.getUpperRow().getFirst()); }
+    /** Shows card preview for upper character card slot 2 on right-click. */
     @FXML   void rightUp2(){ rightClick(vBoard.getUpperRow().get(1)); }
+    /** Shows card preview for upper character card slot 3 on right-click. */
     @FXML   void rightUp3(){ rightClick(vBoard.getUpperRow().get(2)); }
+    /** Shows card preview for upper character card slot 4 on right-click. */
     @FXML   void rightUp4(){ rightClick(vBoard.getUpperRow().get(3)); }
+    /** Shows card preview for upper character card slot 5 on right-click. */
     @FXML   void rightUp5(){ rightClick(vBoard.getUpperRow().get(4)); }
+    /** Shows card preview for upper character card slot 6 on right-click. */
     @FXML   void rightUp6(){ rightClick(vBoard.getUpperRow().get(5)); }
+    /** Shows card preview for upper character card slot 7 on right-click. */
     @FXML   void rightUp7(){ rightClick(vBoard.getUpperRow().get(6)); }
+    /** Shows card preview for upper character card slot 8 on right-click. */
     @FXML   void rightUp8(){ rightClick(vBoard.getUpperRow().get(7)); }
+    /** Shows card preview for upper character card slot 9 on right-click. */
     @FXML   void rightUp9(){ rightClick(vBoard.getUpperRow().get(8)); }
-    @FXML   void rightUpB1(){ rightClickB(vBoard.getUpperBuildings().get(0)); }
+    /** Shows card preview for upper building slot 1 on right-click. */
+    @FXML   void rightUpB1(){ rightClickB(vBoard.getUpperBuildings().getFirst()); }
+    /** Shows card preview for upper building slot 2 on right-click. */
     @FXML   void rightUpB2(){ rightClickB(vBoard.getUpperBuildings().get(1)); }
+    /** Shows card preview for upper building slot 3 on right-click. */
     @FXML   void rightUpB3(){ rightClickB(vBoard.getUpperBuildings().get(2)); }
+    /** Shows card preview for upper building slot 4 on right-click. */
     @FXML   void rightUpB4(){ rightClickB(vBoard.getUpperBuildings().get(3)); }
+    /** Shows card preview for upper building slot 5 on right-click. */
     @FXML   void rightUpB5(){ rightClickB(vBoard.getUpperBuildings().get(4)); }
-    @FXML   void rightDown1() { rightClick(vBoard.getLowerRow().get(0)); }
+    /** Shows card preview for lower character card slot 1 on right-click. */
+    @FXML   void rightDown1() { rightClick(vBoard.getLowerRow().getFirst()); }
+    /** Shows card preview for lower character card slot 2 on right-click. */
     @FXML   void rightDown2() { rightClick(vBoard.getLowerRow().get(1)); }
+    /** Shows card preview for lower character card slot 3 on right-click. */
     @FXML   void rightDown3() { rightClick(vBoard.getLowerRow().get(2)); }
+    /** Shows card preview for lower character card slot 4 on right-click. */
     @FXML   void rightDown4() { rightClick(vBoard.getLowerRow().get(3)); }
+    /** Shows card preview for lower character card slot 5 on right-click. */
     @FXML   void rightDown5() { rightClick(vBoard.getLowerRow().get(4)); }
+    /** Shows card preview for lower character card slot 6 on right-click. */
     @FXML   void rightDown6() { rightClick(vBoard.getLowerRow().get(5)); }
+    /** Shows card preview for lower character card slot 7 on right-click. */
     @FXML   void rightDown7() { rightClick(vBoard.getLowerRow().get(6)); }
+    /** Shows card preview for lower character card slot 8 on right-click. */
     @FXML   void rightDown8() { rightClick(vBoard.getLowerRow().get(7)); }
+    /** Shows card preview for lower character card slot 9 on right-click. */
     @FXML   void rightDown9() { rightClick(vBoard.getLowerRow().get(8)); }
-    @FXML   void rightDownB1() { rightClickB(vBoard.getLowerBuildings().get(0)); }
+    /** Shows card preview for lower building slot 1 on right-click. */
+    @FXML   void rightDownB1() { rightClickB(vBoard.getLowerBuildings().getFirst()); }
+    /** Shows card preview for lower building slot 2 on right-click. */
     @FXML   void rightDownB2() { rightClickB(vBoard.getLowerBuildings().get(1)); }
+    /** Shows card preview for lower building slot 3 on right-click. */
     @FXML   void rightDownB3() { rightClickB(vBoard.getLowerBuildings().get(2)); }
+    /** Shows card preview for lower building slot 4 on right-click. */
     @FXML   void rightDownB4() { rightClickB(vBoard.getLowerBuildings().get(3)); }
+    /** Shows card preview for lower building slot 5 on right-click. */
     @FXML   void rightDownB5() { rightClickB(vBoard.getLowerBuildings().get(4)); }
 
     private void rightClick (Card card){
@@ -700,10 +802,14 @@ public class TableGui {
         infoBox.setVisible(true);
     }
 
+    /** Hides the card info preview panel. */
     @FXML   void closeInfo(){
         infoBox.setVisible(false);
     }
 
+    /**
+     * Shows the leaderboard button and triggers the end-game overlay.
+     */
     public void askShowRankings(){
         leaderboardButton.setVisible(true);
         leaderboardButton.setDisable(false);
@@ -711,16 +817,31 @@ public class TableGui {
         printEnd();
     }
 
+    /** Requests and displays the leaderboard; uses cached rankings if available. */
     @FXML
     public void leaderboard(){
+        if (cachedPlayerRank != null && cachedGlobalRankings != null) {
+            leaderboardController.showRankings(cachedPlayerRank, cachedGlobalRankings);
+            return;
+        }
         try {
             vView.answerShowRankings(true);
         } catch (Exception e) {
             errorLabel.setText("ERROR CONNECTING TO SERVER!");
-        };
+        }
     }
 
+    /**
+     * Caches ranking data and delegates display to LeaderboardGui.
+     * <br/><strong>Pre:</strong> playerRank != null
+     * <br/><strong>Pre:</strong> globalRankings != null
+     *
+     * @param playerRank The current player's rank entry.
+     * @param globalRankings All players' rankings in order.
+     */
     public void showRankings(Map<String, String> playerRank, List<Map<String, String>> globalRankings) {
+        cachedPlayerRank = playerRank;
+        cachedGlobalRankings = globalRankings;
         leaderboardController.showRankings(playerRank, globalRankings);
     }
 }
