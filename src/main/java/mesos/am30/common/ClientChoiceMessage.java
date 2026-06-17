@@ -11,23 +11,23 @@ package mesos.am30.common;
  */
 public class ClientChoiceMessage extends Message {
     private final Choice choice;
-    private final String nickname;
+    private final String identifier;
     private final Object parameter;
 
     /**
      * Constructor for ClientChoiceMessage.
-     * <br><strong>Pre:</strong> type != null && choice != null && nickname != null && parameter != null
-     * <br><strong>Post:</strong> this.type = type && this.choice = choice && this.nickname = nickname && this.parameter = parameter
+     * <br><strong>Pre:</strong> type != null && choice != null && identifier != null && parameter != null
+     * <br><strong>Post:</strong> this.type = type && this.choice = choice && this.identifier = identifier && this.parameter = parameter
      *
      * @param type Type of message
      * @param choice Type of choice
-     * @param nickname Nickname of the Player
+     * @param identifier Identifier of the Lobby/Player
      * @param parameter Chosen parameter
      */
-    public ClientChoiceMessage(MessageType type, Choice choice, String nickname, Object parameter) {
+    public ClientChoiceMessage(MessageType type, Choice choice, String identifier, Object parameter) {
         super(type);
         this.choice = choice;
-        this.nickname = nickname;
+        this.identifier = identifier;
         this.parameter = parameter;
     }
 
@@ -41,12 +41,12 @@ public class ClientChoiceMessage extends Message {
     }
 
     /**
-     * Getter for the attribute "nickname".
+     * Getter for the attribute "identifier".
      *
-     * @return Nickname of the Player
+     * @return Identifier of the Lobby/Player
      */
-    public String getNickname() {
-        return nickname;
+    public String getIdentifier() {
+        return identifier;
     }
 
     /**

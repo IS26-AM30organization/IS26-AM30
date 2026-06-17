@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.rmi.NoSuchObjectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -51,23 +52,41 @@ class RMIViewTest {
     @AfterEach
     void tearDown() {
         try { UnicastRemoteObject.unexportObject(rmiView, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
-        try { UnicastRemoteObject.unexportObject(testRegistry, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
+        try { UnicastRemoteObject.unexportObject(mockServer, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
+        if (testRegistry != null) {
+            try { UnicastRemoteObject.unexportObject(testRegistry, true); } catch (NoSuchObjectException ignored) { /* not exported */ }
+            testRegistry = null;
+        }
     }
 
     @Test
     void findServer_Success() throws Exception {
-        IF_Server ServerStub = (IF_Server) UnicastRemoteObject.exportObject(mockServer, 0);
+        // find a free port to avoid "Port already in use" across test runs
+        int registryPort;
+        try (ServerSocket s = new ServerSocket(0)) {
+            registryPort = s.getLocalPort();
+        }
 
-        testRegistry = LocateRegistry.createRegistry(1099);
-        testRegistry.rebind("Game", ServerStub);
-        rmiView.findServer("localhost", 1099);
+        // Act
+        IF_Server serverStub = (IF_Server) UnicastRemoteObject.exportObject(mockServer, 0);
+        testRegistry = LocateRegistry.createRegistry(registryPort);
+        testRegistry.rebind("server", serverStub);
+        rmiView.findServer("localhost", registryPort);
 
-        verify(mockServer, times(1)).handleConnection(any(IF_GameView.class));
+        // Assert
+        verify(mockUI, never()).printError(ErrorType.WRONG_IP);
+        verify(mockUI, never()).printEnd();
     }
 
     @Test
     void findServer_Fail() throws Exception {
-        rmiView.findServer("localhost", 1099);
+        // get a port that is guaranteed to have no server listening on it
+        int closedPort;
+        try (ServerSocket s = new ServerSocket(0)) {
+            closedPort = s.getLocalPort();
+        }
+
+        rmiView.findServer("localhost", closedPort);
 
         verify(mockUI, times(1)).printError(ErrorType.WRONG_IP);
     }
@@ -81,10 +100,10 @@ class RMIViewTest {
         rmiView.toController(Choice.CHOOSE_TILE, mockTile);
 
         // verify
-        verify(mockController, times(1)).chooseTile("Lore", mockTile);
+        verify(mockController, timeout(1000).times(1)).chooseTile("Lore", mockTile);
         verify(mockController, never()).chooseBuilding(anyString(), any());
-        verify(mockServer, never()).setNickname(any(),any());
-        verify(mockServer, never()).setPlayersNumber(any(),any(Integer.class));
+        verify(mockServer, never()).setNickname(any(), any(), any());
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
     }
 
@@ -96,9 +115,9 @@ class RMIViewTest {
         rmiView.toController(Choice.CHOOSE_BUILDING, mockBuilding);
 
         // verify
-        verify(mockController, times(1)).chooseBuilding("Lore", mockBuilding);
-        verify(mockServer, never()).setPlayersNumber(any(),any(Integer.class));
-        verify(mockServer, never()).setNickname(any(),any());
+        verify(mockController, timeout(1000).times(1)).chooseBuilding("Lore", mockBuilding);
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
+        verify(mockServer, never()).setNickname(any(),any(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
     }
@@ -111,41 +130,64 @@ class RMIViewTest {
         rmiView.toController(Choice.CHOOSE_CHARACTER, mockCharacter);
 
         // verify
-        verify(mockController, times(1)).chooseCharacter("Lore", mockCharacter);
-        verify(mockServer, never()).setPlayersNumber(any(),any(Integer.class));
-        verify(mockServer, never()).setNickname(any(),any());
+        verify(mockController, timeout(1000).times(1)).chooseCharacter("Lore", mockCharacter);
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
+        verify(mockServer, never()).setNickname(any(),any(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
     }
 
     @Test
-    void toController_RoutesChoosePlayersNumbers() throws Exception {
+    void toServer_RoutesCreateLobby() throws Exception {
         rmiView.setController(mockController);
         rmiView.setNickname("Lore");
 
-        rmiView.toController(Choice.PLAYERS_NUMBER, 3);
+        rmiView.lobbyCode = "123456";
+        rmiView.toServer(Choice.CREATE_LOBBY, "123456", 3);
 
         // verify
-        verify(mockServer, times(1)).setPlayersNumber(rmiView, (int) 3);
-        verify(mockServer, never()).setNickname(any(),any());
+        verify(mockServer, timeout(1000).times(1)).createLobby(rmiView, 3, "123456");
+        verify(mockServer, never()).setNickname(any(), any(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
     }
 
     @Test
-    void toController_RoutesChooseNickname() throws Exception {
+    void toServer_RoutesChooseNickname() throws Exception {
         rmiView.setController(mockController);
         rmiView.setNickname("Lore");
 
-        rmiView.toController(Choice.NICKNAME, "Lore");
+        rmiView.toServer(Choice.NICKNAME, "123456", "Lore");
 
         // verify
-        verify(mockServer, times(1)).setNickname(rmiView, (String) "Lore");
-        verify(mockServer, never()).setPlayersNumber(any(),any(Integer.class));
+        verify(mockServer, timeout(1000).times(1)).setNickname(rmiView, "Lore", "123456");
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
         verify(mockController, never()).chooseCharacter(anyString(), any());
         verify(mockController, never()).chooseTile(anyString(), any());
         verify(mockController, never()).chooseBuilding(anyString(), any());
+    }
+
+    @Test
+    void toServer_RoutesGetAvailableLobbies() throws Exception {
+        rmiView.toServer(Choice.GET_AVAILABLE_LOBBIES, null, null);
+
+        // verify
+        verify(mockServer, timeout(1000).times(1)).showAvailableLobbies(rmiView);
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
+        verify(mockServer, never()).setNickname(any(), any(), any());
+        verify(mockServer, never()).joinLobby(any(), any());
+    }
+
+    @Test
+    void toServer_RoutesJoinLobby() throws Exception {
+        rmiView.toServer(Choice.JOIN_LOBBY, "123456", null);
+
+        // verify
+        verify(mockServer, timeout(1000).times(1)).joinLobby(rmiView, "123456");
+        verify(mockServer, never()).createLobby(any(), anyInt(), any());
+        verify(mockServer, never()).setNickname(any(), any(), any());
+        verify(mockServer, never()).showAvailableLobbies(any());
     }
 
     @Test

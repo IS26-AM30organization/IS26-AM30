@@ -46,7 +46,7 @@ public class RMIView extends VirtualView {
             remoteServer.handleConnection(this);
             startHeartbeat(remoteServer);
         }
-        catch (IOException | NotBoundException e){
+        catch (IOException | NotBoundException e) {
             notifyError(ErrorType.WRONG_IP);
             end();
         }
@@ -71,19 +71,24 @@ public class RMIView extends VirtualView {
         }).start();
     }
 
-    // Client writes to controller
+    // invoke Server methods
+    @Override
+    protected void toServer(Choice choice, String lobbyCode, Object parameter) throws IOException {
+        switch (choice) {
+            case CREATE_LOBBY           -> asynchronousServerCall(() -> remoteServer.createLobby(this, (Integer) parameter, lobbyCode));
+            case GET_AVAILABLE_LOBBIES  -> asynchronousServerCall(() -> remoteServer.showAvailableLobbies(this));
+            case JOIN_LOBBY             -> asynchronousServerCall(() -> remoteServer.joinLobby(this, lobbyCode));
+            case NICKNAME               -> asynchronousServerCall(() -> remoteServer.setNickname(this, (String) parameter, lobbyCode));
+        }
+    }
+
+    // invoke Controller methods
     @Override
     protected void toController(Choice choice, Object parameter) throws IOException {
         switch (choice) {
-            case PLAYERS_NUMBER -> asynchronousServerCall(() -> remoteServer.setPlayersNumber(this, (int) parameter));
-
-            case NICKNAME -> asynchronousServerCall(() -> remoteServer.setNickname(this, (String) parameter));
-
-            case CHOOSE_TILE -> asynchronousServerCall(() -> controller.chooseTile(nickname,(Tile) parameter));
-
-            case CHOOSE_BUILDING -> asynchronousServerCall(() -> controller.chooseBuilding(nickname, (BuildingCard) parameter));
-
-            case CHOOSE_CHARACTER -> asynchronousServerCall(() -> controller.chooseCharacter(nickname, (CharacterCard) parameter));
+            case CHOOSE_TILE        -> asynchronousServerCall(() -> controller.chooseTile(nickname,(Tile) parameter));
+            case CHOOSE_BUILDING    -> asynchronousServerCall(() -> controller.chooseBuilding(nickname, (BuildingCard) parameter));
+            case CHOOSE_CHARACTER   -> asynchronousServerCall(() -> controller.chooseCharacter(nickname, (CharacterCard) parameter));
         }
     }
 
@@ -98,12 +103,7 @@ public class RMIView extends VirtualView {
 
     @Override
     public void setController(IF_GameController controller) throws IOException {
-        try {
-            this.controller = (IF_GameController) registry.lookup("lobby");
-        } catch (IOException | NotBoundException e){
-            notifyError(ErrorType.WRONG_IP);
-            end();
-        }
+        this.controller = controller;
     }
 
     @Override

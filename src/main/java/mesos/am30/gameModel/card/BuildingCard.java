@@ -1,12 +1,11 @@
 package mesos.am30.gameModel.card;
 
+import mesos.am30.common.TColors;
 import mesos.am30.gameModel.EventType;
 import mesos.am30.gameModel.IF_Event;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.board.Board;
-
-import java.util.Objects;
 
 public class BuildingCard extends Card {
     private final IF_Event event;
@@ -43,16 +42,14 @@ public class BuildingCard extends Card {
         return true;
     }
 
+    /**
+     * Checks whether a player has enough food to buy the building card
+     * @param player
+     * @return T if he can, F if he cannot
+     */
     public boolean canBeBought(Player player) {
         return player.getParameters().get(Parameter.FOOD)
                 + player.getParameters().get(Parameter.BUILDER) >= foodCost;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        BuildingCard that = (BuildingCard) o;
-        return foodCost == that.foodCost && ppGain == that.ppGain && Objects.equals(event, that.event) && eventType == that.eventType;
     }
 
     @Override
@@ -61,11 +58,6 @@ public class BuildingCard extends Card {
             board.getLowerBuildings().remove(this);
         else if (board.getUpperBuildings().contains(this))
             board.getUpperBuildings().remove(this);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(event, eventType, foodCost, ppGain);
     }
 
     @Override
@@ -78,6 +70,7 @@ public class BuildingCard extends Card {
         if (ppGain != 0) str2.append("ppGainEnd: " + ppGain);
 
         event.getAttributes(str1, str2, str3);
+        str1.append(" ").append("\u26EB");
 
         //need to take longest word
         int maxWidth = str1.length();
@@ -89,8 +82,8 @@ public class BuildingCard extends Card {
         }
         maxWidth += 3;
 
-        eventRole.append(str1).append("\uD83C\uDFE0");;
-        for (int x = str1.length(); x < maxWidth-2; x++) eventRole.append(" ");
+        eventRole.append(TColors.BROWN).append(str1).append(TColors.RESET);
+        for (int x = str1.length()+1; x < maxWidth; x++) eventRole.append(" ");
 
         ln2.append(str2);
         for (int x = str2.length(); x < maxWidth; x++) ln2.append(" ");
@@ -102,5 +95,9 @@ public class BuildingCard extends Card {
     @Override
     public String getArt(){
         return new String(ppGain+""+event.getArt()+""+foodCost);
+    }
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return event.getCardInfo(info);
     }
 }

@@ -2,18 +2,18 @@ package mesos.am30.server;
 
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.*;
 
-import mesos.am30.client.IF_GameView;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.Mock;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -21,10 +21,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 
 @ExtendWith(MockitoExtension.class)
 class SocketProxyTest {
@@ -32,27 +34,18 @@ class SocketProxyTest {
     private ServerSocket serverSocket;
     private Socket proxySocket;
     private Socket clientSocket;
+    private ObjectInputStream clientIn;
     private ObjectOutputStream clientOut;
+
+    @Mock
+    private Server mockServer;
 
     @Mock
     private Controller mockController;
 
-    @Mock
-    private Tile mockTile;
-
-    @Mock
-    private CharacterCard mockCharacterCard;
-
-    @Mock
-    private BuildingCard mockBuildingCard;
-
-    @Mock
-    private IF_GameView mockView;
-
     @BeforeEach
     void setUp() throws IOException, InterruptedException {
         // set up SocketProxy
-
         CountDownLatch latch = new CountDownLatch(1);
         serverSocket = new ServerSocket(0);
         new Thread(() -> {
@@ -62,6 +55,7 @@ class SocketProxyTest {
                 outputStream.flush();
                 ObjectInputStream inputStream = new ObjectInputStream(proxySocket.getInputStream());
                 proxy = new SocketProxy(proxySocket, outputStream, inputStream);
+                proxy.setServer(mockServer);
                 latch.countDown();
             } catch (IOException e) {
                 try { proxySocket.close(); } catch (IOException ignored) {}
@@ -70,6 +64,7 @@ class SocketProxyTest {
 
         // set up Client connection
         clientSocket = new Socket("localhost", serverSocket.getLocalPort());
+        clientIn = new ObjectInputStream(clientSocket.getInputStream());
         clientOut = new ObjectOutputStream(clientSocket.getOutputStream());
         clientOut.flush();
         latch.await();
@@ -84,45 +79,134 @@ class SocketProxyTest {
     }
 
     @Test
-    void startListeningThread_PLAYERS_NUMBER() throws IOException, InterruptedException {
+    void startListeningThread_CorrectDisconnection() throws IOException, InterruptedException, ClassNotFoundException {
         // Act
-        Server.setLobby(null);
-        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.PLAYERS_NUMBER, "", 3));
+        proxy.end();
+
+        // Assert Client-side
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.END, message.getType());
+
+        // throw IOException (no real View which closes the connection)
+        clientSocket.close();
+
+        // Assert Proxy
+        verifyNoInteractions(mockServer);
+        verifyNoInteractions(mockController);
+        assertFalse(proxy.isConnectionOpen());
+        assertTrue(proxySocket.isClosed());
+    }
+
+    @Test
+    void startListeningThread_WrongDisconnection() throws IOException, InterruptedException {
+        // set up Mock IOException
+        doThrow(new IOException()).when(mockController).chooseTile(any(String.class), any(Tile.class));
+        proxy.setController(mockController);
+
+        // Act
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_TILE, "nickname", mock(Tile.class)));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(200);
-        assertNotNull(Server.getLobby());
-        Controller controller = Server.getLobby();
-        assertEquals(3, controller.getPlayersNumber());
+        Thread.sleep(2000);
+        verify(mockController).chooseTile(eq("nickname"), any(Tile.class));
+        verify(mockServer, times(1)).handleDisconnection(proxy);
+    }
+
+    @Test
+    void startListeningThread_WrongMessage() throws IOException, InterruptedException {
+        // Act
+        proxy.setController(mockController);
+        clientOut.writeObject(new Message(MessageType.NOTIFY));
+
+        // Assert
+        Thread.sleep(2000);
+        verifyNoInteractions(mockServer);
+        verifyNoInteractions(mockController);
+    }
+
+    @Test
+    void startListeningThread_WrongChoice_Server() throws IOException, InterruptedException {
+        // Act
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_TILE, "nickname", mock(Tile.class)));
+
+        // Assert
+        Thread.sleep(2000);
+        verifyNoInteractions(mockServer);
+        verifyNoInteractions(mockController);
+    }
+
+    @Test
+    void startListeningThread_WrongChoice_Controller() throws IOException, InterruptedException {
+        // Act
+        proxy.setController(mockController);
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.NICKNAME, "123456", "nickname"));
+
+        // Assert
+        Thread.sleep(2000);
+        verifyNoInteractions(mockServer);
+        verifyNoInteractions(mockController);
+    }
+
+    @Test
+    void startListeningThread_CREATE_LOBBY() throws IOException, InterruptedException {
+        // Act
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CREATE_LOBBY, "123456", 3));
+        clientOut.flush();
+
+        // Assert
+        Thread.sleep(2000);
+        verify(mockServer, times(1)).createLobby(proxy, 3, "123456");
+        verifyNoInteractions(mockController);
+    }
+
+    @Test
+    void startListeningThread_GET_AVAILABLE_LOBBIES() throws IOException, InterruptedException {
+        // Act
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.GET_AVAILABLE_LOBBIES, "", null));
+        clientOut.flush();
+
+        // Assert
+        Thread.sleep(2000);
+        verify(mockServer, times(1)).showAvailableLobbies(proxy);
+        verifyNoInteractions(mockController);
+    }
+
+    @Test
+    void startListeningThread_JOIN_LOBBY() throws IOException, InterruptedException {
+        // Act
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.JOIN_LOBBY, "123456", null));
+        clientOut.flush();
+
+        // Assert
+        Thread.sleep(2000);
+        verify(mockServer, times(1)).joinLobby(proxy, "123456");
+        verifyNoInteractions(mockController);
     }
 
     @Test
     void startListeningThread_NICKNAME() throws IOException, InterruptedException {
-        // set up Mock Controller
-        when(mockController.isFull()).thenReturn(false);
-        when(mockController.getClients()).thenReturn(Map.of());
-        when(mockController.connect(proxy, "nickname")).thenReturn(false);
-
         // Act
-        Server.setLobby(mockController);
-        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.NICKNAME, "", "nickname"));
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.NICKNAME, "123456", "nickname"));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(200);
-        verify(mockController).connect(proxy, "nickname");
+        Thread.sleep(2000);
+        verify(mockServer, times(1)).setNickname(proxy, "nickname", "123456");
+        verifyNoInteractions(mockController);
     }
 
     @Test
     void startListeningThread_CHOOSE_TILE() throws IOException, InterruptedException {
         // Act
         proxy.setController(mockController);
-        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_TILE, "nickname", mockTile));
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_TILE, "nickname", mock(Tile.class)));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(200);
+        Thread.sleep(2000);
+        verifyNoInteractions(mockServer);
         verify(mockController).chooseTile(eq("nickname"), any(Tile.class));
     }
 
@@ -130,11 +214,12 @@ class SocketProxyTest {
     void startListeningThread_CHOOSE_CHARACTER() throws IOException, InterruptedException {
         // Act
         proxy.setController(mockController);
-        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_CHARACTER, "nickname", mockCharacterCard));
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_CHARACTER, "nickname", mock(CharacterCard.class)));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(200);
+        Thread.sleep(2000);
+        verifyNoInteractions(mockServer);
         verify(mockController).chooseCharacter(eq("nickname"), any(CharacterCard.class));
     }
 
@@ -142,53 +227,121 @@ class SocketProxyTest {
     void startListeningThread_CHOOSE_BUILDING() throws IOException, InterruptedException {
         // Act
         proxy.setController(mockController);
-        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_BUILDING, "nickname", mockBuildingCard));
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_BUILDING, "nickname", mock(BuildingCard.class)));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(200);
+        Thread.sleep(2000);
+        verifyNoInteractions(mockServer);
         verify(mockController).chooseBuilding(eq("nickname"), any(BuildingCard.class));
     }
 
     @Test
-    void startListeningThread_WrongDisconnection() throws IOException, InterruptedException {
-        // set up Server
-        Server.setLobby(new Controller(1));
-        List<IF_GameView> clients = Server.getConnectedViews();
-        clients.add(proxy);
-        for (int i = 0; i < 3; i++) clients.add(mockView);
-
-        // set up Mock IOException
-        doThrow(new IOException()).when(mockController).chooseTile(any(String.class), any(Tile.class));
-        proxy.setController(mockController);
-
+    void confirmConnection() throws IOException, InterruptedException, ClassNotFoundException {
         // Act
-        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_TILE, "nickname", mockTile));
-        clientOut.flush();
+        proxy.confirmConnection();
 
         // Assert
-        Thread.sleep(200);
-        verify(mockController).chooseTile(eq("nickname"), any(Tile.class));
-        verify(mockView, times(clients.size() - 1)).notifyError(ErrorType.END_FOR_DISCONNECTION);
-        verify(mockView, times(clients.size() - 1)).end();
-        assertTrue(Server.getConnectedViews().isEmpty());
-        assertNull(Server.getLobby());
-
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.CONFIRM_CONNECTION, message.getType());
     }
 
     @Test
-    void startListeningThread_CorrectDisconnection() throws IOException {
-        // set up Server
-        Server.setLobby(new Controller(1));
-        List<IF_GameView> clients = Server.getConnectedViews();
-        clients.add(proxy);
+    void showLobbies() throws IOException, InterruptedException, ClassNotFoundException {
+        // set up Lobbies
+        Map<String, Integer> lobbies = new HashMap<>();
+        lobbies.put("123456", 5);
+        lobbies.put("123457", 2);
 
         // Act
-        proxy.end();
+        proxy.showLobbies(lobbies);
 
         // Assert
-        assertNotNull(Server.getConnectedViews());
-        assertTrue(Server.getConnectedViews().contains(proxy));
-        assertNotNull(Server.getLobby());
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.SHOW_LOBBIES, message.getType());
+        ShowLobbiesMessage showLobbiesMessage = (ShowLobbiesMessage) message;
+        assertEquals(lobbies, showLobbiesMessage.getAvailableLobbies());
+    }
+
+    @Test
+    void askNickname() throws IOException, InterruptedException, ClassNotFoundException {
+        // Act
+        proxy.askNickname("123456");
+
+        // Assert
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.NICKNAME, message.getType());
+        AskNicknameMessage askNicknameMessage = (AskNicknameMessage) message;
+        assertEquals("123456", askNicknameMessage.getLobbyCode());
+    }
+
+    @Test
+    void confirmLobbyJoined() throws IOException, InterruptedException, ClassNotFoundException {
+        // Act
+        proxy.confirmLobbyJoined();
+
+        // Assert
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.CONFIRM_LOBBY_JOINED, message.getType());
+    }
+
+    @Test
+    void notifyTurn() throws IOException, InterruptedException, ClassNotFoundException {
+        // Act
+        proxy.notifyTurn("nickname", Move.PICK_TILE);
+
+        // Assert
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.NOTIFY, message.getType());
+        ClienTurnMessage clienTurnMessage = (ClienTurnMessage) message;
+        assertEquals("nickname", clienTurnMessage.getNickname());
+        assertEquals(Move.PICK_TILE, clienTurnMessage.getMove());
+    }
+
+    @Test
+    void notifyError() throws IOException, InterruptedException, ClassNotFoundException {
+        // Act
+        proxy.notifyError(ErrorType.WRONG_TILE);
+
+        // Assert
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.ERROR, message.getType());
+        ErrorMessage errorMessage = (ErrorMessage) message;
+        assertEquals(ErrorType.WRONG_TILE, errorMessage.getError());
+    }
+
+    @Test
+    void update() throws IOException, InterruptedException, ClassNotFoundException {
+        // Act
+        proxy.update(ViewParameter.PLAYERS, List.of(mock(Player.class)));
+
+        // Assert
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.UPDATE, message.getType());
+        ModelUpdateMessage modelUpdateMessage = (ModelUpdateMessage) message;
+        assertEquals(ViewParameter.PLAYERS, modelUpdateMessage.getToUpdate());
+        List<Player> players = new ArrayList<>();
+        for (Object parameter : modelUpdateMessage.getParameters()) {
+            players.add((Player) parameter);
+        }
+        assertEquals(players, modelUpdateMessage.getParameters());
+    }
+
+    @Test
+    void ping() throws IOException, InterruptedException, ClassNotFoundException {
+        // Act
+        proxy.ping();
+
+        // Assert
+        Thread.sleep(2000);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.PING, message.getType());
     }
 }

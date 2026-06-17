@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import mesos.am30.client.gui.MMMGui;
 import mesos.am30.client.gui.MenuGui;
 import mesos.am30.client.gui.TableGui;
 import mesos.am30.client.gui.TribeGui;
@@ -12,6 +13,7 @@ import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class Gui extends Application implements IF_GameUI {
     VirtualView vView;
@@ -32,27 +34,43 @@ public class Gui extends Application implements IF_GameUI {
     private Scene prompt;
     private Scene table;
 
-    private MenuGui menu;
+    private MMMGui menu;
     private TableGui game;
+    private Map<String, Integer> availableLobbies;
 
-    public void start (Stage little) throws IOException {
-        vView = new SocketView(this);
+    public void start (Stage big) throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/start.fxml"));
+        try {
+            int port = 0;
+            if (!ClientMain.getRMI()) {
+                vView = new SocketView(this);
+                port = 12345;
+            } else if (ClientMain.getRMI()) {
+                vView = new RMIView(this);
+                port = 1099;
+            } else {
+                System.err.println("[Wrong argument] : use 'socket' or 'rmi'!!!");
+                System.exit(1);
+            }
+            vView.findServer(ClientMain.getIP(), port);
+        } catch (IOException exception) {
+            System.err.println("[ERROR: ] " + exception.getMessage());
+            System.exit(1);
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/multimatch_menu.fxml"));
         System.out.println("creato gui");
 
         Scene scene = new Scene(loader.load(), 551, 551);
-        little.setTitle("MESOS");
-        little.setScene(scene);
+        big.setTitle("MESOS");
+        big.setScene(scene);
 
         menu = loader.getController();
         menu.setView(vView);
 
         loader = new FXMLLoader(getClass().getResource("/fxml/table.fxml"));
         try {
-            big = new Stage();
             table = new Scene(loader.load(), 1920, 1080);
-            big.setScene(table);
             big.setFullScreen(true);
         } catch (IOException e) {
             System.out.println("Error loading graphic interface");
@@ -65,13 +83,8 @@ public class Gui extends Application implements IF_GameUI {
 
         TribeGui.set(table, table.getRoot());
 
-        this.little = little;
-        little.show();
-    }
-
-    @Override
-    public void askPlayersNumber() {
-        menu.askPlayersNumber();
+        this.big = big;
+        big.show();
     }
 
     public void ready() {
@@ -82,6 +95,33 @@ public class Gui extends Application implements IF_GameUI {
     @Override
     public void askNickname() {
         menu.askNickname();
+    }
+
+
+    /**
+     * Shows the available lobbies the User can join
+     *
+     * @param availableLobbies map of lobby codes to their current number of players
+     */
+    @Override
+    public void showLobbies(Map<String, Integer> availableLobbies) {
+        menu.showLobbies(availableLobbies);
+    }
+
+    /**
+     * Notifies the User that the connection to the Server has been established
+     */
+    @Override
+    public void confirmConnection() {
+
+    }
+
+    /**
+     * Notifies the User that they have successfully joined the lobby
+     */
+    @Override
+    public void confirmLobbyJoined() {
+
     }
 
     @Override
@@ -97,15 +137,12 @@ public class Gui extends Application implements IF_GameUI {
     @Override
     public void refresh(ViewModel viewModel) {
         Platform.runLater(() -> {
-            game.setBoard(viewModel);
-            if (little.isShowing()) {
-                menu.hide();
-                System.out.println("menu closed");
-            }
-            if (!big.isShowing()) {
+            if (big.getScene() != table) {
+                big.setScene(table);
+                big.setFullScreen(true);
+                game.setBoard(viewModel);
                 game.setName(menu.getNickname());
                 game.createTable();
-                big.show();
             }
             game.refresh(viewModel);
         });
@@ -114,6 +151,16 @@ public class Gui extends Application implements IF_GameUI {
     @Override
     public void printEnd() {
         game.printEnd();
+    }
+
+    @Override
+    public void setvView(VirtualView view) {
+
+    }
+
+    @Override
+    public void setvModel(ViewModel vBoard) {
+
     }
 
     public void setStage(Stage stagee) {

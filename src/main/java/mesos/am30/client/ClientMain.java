@@ -1,37 +1,61 @@
 package mesos.am30.client;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
-import java.rmi.RemoteException;
 
 public class ClientMain {
-    Tui tui;
+    private static Boolean isItRMI;
+    private static String IP;
 
-    public static void main(String[] args) throws RemoteException {
-        String serverIp = "127.0.0.1";
-        int serverPort = 12345;
-        boolean doYouWantGui = true;
-        VirtualView view = null;
-        Tui tui = null;
+    static void main(String[] args) {
+        // check arguments
+        if (args.length != 3) {
+            System.err.println("[Wrong arguments] : You must add the arguments as follows: \"java -jar am30-client.jar 'ip' 'tui/gui' 'socket/rmi'\"");
+            return;
+        }
 
+        isItRMI = args[2].equalsIgnoreCase("rmi");
+        IP = args[0];
 
-        if (doYouWantGui == false) {
-            tui = new Tui();
-            view = new SocketView(tui);
-            try {
-                view.findServer(serverIp, serverPort);
-            } catch (Exception e) {
-                System.err.println("[ERROR: ] " + e.getMessage());
+        // get User Interface
+        IF_GameUI userInterface = null;
+        if (args[1].equalsIgnoreCase("tui")) {
+            userInterface = new Tui();
+        } else if (args[1].equalsIgnoreCase("gui")) {
+            Application.launch(Gui.class, args);
+            System.exit(1);
+        } else {
+            System.err.println("[Wrong argument] : " + args[1] + "is not valid!!! Use 'tui' or 'gui'!!!");
+            System.exit(1);
+        }
+
+        // run the View
+        try {
+            VirtualView view = null;
+            int port = 0;
+            if (args[2].equalsIgnoreCase("socket")) {
+                view = new SocketView(userInterface);
+                port = 12345;
+            } else if (args[2].equalsIgnoreCase("rmi")) {
+                view = new RMIView(userInterface);
+                port = 1099;
+            } else {
+                System.err.println("[Wrong argument] : " + args[2] + "is not valid!!! Use 'socket' or 'rmi'!!!");
                 System.exit(1);
             }
-            tui.vView = view;
-        } else {
-            Application.launch(Gui.class, args);
+            view.findServer(args[0], port);
+        } catch (IOException exception) {
+            System.err.println("[ERROR: ] " + exception.getMessage());
+            System.exit(1);
         }
+    }
+
+    public static Boolean getRMI() {
+        return isItRMI;
+    }
+
+    public static String getIP() {
+        return IP;
     }
 }

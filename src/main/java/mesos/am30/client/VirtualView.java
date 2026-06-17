@@ -1,7 +1,10 @@
 package mesos.am30.client;
 
 import mesos.am30.gameModel.*;
-import mesos.am30.gameModel.card.*;
+import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
+import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 import mesos.am30.common.Choice;
 import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
@@ -11,6 +14,7 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * View implementation Client-Side.
@@ -25,17 +29,21 @@ public abstract class VirtualView implements IF_GameView {
     protected final IF_GameUI userInterface;
     protected final ViewModel model;
     protected String nickname = "stillToConnect";   // avoid null value messages
+    protected String lobbyCode = "";
+    protected int playersNumber = 0;
 
     /**
      * Constructor for virtualView.
      * <br><strong>Pre:</strong> userInterface != null
      * <br><strong>Post:</strong> this.userInterface == userInterface && this.model = new ViewModel()
      *
-     * @param userInterface User Interface to use
+     * @param userInterface User Interface to use.
      */
     public VirtualView(IF_GameUI userInterface) {
         this.userInterface = userInterface;
         model = new ViewModel();
+        this.userInterface.setvModel(model);
+        this.userInterface.setvView(this);
     }
 
     // Test getter for the attribute model
@@ -46,6 +54,10 @@ public abstract class VirtualView implements IF_GameView {
     // Test getter for the attribute nickname
     String getNickname() {
         return nickname;
+    }
+
+    String getLobbyCode() {
+        return lobbyCode;
     }
 
     // Test setter for the attribute nickname
@@ -59,10 +71,15 @@ public abstract class VirtualView implements IF_GameView {
      * via the Server method server.handleConnection(view).
      * <br><strong>Pre:</strong> path != null
      *
-     * @param path URL of the Server
+     * @param path URL of the Server.
      * @param port Port opened by the Server
+     *
+     * @throws IOException The connection cannot be established correctly.
      */
     public abstract void findServer(String path, int port) throws IOException;
+
+    // invoke Server methods (polymorphic)
+    protected abstract void toServer(Choice choice, String lobbyCode, Object parameter) throws IOException;
 
     // invoke Controller methods (polymorphic)
     protected abstract void toController(Choice choice, Object parameter) throws IOException;
@@ -73,8 +90,9 @@ public abstract class VirtualView implements IF_GameView {
      * sending it to the Controller.
      * <br><strong>Pre:</strong> choice != null
      *
-     * @param choice Picked Tile
-     * @throws IOException The connection cannot be established correctly
+     * @param choice Picked Tile.
+     *
+     * @throws IOException The connection cannot be established correctly.
      */
     public synchronized void checkTile(Tile choice) throws IOException {
         // check if right turn
@@ -85,10 +103,7 @@ public abstract class VirtualView implements IF_GameView {
                 model.setDefault();
                 toController(Choice.CHOOSE_TILE, choice);
             } else notifyError(ErrorType.WRONG_TILE);
-        } else {
-            notifyError(ErrorType.NOT_YOUR_TURN);
-            System.out.println("I'm " + nickname + " and " + model.getCurrentUser().getNickname() + " is current with " + model.getCurrentMove());
-        }
+        } else notifyError(ErrorType.NOT_YOUR_TURN);
     }
 
     /**
@@ -97,8 +112,9 @@ public abstract class VirtualView implements IF_GameView {
      * sending it to the Controller.
      * <br><strong>Pre:</strong> choice != null
      *
-     * @param choice Picked Character Card
-     * @throws IOException The connection cannot be established correctly
+     * @param choice Picked Character Card.
+     *
+     * @throws IOException The connection cannot be established correctly.
      */
     public synchronized void checkCharacterCard(CharacterCard choice) throws IOException {
         // check if right turn
@@ -112,10 +128,7 @@ public abstract class VirtualView implements IF_GameView {
                 model.setDefault();
                 toController(Choice.CHOOSE_CHARACTER, choice);
             } else notifyError(ErrorType.WRONG_CARD);
-        } else {
-            notifyError(ErrorType.NOT_YOUR_TURN);
-            System.out.println(model.getCurrentUser().getNickname() + "is current with" + model.getCurrentMove());
-        }
+        } else notifyError(ErrorType.NOT_YOUR_TURN);
     }
 
     // get the correct Character Cards
@@ -125,21 +138,21 @@ public abstract class VirtualView implements IF_GameView {
             // picked Character from upper/lower row
             case PICK_ANY_CARD -> {
                 List<Card> upperRow = model.getUpperRow().stream()
-                        .filter(card -> card instanceof CharacterCard)
+                        .filter(Card::isPickable)
                         .toList();
                 List<Card> lowerRow = model.getLowerRow().stream()
-                        .filter(card -> card instanceof CharacterCard)
+                        .filter(Card::isPickable)
                         .toList();
                 row = new ArrayList<>(upperRow);
                 row.addAll(lowerRow);
             }
             // picked Character from upper row
             case PICK_FROM_UP -> row = model.getUpperRow().stream()
-                    .filter(card -> card instanceof CharacterCard)
+                    .filter(Card::isPickable)
                     .toList();
             // picked Character from lower row
             case PICK_FROM_DOWN -> row = model.getLowerRow().stream()
-                    .filter(card -> card instanceof CharacterCard)
+                    .filter(Card::isPickable)
                     .toList();
         }
         return row;
@@ -151,8 +164,9 @@ public abstract class VirtualView implements IF_GameView {
      * sending it to the Controller.
      * <br><strong>Pre:</strong> choice != null
      *
-     * @param choice Picked Building Card
-     * @throws IOException The connection cannot be established correctly
+     * @param choice Picked Building Card.
+     *
+     * @throws IOException The connection cannot be established correctly.
      */
     public synchronized void checkBuildingCard(BuildingCard choice) throws IOException {
         // check if right turn
@@ -168,10 +182,7 @@ public abstract class VirtualView implements IF_GameView {
                     toController(Choice.CHOOSE_BUILDING, choice);
                 } else notifyError(ErrorType.NOT_ENOUGH_FOOD);
             } else notifyError(ErrorType.WRONG_CARD);
-        } else {
-            notifyError(ErrorType.NOT_YOUR_TURN);
-            System.out.println(model.getCurrentUser().getNickname() + "is current with" + model.getCurrentMove());
-        }
+        } else notifyError(ErrorType.NOT_YOUR_TURN);
     }
 
     // get the correct Building Cards
@@ -194,36 +205,97 @@ public abstract class VirtualView implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Client-side asking the View
+     * @see IF_GameView Implementation Client-Side of the confirmConnection method.
      */
     @Override
-    public synchronized void askPlayersNumber() throws IOException {
-        userInterface.askPlayersNumber();
-    }
-
-    public synchronized void answerPlayersNumber(int playersNumber) {
-        try {            toController(Choice.PLAYERS_NUMBER, playersNumber); } catch (IOException e) {
-            return;
-        }
+    public synchronized void confirmConnection() throws IOException {
+        userInterface.confirmConnection();
     }
 
     /**
-     * @see IF_GameView Implementation Client-side asking the View
+     * Send a request to create a Lobby.
+     * <br>This method is called by the Client in order to request the Server the creation of a new Lobby.
+     * <br><strong>Pre:</strong> lobbyCode != null
+     *
+     * @param playersNumber Number of Players of the Lobby.
+     * @param lobbyCode Code of the Lobby.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    public void createLobby(int playersNumber, String lobbyCode) throws IOException {
+        this.playersNumber = playersNumber;
+        if (lobbyCode == null || lobbyCode.isEmpty()) {
+            this.lobbyCode = "";
+        }
+        else this.lobbyCode = lobbyCodePadded(lobbyCode);
+
+        toServer(Choice.CREATE_LOBBY, this.lobbyCode, playersNumber);
+    }
+    /**
+     * Send a request to get the available Lobbies.
+     * <br>This method is called by the Client in order to request the Server to show the available Lobbies to join.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    public synchronized void requestAvailableLobbies() throws IOException {
+        toServer(Choice.GET_AVAILABLE_LOBBIES, null, null);
+    }
+
+    /**
+     * @see IF_GameView Implementation Client-side of the showLobbies method.
      */
     @Override
-    public synchronized void askNickname() throws IOException {
+    public synchronized void showLobbies(Map<String, Integer> availableLobbies) throws IOException {
+        userInterface.showLobbies(availableLobbies);
+    }
+
+    /**
+     * Send a request to join a Lobby.
+     * <br>This method is called by the Client in order to request the Server to join a new Lobby.
+     * <br><strong>Pre:</strong> lobbyCode != null
+     *
+     * @param lobbyCode Code of the Lobby.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    public void joinLobby(String lobbyCode) throws IOException{
+        this.lobbyCode = lobbyCodePadded(lobbyCode);
+        toServer(Choice.JOIN_LOBBY, this.lobbyCode, null);
+    }
+
+    /**
+     * @see IF_GameView Implementation Client-side of the askNickname method.
+     */
+    @Override
+    public synchronized void askNickname(String lobbyCode) throws IOException {
+        this.lobbyCode = lobbyCode;
         userInterface.askNickname();
     }
 
-    public synchronized void answerNickname(String nickname) {
+    /**
+     * Send the Nickname for the Lobby.
+     * <br>This method is called by the Client in order to send the Server its nickname and then join the Lobby.
+     * <br><strong>Pre:</strong> nickname != null
+     *
+     * @param nickname Nickname the Client wants to use.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    public synchronized void answerNickname(String nickname) throws IOException {
         this.nickname = nickname;
-        try{ toController(Choice.NICKNAME, nickname); } catch (IOException e) {
-            return;
-        }
+        toServer(Choice.NICKNAME, lobbyCode, nickname);
     }
 
     /**
-     * @see IF_GameView Implementation Client-Side of the notifyTurn method
+     * @see IF_GameView Implementation Client-side of the confirmLobbyJoined method.
+     */
+    @Override
+    public synchronized void confirmLobbyJoined() throws IOException {
+        userInterface.confirmLobbyJoined();
+    }
+
+    /**
+     * @see IF_GameView Implementation Client-Side of the notifyTurn method.
      */
     @Override
     public synchronized void notifyTurn(String nickname, Move move) throws IOException {
@@ -233,7 +305,7 @@ public abstract class VirtualView implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Client-Side of the notifyError method
+     * @see IF_GameView Implementation Client-Side of the notifyError method.
      */
     @Override
     public synchronized void notifyError(ErrorType errorType) throws IOException {
@@ -241,7 +313,7 @@ public abstract class VirtualView implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Client-Side of the update method
+     * @see IF_GameView Implementation Client-Side of the update method.
      */
     @Override
     public synchronized void update(ViewParameter toUpdate, List<Object> parameters) throws IOException {
@@ -287,8 +359,21 @@ public abstract class VirtualView implements IF_GameView {
     }
 
     /**
-     * @see IF_GameView Implementation Client-Side of the ping method
+     * @see IF_GameView Implementation Client-Side of the ping method.
      */
     @Override
     public void ping() throws IOException { /* heartbeat */ }
+
+    private String lobbyCodePadded (String lobbyCode){
+        String code = lobbyCode;
+
+        if (code.length() > 6) {
+            code = code.substring(0, 6);
+        }
+        else if (code.length() < 6) {
+            code = code + "0".repeat(6 - code.length());
+        }
+
+        return code;
+    }
 }

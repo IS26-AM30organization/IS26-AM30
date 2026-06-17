@@ -57,7 +57,7 @@ class CharacterCardTest {
         String role = roles.toString();
         String pp = pps.toString();
         assertTrue(role.contains("" + card1.getRole()));
-        assertTrue(pp.contains("PP: 11"));
+        assertTrue(pp.contains("PP:11"));
         role = "";
         pp = "";
 
@@ -65,7 +65,7 @@ class CharacterCardTest {
         role = roles.toString();
         pp = pps.toString();
         assertTrue(role.contains("" + card2.getRole()));
-        assertTrue(pp.contains("PP: 11"));
+        assertTrue(pp.contains("PP:11"));
         role = "";
         pp = "";
 
@@ -73,7 +73,7 @@ class CharacterCardTest {
         role = roles.toString();
         pp = pps.toString();
         assertTrue(role.contains("" + card2.getRole()));
-        assertTrue(pp.contains("PP: 11"));
+        assertTrue(pp.contains("PP:11"));
         role = "";
         pp = "";
 
@@ -81,7 +81,7 @@ class CharacterCardTest {
         role = roles.toString();
         pp = pps.toString();
         assertTrue(role.contains("" + card3.getRole()));
-        assertTrue(pp.contains("PP: 11"));
+        assertTrue(pp.contains("PP:11"));
         role = "";
         pp = "";
 
@@ -89,7 +89,7 @@ class CharacterCardTest {
         role = roles.toString();
         pp = pps.toString();
         assertTrue(role.contains("" + card4.getRole()));
-        assertTrue(pp.contains("PP: 11"));
+        assertTrue(pp.contains("PP:11"));
         role = "";
         pp = "";
 
@@ -97,7 +97,7 @@ class CharacterCardTest {
         role = roles.toString();
         pp = pps.toString();
         assertTrue(role.contains("" + card5.getRole()));
-        assertTrue(pp.contains("PP: 11"));
+        assertTrue(pp.contains("PP:11"));
         role = "";
         pp = "";
 
@@ -105,7 +105,7 @@ class CharacterCardTest {
         role = roles.toString();
         pp = pps.toString();
         assertTrue(role.contains("" + card6.getRole()));
-        assertTrue(pp.contains("PP: 11"));
+        assertTrue(pp.contains("PP:11"));
         role = "";
         pp = "";
     }

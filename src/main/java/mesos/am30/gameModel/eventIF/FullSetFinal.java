@@ -49,7 +49,14 @@ public class FullSetFinal implements IF_Event {
 
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
-        str1.append("fnlSet");
-        str3.append("pP+" + ppGain);
+        str1.append("FullSetEnd");
+        str3.append("pPGain:").append(ppGain);
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This Building gives ").append(ppGain)
+                .append(" pP to its owner, for each set of 6 unique Characters he has collected during the game.")
+                .toString();
     }
 }

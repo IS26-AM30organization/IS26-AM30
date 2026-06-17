@@ -49,12 +49,27 @@ class VirtualViewTest {
     @Mock
     private List<Object> mockList;
 
+    private Choice capturedServerChoice;
+    private String capturedLobbyCode;
+    private Object capturedParameter;
+
     @BeforeEach
     void setUp() {
+        capturedServerChoice = null;
+        capturedLobbyCode = null;
+        capturedParameter = null;
+
         // set up anonymous VirtualView
         virtualView = new VirtualView(mockUI) {
             @Override
             public void findServer(String path, int port) {}
+
+            @Override
+            protected void toServer(Choice choice, String lobbyCode, Object parameter) {
+                capturedServerChoice = choice;
+                capturedLobbyCode = lobbyCode;
+                capturedParameter = parameter;
+            }
 
             @Override
             protected void toController(Choice choice, Object parameter) {}
@@ -65,6 +80,25 @@ class VirtualViewTest {
             @Override
             public void end() {}
         };
+    }
+
+    @Test
+    void confirmConnection() throws IOException {
+        virtualView.confirmConnection();
+        verify(mockUI).confirmConnection();
+    }
+
+    @Test
+    void confirmLobbyJoined() throws IOException {
+        virtualView.confirmLobbyJoined();
+        verify(mockUI).confirmLobbyJoined();
+    }
+
+    @Test
+    void showLobbies() throws IOException {
+        Map<String, Integer> lobbies = Map.of("123456", 2);
+        virtualView.showLobbies(lobbies);
+        verify(mockUI).showLobbies(lobbies);
     }
 
     @Test
@@ -229,6 +263,7 @@ class VirtualViewTest {
     @Test
     void checkCharacterCard_Correct() throws IOException {
         // set up VirtualView
+        when(mockCharacterCard.isPickable()).thenReturn(true);
         when(mockPlayer.getNickname()).thenReturn("nickname");
         virtualView.setNickname("nickname");
         ViewModel viewModel = virtualView.getModel();
@@ -351,18 +386,9 @@ class VirtualViewTest {
     }
 
     @Test
-    void askPlayersNumber() throws IOException {
-        // Act
-        virtualView.askPlayersNumber();
-
-        // Assert
-        verify(mockUI).askPlayersNumber();
-    }
-
-    @Test
     void askNickname() throws IOException {
         // Act
-        virtualView.askNickname();
+        virtualView.askNickname("123456");
 
         // Assert
         verify(mockUI).askNickname();
@@ -487,5 +513,84 @@ class VirtualViewTest {
         assertEquals(mockList.size(), lowerBuildings.size());
         for (int i = 0; i < mockList.size(); i++) assertEquals(mockList.get(i), lowerBuildings.get(i));
         verify(mockUI).refresh(virtualView.getModel());
+    }
+
+    @Test
+    void checkCharacterCard_PickAnyCard_Correct() throws IOException {
+        // set up VirtualView: card is in the upper row, move is PICK_ANY_CARD
+        when(mockCharacterCard.isPickable()).thenReturn(true);
+        when(mockPlayer.getNickname()).thenReturn("nickname");
+        virtualView.setNickname("nickname");
+        ViewModel viewModel = virtualView.getModel();
+        viewModel.setUpperRow(List.of(mockCharacterCard));
+        viewModel.setLowerRow(List.of());
+        viewModel.setPlayers(List.of(mockPlayer));
+        viewModel.setCurrentUser("nickname");
+        viewModel.setCurrentMove(Move.PICK_ANY_CARD);
+
+        // Act
+        virtualView.checkCharacterCard(mockCharacterCard);
+
+        // Assert: move was accepted, model reset
+        assertNull(viewModel.getCurrentUser());
+        assertNull(viewModel.getCurrentMove());
+    }
+
+    @Test
+    void createLobby_SetsCode() throws IOException {
+        // Act
+        virtualView.createLobby(3, "123456");
+
+        // Assert
+        assertEquals("123456", virtualView.lobbyCode);
+        assertEquals(3, virtualView.playersNumber);
+        assertEquals(Choice.CREATE_LOBBY, capturedServerChoice);
+        assertEquals("123456", capturedLobbyCode);
+    }
+
+    @Test
+    void createLobby_NullCode_NormalizesToEmpty() throws IOException {
+        // Act: null is normalized to "" before being stored and sent
+        virtualView.createLobby(3, null);
+
+        // Assert
+        assertEquals("", virtualView.lobbyCode);
+        assertEquals(Choice.CREATE_LOBBY, capturedServerChoice);
+    }
+
+    @Test
+    void requestAvailableLobbies() throws IOException {
+        // Act
+        virtualView.requestAvailableLobbies();
+
+        // Assert
+        assertEquals(Choice.GET_AVAILABLE_LOBBIES, capturedServerChoice);
+        assertNull(capturedLobbyCode);
+        assertNull(capturedParameter);
+    }
+
+    @Test
+    void joinLobby_SetsLobbyCode() throws IOException {
+        // Act
+        virtualView.joinLobby("123456");
+
+        // Assert
+        assertEquals("123456", virtualView.lobbyCode);
+        assertEquals(Choice.JOIN_LOBBY, capturedServerChoice);
+        assertEquals("123456", capturedLobbyCode);
+    }
+
+    @Test
+    void answerNickname() throws IOException {
+        // set up: lobbyCode must be set before answering nickname
+        virtualView.lobbyCode = "123456";
+
+        // Act
+        virtualView.answerNickname("Lorenzo");
+
+        // Assert
+        assertEquals(Choice.NICKNAME, capturedServerChoice);
+        assertEquals("123456", capturedLobbyCode);
+        assertEquals("Lorenzo", capturedParameter);
     }
 }

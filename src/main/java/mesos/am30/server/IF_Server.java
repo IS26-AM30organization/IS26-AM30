@@ -18,10 +18,48 @@ public interface IF_Server extends Remote {
      * asks directly for its nickname.
      * <br><strong>Pre:</strong> view != null
      *
-     * @param view The Client instance of the IF_GameView
-     * @throws IOException The connection cannot be established correctly
+     * @param view The Client instance of the IF_GameView.
+     *
+     * @throws IOException The connection cannot be established correctly.
      */
     void handleConnection(IF_GameView view) throws IOException;
+
+    /**
+     * Request to create a Lobby.
+     * <br>This method is called by the Client in order to create a Lobby.
+     * <br>the Server check if the number of Players and the Lobby Code are valid.
+     * <br><strong>Pre:</strong> view != null && lobbyCode != null
+     *
+     * @param view The Client instance of the IF_GameView.
+     * @param playersNumber Number of Players for the Lobby.
+     * @param lobbyCode Requested Lobby Code.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    void createLobby(IF_GameView view, int playersNumber, String lobbyCode) throws IOException;
+
+    /**
+     * Request to show the available Lobbies.
+     * <br>This method is called by the Client in order to get the available Lobbies to join.
+     * <br><strong>Pre:</strong> view != null
+     *
+     * @param view The Client instance of the IF_GameView.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    void showAvailableLobbies(IF_GameView view) throws IOException;
+
+    /**
+     * Request to join a Lobby.
+     * <br>This method is called by the Client in order to join a Lobby.
+     * <br><strong>Pre:</strong> view != null && lobbyCode != null
+     *
+     * @param view The Client instance of the IF_GameView.
+     * @param lobbyCode Code of the Lobby to join.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    void joinLobby(IF_GameView view, String lobbyCode) throws IOException;
 
     /**
      * Check the nickname of a Client.
@@ -31,31 +69,18 @@ public interface IF_Server extends Remote {
      * <br><strong>Pre:</strong> view != null && nickname != null
      * <br><strong>Post:</strong> !\old(lobby.getClients().keySet().contains(nickname)) ==> lobby.getClients().keySet().contains(nickname)
      *
-     * @param view The Client instance of the IF_GameView
-     * @param nickname Nickname of the Client
-     * @throws IOException The connection cannot be established correctly
-     */
-    void setNickname(IF_GameView view, String nickname) throws IOException;
-
-    /**
-     * Creates a lobby for a give number of Players.
-     * <br>This method is invocated from the first Client connecting to the lobby, and works as the Server-side counterpart to
-     * the method view.askPlayersNumber().
-     * <br> If the number is valid, the Server creates the lobby, then asks the Client for its nickname.
-     * <br><strong>Pre:</strong> view != null
-     * <br><strong>Post:</strong> 2 <= playersNumber <= 5 && lobby == new Controller(playersNumber)
+     * @param view The Client instance of the IF_GameView.
+     * @param nickname Nickname of the Client.
      *
-     * @param view The Client instance of the IF_GameView
-     * @param playersNumber Number of Players for the lobby
-     * @throws IOException The connection cannot be established correctly
+     * @throws IOException The connection cannot be established correctly.
      */
-    void setPlayersNumber(IF_GameView view, int playersNumber) throws IOException;
+    void setNickname(IF_GameView view, String nickname, String code) throws IOException;
 
     /**
      * Heartbeat for the Server.
-     * <br>This method is called in order to verify if the Server is still connected.
+     * <br>This method is called by the Client in order to verify if the Server is still connected.
      *
-     * @throws IOException The connection is no more established
+     * @throws IOException The connection is no more established.
      */
     void ping () throws IOException;
 }

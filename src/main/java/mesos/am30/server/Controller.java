@@ -21,8 +21,8 @@ import java.util.NoSuchElementException;
 
 public class Controller extends UnicastRemoteObject implements IF_GameController {
     private IF_GameModel board;
-    private Map<Player, IF_GameView> connections;
-    private int numPlayers;
+    private final Map<Player, IF_GameView> connections;
+    private final int numPlayers;
 
     public Controller(int numPlayers) throws IOException {
         this.numPlayers = numPlayers;
@@ -35,11 +35,15 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
         this.board.start();
     }
 
-    public boolean isFull() {
+    public synchronized boolean isFull() {
         return connections.size() == numPlayers;
     }
 
-    public boolean connect(IF_GameView view, String nickname) throws IOException {
+    public synchronized int getOccupiedSlots() {
+        return getClients().size();
+    }
+
+    public synchronized boolean connect(IF_GameView view, String nickname) throws IOException {
         connections.put(new Player(nickname), view);
         view.setController(this);
         return connections.size() == numPlayers;

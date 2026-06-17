@@ -12,10 +12,6 @@ import java.net.Socket;
  * Socket communication handler View-side.
  * <br>This Class works as the communication logic for the VirtualView Class, handling all the View commands and sending them to the Controller.
  * <br>It implements the communication protocol via Socket.
- *
- * @author LoreDN - Lorenzo Di Napoli
- * @version 1.0
- * @since 1.0
  */
 public class SocketView extends VirtualView {
     private Socket socket = null;
@@ -30,7 +26,12 @@ public class SocketView extends VirtualView {
      */
     public SocketView(IF_GameUI userInterface) {
         super(userInterface);
-        connectionOpen = true;
+        connectionOpen = false;
+    }
+
+    // Test getter for the flag connectionOpen
+    public boolean isConnectionOpen() {
+        return connectionOpen;
     }
 
     // Test setter for the attribute socket
@@ -52,8 +53,7 @@ public class SocketView extends VirtualView {
      * Open the connection to the Server.
      * <br>This method manages the Socket connection between this View and the Server.
      * <br><strong>Pre:</strong> path != null
-     * <br><strong>Post:</strong> socket = Socket(path, port) && outputStream = socket.getOutputStream && inputStream = socket.getInputStream &&
-     *                  this.nickname = (* unique nickname for each player in the lobby, chosen by the View *)
+     * <br><strong>Post:</strong> socket = Socket(path, port) && outputStream = socket.getOutputStream && inputStream = socket.getInputStream
      *
      * @see VirtualView Deeper description of this method in the VirtualView abstract Class.
      */
@@ -79,14 +79,31 @@ public class SocketView extends VirtualView {
         // start listening Thread (SocketProxy -> SocketView)
         new Thread(() -> {
             try {
+                connectionOpen = true;
                 while (connectionOpen) {
                     try {
                         Message message = (Message) inputStream.readObject();
                         switch (message.getType()) {
-                            // give the number of Players for the lobby
-                            case FIRST_PLAYER -> askPlayersNumber();
+
+                            // ----- Connection phase -----
+
+                            // server confirms connection established
+                            case CONFIRM_CONNECTION -> confirmConnection();
+                            // server sends available lobby
+                            case SHOW_LOBBIES -> {
+                                ShowLobbiesMessage showLobbiesMessage = (ShowLobbiesMessage) message;
+                                showLobbies(showLobbiesMessage.getAvailableLobbies());
+                            }
                             // give the Client nickname
-                            case NICKNAME -> askNickname();
+                            case NICKNAME -> {
+                                AskNicknameMessage askNicknameMessage = (AskNicknameMessage) message;
+                                askNickname(askNicknameMessage.getLobbyCode());
+                            }
+                            // server confirms lobby joined to Client
+                            case CONFIRM_LOBBY_JOINED -> confirmLobbyJoined();
+
+                            // ----- Game Phase -----
+
                             // notification of turn action
                             case NOTIFY -> {
                                 ClienTurnMessage turnMessage = (ClienTurnMessage) message;
@@ -112,9 +129,7 @@ public class SocketView extends VirtualView {
             } catch (IOException exception) {
                 try { socket.close(); } catch (IOException ignored) { /* connection closed Server-Side */ }
                 try {
-                    if (!connectionOpen) return;
                     notifyError(ErrorType.CONNECTION_CRASHED);
-                    exception.printStackTrace();
                     end();
                 } catch (IOException ignored) { /* userInterface error */ }
             }
@@ -125,6 +140,13 @@ public class SocketView extends VirtualView {
     @Override
     public void setController(IF_GameController controller) { /* never called on SocketView */ }
 
+    // invoke Server methods
+    @Override
+    protected synchronized void toServer(Choice choice, String lobbyCode, Object parameter) throws IOException {
+        outputStream.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, choice, lobbyCode, parameter));
+        outputStream.flush();
+    }
+
     // invoke Controller methods
     @Override
     protected synchronized void toController(Choice choice, Object parameter) throws IOException {
@@ -133,7 +155,7 @@ public class SocketView extends VirtualView {
     }
 
     /**
-     * @see IF_GameView Implementation Client-Side via Socket of the end method
+     * @see IF_GameView Implementation Client-Side via Socket of the end method.
      */
     @Override
     public synchronized void end() throws IOException {

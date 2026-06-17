@@ -21,14 +21,21 @@ public class FinalBuilderBoost implements IF_Event {
         int tot= tribe.get(Parameter.BUILDER).stream()
                 .mapToInt(CharacterCard::getPrestigePoints)
                 .sum();
-        // considerando che avviene già un conteggio
+
         player.updateStats(Parameter.PRESTIGE_POINTS,tot * (multiplier - 1));
     }
 
     @Override
     public void getAttributes(StringBuilder str1, StringBuilder str2, StringBuilder str3) {
-        str1.append("fnlBuilder");
-        str3.append("x" + multiplier);
+        str1.append("BuilderMultiplier");
+        str3.append("x").append(multiplier);
+    }
+
+    @Override
+    public String getCardInfo(StringBuilder info) {
+        return info.append("This Building gives ").append(multiplier)
+                .append("x pP showed on owner's Builders once the game has ended.")
+                .toString();
     }
 
     @Override

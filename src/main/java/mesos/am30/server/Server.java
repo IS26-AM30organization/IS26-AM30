@@ -17,8 +17,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -27,50 +27,57 @@ import java.util.concurrent.ThreadPoolExecutor;
  * <br>This class works as a static implementation of the Server for the game "Mesos".
  * <br>It handles new Clients connecting both via Socket and RMI, binding them to the Controller for the specific lobby.
  * <br>This class extends the class UnicastRemoteObject and implements the interface Remote, in order to work both via RMI and Socket.
- *
- * @author LoreDN - Lorenzo Di Napoli
- * @version 1.0
- * @since 1.0
  */
 public class Server extends UnicastRemoteObject implements IF_Server {
     private static Server instance = null;
-    private static Controller lobby = null;
-    private static List<IF_GameView> connectedViews;
     private static ThreadPoolExecutor executor;
     private static Registry registry;
+    private static final Map<String, Controller> lobbies = new ConcurrentHashMap<>();
+    private static final Map<String, List<IF_GameView>> lobbyViews = new ConcurrentHashMap<>();
+    private static final List<IF_GameView> pendingViews = new ArrayList<>();
+    private static Random random = new Random();
 
     // constructor of the instance
     Server() throws RemoteException {
-        connectedViews = new ArrayList<>();
         executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     }
+
+    // Package-private getters/setters used by test
+    static Map<String, Controller> getLobbies() { return lobbies; }
+    static Map<String, List<IF_GameView>> getLobbyViews() { return lobbyViews; }
+    static List<IF_GameView> getPendingViews() { return pendingViews; }
+    static void setRegistry(Registry r) { registry = r; }
+    static void setRandom(Random r) { random = r; }
 
     /**
      * Static Getter for the Server.
      * <br>This static method returns the static instance of the Server.
      * <br>This allows everything to work in the intended way, even if more instances of the program run simultaneously.
      *
-     * @return Static instance of the Server
-     * @throws RemoteException The Server cannot be instantiated correctly
+     * @return Static instance of the Server.
+     * @throws RemoteException The Server cannot be instantiated correctly.
      */
     public synchronized static Server getInstance() throws RemoteException {
         if (instance == null) instance = new Server();
         return instance;
     }
 
-    // Test getter for the attribute lobby
-    static Controller getLobby() {
-        return lobby;
+    // It generates a 6 decimal digit code
+    private String generateLobbyCode() {
+        String code;
+        do {
+            code = String.format("%06d", random.nextInt(1_000_000));
+        } while (lobbies.containsKey(code));
+        return code;
     }
 
-    // Test setter for the attribute lobby
-    static void setLobby(Controller lobby) {
-        Server.lobby = lobby;
-    }
-
-    // Test getter for the attribute connectedViews
-    static List<IF_GameView> getConnectedViews() {
-        return connectedViews;
+    // It finds the lobby code containing the view (null if pending)
+    private String findLobbyCodeOf(IF_GameView view) {
+        return lobbyViews.entrySet().stream()
+                .filter(e -> e.getValue().contains(view))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
     }
 
     // handle an asynchronous view method call
@@ -87,26 +94,39 @@ public class Server extends UnicastRemoteObject implements IF_Server {
      * <br>This method is the main entry point for the "Mesos" Server; it creates (or connects to) the Server instance, then
      * opens both the RMI and Socket channel of communications as Threads.
      *
-     * @throws IOException The connection cannot be established correctly
+     * @throws IOException The connection cannot be established correctly.
      */
-    static void main() throws IOException {
+    public static void main(String[] args) throws IOException {
+        String ip = (args.length >= 1) ? args[0] : "localhost";
         Server server = Server.getInstance();
+        if (startRmiServer(server, 1099, ip)) startSocketServer(server, 12345);
+    }
 
-        // open RMI connection (RMI - Thread)
+    // package-private for testing
+    static boolean startRmiServer(Server server, int port) throws IOException {
+        return startRmiServer(server, port, "localhost");
+    }
+
+    // package-private for testing
+    static boolean startRmiServer(Server server, int port, String ip) throws IOException {
+        System.setProperty("java.rmi.server.hostname", ip);
         try {
-            registry = LocateRegistry.createRegistry(1099);
+            registry = LocateRegistry.createRegistry(port);
             registry.bind("server", server);
-            System.out.println("Server RMI Registry open at port 1099");
+            System.out.println("Server RMI Registry open at port " + port + " (hostname: " + ip + ")");
+            return true;
         } catch (AlreadyBoundException exception) {
             // already running Server
             System.err.println("[Server RMI Registry Error]: " + exception.getMessage());
-            return;
+            return false;
         }
+    }
 
-        // open Socket connection (Thread)
+    // package-private for testing
+    static void startSocketServer(Server server, int port) {
         new Thread( () -> {
-            try (ServerSocket socket = new ServerSocket(12345)) {
-                System.out.println("Server Socket open at port 12345");
+            try (ServerSocket socket = new ServerSocket(port)) {
+                System.out.println("Server Socket open at port " + port);
                 while (true) {
                     Socket client = socket.accept();
 
@@ -129,21 +149,20 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     }
 
     /**
-     * @see IF_Server Implementation of the handleConnection method
+     * @see IF_Server Implementation of the handleConnection method.
      */
     @Override
     public synchronized void handleConnection(IF_GameView view) throws IOException {
-        connectedViews.add(view);
+        pendingViews.add(view);
         startHeartbeat(view);
-        if (lobby == null) asynchronousViewCall(view::askPlayersNumber);
-        else asynchronousViewCall(view::askNickname);
+        asynchronousViewCall(view::confirmConnection);
     }
 
     // start a Heartbeat thread
     private void startHeartbeat(IF_GameView view) {
         new Thread(() -> {
             try {
-                while (connectedViews.contains(view)) {
+                while (pendingViews.contains(view) || findLobbyCodeOf(view) != null) {
                     Thread.sleep(1000);
                     view.ping();
                 }
@@ -154,59 +173,130 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     }
 
     /**
-     * @see IF_Server Implementation of the handleConnection method
+     * @see IF_Server Implementation of the createLobby method.
      */
     @Override
-    public synchronized void setPlayersNumber(IF_GameView view, int playersNumber) throws IOException {
-        if (lobby != null) asynchronousViewCall(() -> view.notifyError(ErrorType.ALREADY_EXISTING_LOBBY));
-        else if (playersNumber < 2 || playersNumber > 5) asynchronousViewCall(() -> view.notifyError(ErrorType.WRONG_PLAYERS_NUMBER));
-        else {
-            lobby = new Controller(playersNumber);
-            registry.rebind("lobby", lobby);
-            asynchronousViewCall(view::askNickname);
+    public synchronized void createLobby(IF_GameView view, int playersNumber, String lobbyCode) throws IOException {
+        if (lobbyCode.isBlank()) {
+            lobbyCode = generateLobbyCode();
+        } else if (!lobbyCode.matches("\\d{6}")) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.INVALID_LOBBY_CODE));
+            return;
         }
+        if (lobbies.containsKey(lobbyCode)) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.ALREADY_EXISTING_LOBBY));
+            return;
+        }
+        if (playersNumber < 2 || playersNumber > 5) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.WRONG_PLAYERS_NUMBER));
+            return;
+        }
+
+        // create the new lobby
+        Controller newLobby = new Controller(playersNumber);
+        lobbies.put(lobbyCode, newLobby);
+        registry.rebind(lobbyCode, newLobby);
+        lobbyViews.put(lobbyCode, new ArrayList<>());
+
+        // ask for the Nickname
+        String finalLobbyCode = lobbyCode;
+        asynchronousViewCall(() -> view.askNickname(finalLobbyCode));
     }
 
     /**
-     * @see IF_Server Implementation of the ping method
+     * @see IF_Server Implementation of the showAvailableLobbies method.
+     */
+    @Override
+    public synchronized void showAvailableLobbies(IF_GameView view) throws IOException {
+        Map<String, Integer> available = new HashMap<>();
+        lobbies.forEach((code, controller) -> {
+            if (!controller.isFull() && controller.getOccupiedSlots() > 0) available.put(code, controller.getOccupiedSlots());
+        });
+        asynchronousViewCall(() -> view.showLobbies(available));
+    }
+
+    /**
+     * @see IF_Server Implementation of the joinLobby method.
+     */
+    @Override
+    public synchronized void joinLobby(IF_GameView view, String lobbyCode) throws IOException {
+        if (!lobbies.containsKey(lobbyCode)) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.NOT_EXISTING_LOBBY));
+            return;
+        }
+        Controller target = lobbies.get(lobbyCode);
+        if (target.isFull()) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.FULL_LOBBY));
+            return;
+        }
+        asynchronousViewCall(() -> view.askNickname(lobbyCode));
+    }
+
+    /**
+     * @see IF_Server Implementation of the setNickname method.
+     */
+    @Override
+    public synchronized void setNickname(IF_GameView view, String nickname, String code) throws IOException {
+        Controller target = (code == null) ? null : lobbies.get(code);
+        if (target == null) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.NOT_EXISTING_LOBBY));
+            return;
+        }
+
+        // check Nickname
+        List<String> existingNicknames = target.getClients().keySet().stream()
+                .map(Player::getNickname)
+                .toList();
+        if (existingNicknames.contains(nickname)) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.WRONG_NICKNAME));
+            return;
+        }
+
+        if (target.isFull()) {
+            asynchronousViewCall(() -> view.notifyError(ErrorType.FULL_LOBBY));
+            return;
+        }
+
+        // Send the connecting Client a confirmation that he has joined the lobby.
+        asynchronousViewCall(view::confirmLobbyJoined);
+        // Last player to fill the lobby, game starts
+        if (target.connect(view, nickname)) new Thread(target::startGame).start();
+        pendingViews.remove(view);
+        lobbyViews.get(code).add(view);
+    }
+
+    /**
+     * @see IF_Server Implementation of the ping method.
      */
     @Override
     public void ping() throws IOException {}
-
-    /**
-     * @see IF_Server Implementation of the handleConnection method
-     */
-    @Override
-    public synchronized void setNickname(IF_GameView view, String nickname) throws IOException {
-        if (lobby == null) asynchronousViewCall(() -> view.notifyError(ErrorType.NOT_EXISTING_LOBBY));
-        else if (lobby.isFull()) asynchronousViewCall(() -> view.notifyError(ErrorType.FULL_LOBBY));
-        else {
-            // check nickname
-            List<String> existingNicknames = lobby.getClients().keySet().stream()
-                    .map(Player::getNickname)
-                    .toList();
-            if (existingNicknames.contains(nickname)) asynchronousViewCall(() -> view.notifyError(ErrorType.WRONG_NICKNAME));
-            else if (lobby.connect(view, nickname)) new Thread(lobby::startGame).start();
-        }
-    }
 
     /**
      * Handle a Client Disconnection.
      * <br>This method notifies all the other clients when a disconnection happens that the Game has come to an end.
      * <br><strong>Pre:</strong> disconnected != null
      *
-     * @param disconnected The Client instance of the IF_GameView who disconnected
+     * @param disconnected The Client instance of the IF_GameView who disconnected.
      */
     public synchronized void handleDisconnection(IF_GameView disconnected) {
-        if (!connectedViews.contains(disconnected)) return;
-        connectedViews.remove(disconnected);
-        connectedViews.forEach(view -> {
+        if (pendingViews.remove(disconnected)) return;
+
+        // end Game for all Views in the Lobby
+        String code = findLobbyCodeOf(disconnected);
+        if (code == null) return;
+        List<IF_GameView> views = lobbyViews.get(code);
+        views.remove(disconnected);
+
+        // Notify the end of the game to all the others Client
+        views.forEach(view -> {
             try {
                 asynchronousViewCall(() -> view.notifyError(ErrorType.END_FOR_DISCONNECTION));
                 asynchronousViewCall(view::end);
             } catch (IOException ignored) { /* Client connection failed */ }
         });
-        connectedViews = new ArrayList<>();
-        lobby = null;
+
+        // Remove the lobby
+        lobbies.remove(code);
+        lobbyViews.remove(code);
     }
 }

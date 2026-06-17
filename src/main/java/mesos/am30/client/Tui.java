@@ -1,5 +1,6 @@
 package mesos.am30.client;
 
+import mesos.am30.common.TColors;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
@@ -11,6 +12,7 @@ import mesos.am30.common.Move;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -37,67 +39,56 @@ public class Tui implements IF_GameUI {
 		gPhase = GamePhase.MENU;
 	}
 
+	public void setvModel(ViewModel vBoard){
+		this.vBoard = vBoard;
+	}
+
 	/**
 	 * Starts executor service for terminal reading
 	 */
 	public void startCLient() {
-		clientExecutor.submit(() -> plInputReader());
+		clientExecutor.submit(this::plInputReader);
 	}
 
 	/**
 	 * Allows execution of available commands based on gamePhase
 	 */
-	public void plInputReader() {
-		String action = "";
+    public void plInputReader() {
+        String action = "";
 
-		while (gPhase != END) {
-			String plInput = actionScanner.nextLine();
-			String[] plAction = plInput.toLowerCase().split("\\s+");
+        while (gPhase != END) {
+            String plInput = actionScanner.nextLine();
+            String[] plAction = plInput.toLowerCase().split("\\s+"); //input is divided in words.
 
-			if (Objects.requireNonNull(gPhase) == GamePhase.GAME) {
-				matchCMDs(plAction);
-			} else {
-				printMessage("The current Phase is non existent");
-			}
-		}
-		printEnd();
-	}
-
-	/**
-	 * @return nickname inserted after server's invoice
-	 */
-	public void askNickname() {
-		synchronized (tuiLock) {
-			System.out.print("Inserisci nickname > ");
-			System.out.flush();
-		}
-        vView.answerNickname(actionScanner.nextLine());
-	}
+            switch (gPhase) {
+                case MENU -> menuCMDs(plAction); //MENU Phase: connecting to a lobby
+                case LOBBY -> { //LOBBY Phase: inserting a valid name
+                    try {
+                        if (!plAction[0].isBlank()) vView.answerNickname(plAction[0]);
+						else askNickname();
+                    } catch (IOException e) {
+                        printMessage("[ERROR]: error on transmitting player's Nickname.");
+                    }
+                }
+                case GAME -> matchCMDs(plAction); //GAME Phase: game phase
+                default -> {}
+            }
+        }
+        printEnd();
+    }
 
 	/**
-	 * @return playerNumber inserted after server's invoice
+	 *
 	 */
-	@Override
-	public void askPlayersNumber() {
-		synchronized (tuiLock) {
-			System.out.print("Inserisci playerNum > ");
-			System.out.flush();
-		}
-		try {
-			vView.answerPlayersNumber(Integer.parseInt(actionScanner.nextLine()));
-		} catch (NumberFormatException e) {
-			printMessage("[ERROR]: invalid");
-            vView.answerPlayersNumber(0);
-			return;
-		}
-	}
+    public void askNickname() throws IOException {
+            gPhase = GamePhase.LOBBY;
+            printMessage("Insert nickname: ");
+    }
 
 	/**
 	 * Invoked by virtualView, used to set vBoard
 	 */
 	public void refresh(ViewModel vBoard) {
-		this.vBoard = vBoard; //check if needed
-		//boardRender();
 	}
 
 	/**
@@ -106,67 +97,73 @@ public class Tui implements IF_GameUI {
 	 */
 	public void printMove(String nickname, Move move) {
 		boardRender();
-		printMessage("\033[1;36m" + "[System]: Player " + "\033[1;33m" + nickname + "\033[0m" + " has " + move + "\033[0m");
+		printSysMessage(TColors.CYAN_B + "[System]: Player " + TColors.YELLOW + nickname + TColors.RESET + " has " + move + TColors.RESET);
 
 		if (isMatchRunning) return;
 		isMatchRunning = true;
-		gPhase = GamePhase.GAME;
-		printMessage("[System]: game is starting: type -h or -help to show available commands.");
-		startCLient();
 	}
 
 	/**
 	 * Handles end-game screen
 	 */
 	public void printEnd() {
-		printMessage("Game is ended - Thank you for playing\n Press 'enter' to close.");
+		printMessage(TColors.GREEN + "Game is ended - Thank you for playing." + TColors.RESET);
 		gPhase = END;
 
 		clientExecutor.shutdown();
 		System.exit(0);
 	}
 
+	@Override
+	public void setvView(VirtualView view) {
+		this.vView=view;
+	}
+
 	/**
 	 * Shows on TUI any errors sent by the server/view model for incorrect player's actions
-	 * if the wrong nickname or playersNumber was inserted, client gets prompted again
+	 * if the wrong nickname was inserted, client gets prompted again
 	 */
-	public void printError(ErrorType errorMessage) {
-		printMessage("\033[1;31m" + "[Error]: " + errorMessage + "\033[0m");
-		if (errorMessage == ErrorType.WRONG_NICKNAME || errorMessage == ErrorType.ALREADY_EXISTING_LOBBY)
-			promptPlayerNickname();
-		else if (errorMessage == ErrorType.WRONG_PLAYERS_NUMBER) promptPlayerNumber();
-		else if (errorMessage == ErrorType.FULL_LOBBY) printEnd();
+    public void printError(ErrorType errorMessage) {
+        printMessage(TColors.RED_B + "[Error]: " + errorMessage + TColors.RESET);
+
+        switch (errorMessage) {
+            case WRONG_PLAYERS_NUMBER -> printMessage("Type: create #plNum, to create a lobby.");
+            case WRONG_NICKNAME -> {
+                try {
+                    askNickname();
+                } catch (IOException e) {
+                    printMessage("[Error]: error on setting player's nickname");
+                }
+            }
+        }
+    }
+
+	@Override
+	public void showLobbies(Map<String, Integer> availableLobbies) {
+		if (availableLobbies.isEmpty()) {
+			printMessage("[ERROR]: No available lobbies.");
+			return;
+		}
+		StringBuilder sb = new StringBuilder("[System]: Available lobbies:\n");
+		availableLobbies.forEach((code, players) ->
+				sb.append("  Code: ").append(code).append(" | Players: ").append(players).append("\n"));
+		printSysMessage(sb.toString());
+	}
+
+	@Override
+	public void confirmConnection() {
+		printSysMessage(TColors.GREEN_B + "[System]: Connected! Type -h or -help to show available commands at anytime." + TColors.RESET);
+		gPhase = GamePhase.MENU;
+		startCLient();
+	}
+
+	@Override
+	public void confirmLobbyJoined() {
+		printSysMessage("[System]: Lobby joined! \n[System]: Waiting for other players... \nOnce the match starts, type -h or -help to show all available commands.");
+		gPhase = GamePhase.GAME;
 	}
 
 	//PRIVATE LOGIC METHODS
-
-	/**
-	 * if server replies that playerNickname was entered incorrectly, this method re-promts the user to insert it
-	 */
-    void promptPlayerNickname() {
-		clientExecutor.submit(() -> {
-					try {
-						if (vView != null) vView.askNickname();
-					} catch (IOException e) {
-						printMessage("Error with server.");
-					}
-				}
-		);
-	}
-
-	/**
-	 * if server replies that playerNum was entered incorrectly, this method re-promts the user to insert it
-	 */
-    void promptPlayerNumber() {
-		clientExecutor.submit(() -> {
-					try {
-						if (vView != null) vView.askPlayersNumber();
-					} catch (IOException e) {
-						printMessage("Error with server.");
-					}
-				}
-		);
-	}
 
 	/**
 	 * Returns the wanted Tile, if existing
@@ -180,22 +177,22 @@ public class Tui implements IF_GameUI {
 	 * Returns the wanted Card, if existing
 	 * @throws IndexOutOfBoundsException if number inserted is incorrect
 	 */
-	private CharacterCard wantedCCard(Move move, int cIndex) throws IndexOutOfBoundsException {
+	private CharacterCard wantedCCard(Card card) {
+		if (!card.isPickable())
+			throw new IndexOutOfBoundsException("Card is not a Character.");
+		return (CharacterCard) card;
+	}
+
+	private Card wantedCard(Move move,int cIndex) throws IOException {
 		switch (move) {
 			case PICK_FROM_UP -> {
-				Card selectedCard = vBoard.getUpperRow().get(cIndex);
-				if (!vBoard.getUpperRow().get(cIndex).isPickable())
-					throw new IndexOutOfBoundsException("Card is not a Character.");
-				return (CharacterCard) selectedCard;
+				return vBoard.getUpperRow().get(cIndex);
 			}
 			case PICK_FROM_DOWN -> {
-				Card selectedCard = vBoard.getLowerRow().get(cIndex);
-				if (!vBoard.getLowerRow().get(cIndex).isPickable())
-					throw new IndexOutOfBoundsException("Card is not a Character.");
-				return (CharacterCard) selectedCard;
+				return vBoard.getLowerRow().get(cIndex);
 			}
 			default -> {
-				return null;
+				 throw new IOException("Unknown Move");
 			}
 		}
 	}
@@ -217,12 +214,68 @@ public class Tui implements IF_GameUI {
 			}
 		}
 	}
+    /**
+     * Defines which are the correct commands for the ongoing game phase: MENU
+     * @param plAction contains terminal player's input
+     */
+    private void menuCMDs(String[] plAction) {
+        String action = " ";
+        int numOne = -1;
+        String numTwo = "";
 
-	/**
-	 * Defines which are the correct commands for the ongoing game phase
-	 * @param plAction contains terminal player's input
-	 */
+        action = plAction[0];
+        int cmdSize = plAction.length;
+
+        if (cmdSize > 0 && cmdSize <= 3) {
+            try {
+                switch (cmdSize) {
+                    case 1 -> {}
+                    case 2 -> {
+                        numTwo = plAction[1];
+                        if (Objects.equals(action, "create")) {
+                            numOne = parseInt(plAction[1]);
+                            numTwo = vView.getLobbyCode();
+                        }
+                    }
+                    case 3 -> {
+                        numOne = parseInt(plAction[1]);
+                        numTwo = plAction[2];
+                    }
+                    default -> printMessage("Invalid Command, type -h or -help to show all available commands.");
+                }
+
+                switch (action) {
+                    case "-h", "-help" -> showMenuCommands();
+                    case "join" -> vView.joinLobby(numTwo); //join(lobbyCode);
+                    case "create" -> vView.createLobby(numOne, numTwo); //(numPlayers, lobbyCode);
+                    case "list" -> {
+                        try {
+                            vView.requestAvailableLobbies();
+                        } catch (IOException e) {
+                            printMessage("[ERROR]: Cannot reach server.");
+                        }
+                    }
+                    default -> printMessage("Invalid command. type -h or -help to show all available commands.");
+                }
+            } catch(NumberFormatException | IndexOutOfBoundsException e){
+                printMessage("Invalid number: outOfBound/WrongRow/Event was picked");
+            } catch(IOException e){
+                throw new RuntimeException(e);
+            }
+        }else printMessage("Invalid Command, type -h or -help to show all available commands.");
+
+    }
+
+    /**
+     * Defines which are the correct commands for the ongoing game phase
+     * @param plAction contains terminal player's input
+     */
 	private void matchCMDs(String[] plAction) {
+		if (!isMatchRunning) {
+			printMessage("[ERROR]: Game hasn't started yet.");
+			return;
+		}
+
 		String action = " ";
 		int cIndex = -1;
 
@@ -233,7 +286,10 @@ public class Tui implements IF_GameUI {
 			try {
 				switch (cmdSize) {
 					case 1 -> {}
-					case 2 -> cIndex = parseInt(plAction[1]);
+					case 2 -> {
+						if (!action.equals("show"))
+							cIndex = parseInt(plAction[1]);
+					}
 					case 3 -> {
 						action += " " + plAction[1];
 						cIndex = parseInt(plAction[2]);
@@ -242,12 +298,17 @@ public class Tui implements IF_GameUI {
 				}
 
 				switch (action) {
-					case "-h", "-help" -> showAvailableCommands();
-					case "tile" -> vView.checkTile(wantedTile(cIndex));
-					case "draw up" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_UP, cIndex));
-					case "draw down" -> vView.checkCharacterCard(wantedCCard(Move.PICK_FROM_DOWN, cIndex));
-					case "buy up" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_UP, cIndex));
-					case "buy down" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_DOWN, cIndex));
+					case "-h", "-help" -> showGameCommands();
+					case "show" -> displayChosenPlayer(plAction[1]);
+					case "tile", "t" -> vView.checkTile(wantedTile(cIndex));
+					case "draw up", "d u" -> vView.checkCharacterCard(wantedCCard(wantedCard(Move.PICK_FROM_UP, cIndex)));
+					case "draw down", "d d" -> vView.checkCharacterCard(wantedCCard(wantedCard(Move.PICK_FROM_DOWN, cIndex)));
+					case "buy up", "b u" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_UP, cIndex));
+					case "buy down", "b d" -> vView.checkBuildingCard(wantedBuild(Move.PICK_FROM_DOWN, cIndex));
+					case "info cup", "i cu" -> printMessage(TColors.GOLD + (wantedCard(Move.PICK_FROM_UP, cIndex).getCardInfo(new StringBuilder())) + TColors.RESET);
+					case "info cdown", "i cd" -> printMessage(TColors.GOLD + wantedCard(Move.PICK_FROM_DOWN, cIndex).getCardInfo(new StringBuilder()) + TColors.RESET);
+					case "info bup", "i bu" -> printMessage(TColors.BROWN + wantedBuild(Move.PICK_FROM_UP, cIndex).getCardInfo(new StringBuilder()) + TColors.RESET);
+					case "info bdown", "i bd" -> printMessage(TColors.BROWN + wantedBuild(Move.PICK_FROM_DOWN, cIndex).getCardInfo(new StringBuilder()) + TColors.RESET);
 					default -> printMessage("Invalid Command, type -h or -help to show all available commands.");
 				}
 			} catch (NumberFormatException | IndexOutOfBoundsException e) {
@@ -267,7 +328,19 @@ public class Tui implements IF_GameUI {
 	 */
 	private void printMessage(String message) {
 		synchronized (tuiLock) {
-			System.out.println("\033[1;31m" + message + "\033[0m");
+			System.out.println(TColors.RED + message + TColors.RESET);
+			System.out.print("cmd > ");
+			System.out.flush();
+		}
+	}
+
+	/**
+	 * Method to print on TUI - Prints all [System] messages green
+	 * @param message string to be printed
+	 */
+	private void printSysMessage(String message) {
+		synchronized (tuiLock) {
+			System.out.println(TColors.GREEN_B + message + TColors.RESET);
 			System.out.print("cmd > ");
 			System.out.flush();
 		}
@@ -276,15 +349,29 @@ public class Tui implements IF_GameUI {
 	/**
 	 * Prints a list of all available commands
 	 */
-	private void showAvailableCommands() {
-		printMessage("""
-				tile #num -> chose a Tile 
-				draw up #num -> draw a Card 
-				draw down #num-> draw a Card 
-				buy up #num -> buy a Building 
-				buy down #num -> chose a Building 
-				-h or -help #num -> to show available commands 
-				""");
+	private void showGameCommands() {
+		printMessage(TColors.CYAN_B + """
+				tile #num -> chose a Tile (t)\s
+				draw up #num -> draw a Card (d u)\s
+				draw down #num-> draw a Card (d d\s
+				buy up #num -> buy a Building (b u)\s
+				buy down #num -> chose a Building (b d)\s
+				show #plName -> shows tribe of player 
+				info cUp/cDown/bUp/bDown #num -> shows info on selected card (i cu/cd/bu/bd)
+				-h or -help #num -> to show available commands\s
+			\t""" + TColors.RESET);
+	}
+
+	/**
+	 * Prints a list of all available commands
+	 */
+	private void showMenuCommands() {
+		printMessage(TColors.CYAN + """
+				list -> shows available lobbies\s
+				create #plNum #code -> creates a lobby with chosen parameters
+				join #code-> join #code lobby\s
+				-h or -help #num -> to show available commands\s
+			\t""" + TColors.RESET);
 	}
 
 	/**
@@ -325,21 +412,24 @@ public class Tui implements IF_GameUI {
 
 		for (Player p : players) {
 			displayPlayer(p);
+			System.out.println("\n");
 		}
+		System.out.println("\n");
 
-		System.out.println("\033[1;32m" + "\n\n--- UPPER-ROW --------------" + "\033[0m");
+		System.out.println(TColors.GREEN_B + "\n\n--- UPPER-ROW --------------" + TColors.RESET);
 		displayRows(upRow);
 
-		System.out.println("\033[1;33m" + "--- UPPER-BUILDS -----------" + "\033[0m");
+		System.out.println(TColors.YELLOW_B + "--- UPPER-BUILDS -----------" + TColors.RESET);
 		displayBuilds(upBuild);
 
-		System.out.println("\033[1;34m" + "\n--- TILES ------------------" + "\033[0m");
+		System.out.println(TColors.BLUE_B + "\n--- TILES ------------------" + TColors.RESET);
 		displayTiles(tiles);
+        System.out.println(TColors.BLUE_B + "----------------------------" + TColors.RESET);
 
-		System.out.println("\033[1;32m" + "\n--- LOWER-ROW --------------" + "\033[0m");
+		System.out.println(TColors.GREEN_B + "\n--- LOWER-ROW --------------" + TColors.RESET);
 		displayRows(loRow);
 
-		System.out.println("\033[1;33m" + "--- LOWER-BUILDS -----------" + "\033[0m");
+		System.out.println(TColors.YELLOW_B + "--- LOWER-BUILDS -----------" + TColors.RESET);
 		displayBuilds(loBuild);
 
 		Player crntPlayer = vBoard.getCurrentUser();
@@ -377,17 +467,19 @@ public class Tui implements IF_GameUI {
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Card card : row) {
-			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
+			ln1.append(TColors.CYAN_B).append("|").append(TColors.RESET);
+			ln2.append(TColors.CYAN_B).append("|").append(TColors.RESET);
+			ln3.append(TColors.CYAN_B).append("|").append(TColors.RESET);
+			ln1.append(TColors.MAGENTA_B).append(j).append(".").append(TColors.RESET);
 			ln2.append("  ");
 			ln3.append("  ");
 			card.createRow(ln1, ln2, ln3);
 			j++;
-			if (j == maxCardsXRow) {
+			if (j % maxCardsXRow == 0) {
 				displayRows(ln1, ln2, ln3);
-				j = 0;
 			}
 		}
-		if (j > 0) displayRows(ln1, ln2, ln3);
+		if (j % maxCardsXRow != 0) displayRows(ln1, ln2, ln3);
 	}
 
 	/**
@@ -402,7 +494,7 @@ public class Tui implements IF_GameUI {
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Card card : builds) {
-			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
+			ln1.append(TColors.MAGENTA_B).append(j).append(".").append(TColors.RESET);
 			card.createRow(ln1, ln2, ln3);
 			j++;
 		}
@@ -421,8 +513,9 @@ public class Tui implements IF_GameUI {
 		StringBuilder ln3 = new StringBuilder();
 
 		for (Tile tile : tiles) {
-			ln1.append("\033[1;35m").append(j).append(".").append("\033[0m");
-			ln2.append("\033[1;35m").append(j).append(".").append("\033[0m");
+			ln1.append(TColors.MAGENTA_B).append(j).append(".").append(TColors.RESET);
+			ln2.append(TColors.MAGENTA_B).append(j).append(".").append(TColors.RESET);
+			ln3.append("  ");
 			tile.createRow(ln1, ln2, ln3);
 			j++;
 		}
@@ -433,12 +526,27 @@ public class Tui implements IF_GameUI {
 	 * Displays player's info
 	 */
 	private void displayPlayer(Player p) {
-		System.out.println("\033[1;32m" + "\n--- TRIBE OF " + "\033[1;36m" + p.getNickname() + "\033[1;32m" + " ---" + "\033[0m");
+        System.out.println(TColors.GREEN_B + "\n--- TRIBE OF " + TColors.CYAN_B + p.getNickname() + TColors.GREEN_B + " ---" + TColors.RESET);
 		p.displayTribe();
 		p.displayStats();
 	}
 
+	private void displayChosenPlayer(String nickname) {
+		synchronized (tuiLock) {
+			for (Player p : vBoard.getPlayers()) {
+				if (p.getNickname().equals(nickname)) {
+					displayPlayer(p);
+					System.out.println("\n\ncmd > ");
+					System.out.flush();
+					return;
+				}
+			}
+		}
+		printMessage("\n[ERROR]: player does not exists.");
+	}
+
 }
+
 
 
 

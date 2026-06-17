@@ -1,6 +1,7 @@
 package mesos.am30.gameModel;
 
 import mesos.am30.gameModel.card.BuildingCard;
+import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
 
 import java.io.Serializable;
@@ -179,38 +180,16 @@ public class Player implements Serializable {
     }
 
     /**
-     * It prints the entire tribe
+     *Invoked buy TUI to display player's tribe
      */
     public void displayTribe() {
-        int i = 0;
-        int maxCardsXRow = 7;
-
-        StringBuilder rowRoles = new StringBuilder();
-        StringBuilder rowValue = new StringBuilder();
-        StringBuilder rowPP = new StringBuilder();
+        List<Card> allCharacters = new ArrayList<>();
         for (List<CharacterCard> roles : tribe.values()) {
-            for (CharacterCard card : roles) {
-                card.createRow(rowRoles, rowValue, rowPP);
-                i++;
-
-                if (i == maxCardsXRow) {
-                    System.out.println(rowRoles);
-                    System.out.println(rowValue);
-                    System.out.println(rowPP);
-                    System.out.println();
-
-                    rowRoles.setLength(0);
-                    rowValue.setLength(0);
-                    rowPP.setLength(0);
-                    i = 0;
-                }
-            }
+            allCharacters.addAll(roles);
         }
-        if (i > 0) {
-            System.out.println(rowRoles);
-            System.out.println(rowValue);
-            System.out.println(rowPP);
-        }
+
+        createRows(allCharacters);
+        createRows(buildings);
     }
 
     /**
@@ -221,5 +200,44 @@ public class Player implements Serializable {
         int prestigePoints = parameters.get(Parameter.PRESTIGE_POINTS);
         System.out.printf("\033[31m" + "Food: %d, " + "\033[0m" + "\033[33m" + "pPoints: %d\n" + "\033[0m", food, prestigePoints);
         if (inventions != null) System.out.printf("Inventions: %s", inventions.toString());
+    }
+
+    /**
+     * Takes a Collection of Cards an adds their info to the corresponding StringBuilder
+     * @param cards either player's tribe or player's building;
+     */
+    private void createRows(Collection<? extends Card> cards) {
+        if (cards.isEmpty()) return;
+
+        int i = 0;
+        int maxCardsXRow = 8;
+
+        StringBuilder rowRoles = new StringBuilder();
+        StringBuilder rowValue = new StringBuilder();
+        StringBuilder rowPP = new StringBuilder();
+
+        for (Card card : cards) {
+            card.createRow(rowRoles, rowValue, rowPP);
+            i++;
+
+            if (i == maxCardsXRow) {
+                System.out.println(rowRoles);
+                System.out.println(rowValue);
+                System.out.println(rowPP);
+                System.out.println();
+
+                rowRoles.setLength(0);
+                rowValue.setLength(0);
+                rowPP.setLength(0);
+                i = 0;
+            }
+        }
+
+        if (i > 0) {
+            System.out.println(rowRoles);
+            System.out.println(rowValue);
+            System.out.println(rowPP);
+            System.out.println();
+        }
     }
 }
