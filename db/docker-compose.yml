@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+
+  # mysql-DB container
+  mysql-db:
+    container_name: am30-db
+    image: mysql:latest
+    env_file: .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d:Z
+      - ./data:/var/lib/mysql:Z

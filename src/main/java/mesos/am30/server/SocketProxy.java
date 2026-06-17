@@ -87,6 +87,10 @@ class SocketProxy implements IF_GameView {
                                             controller.chooseCharacter(choiceMessage.getIdentifier(), (CharacterCard) choiceMessage.getParameter());
                                     case CHOOSE_BUILDING ->
                                             controller.chooseBuilding(choiceMessage.getIdentifier(), (BuildingCard) choiceMessage.getParameter());
+                                    case RANKINGS -> {
+                                        connectionOpen = false;
+                                        controller.showRankings(choiceMessage.getIdentifier(), (boolean) choiceMessage.getParameter());
+                                    }
                                 }
                             } else {
                                 // connection phase
@@ -182,6 +186,24 @@ class SocketProxy implements IF_GameView {
         outputStream.writeObject(new ModelUpdateMessage(MessageType.UPDATE, toUpdate, parameters));
         outputStream.flush();
         outputStream.reset();
+    }
+
+    /**
+     * @see IF_GameView Implementation Server-side via Socket Proxy of the askShowRankings method.
+     */
+    @Override
+    public synchronized void askShowRankings() throws IOException {
+        outputStream.writeObject(new Message(MessageType.RANKINGS));
+        outputStream.flush();
+    }
+
+    /**
+     * @see IF_GameView Implementation Server-side via Socket Proxy of the showRankings method.
+     */
+    @Override
+    public synchronized void showRankings(Map<String, String> playerRank, List<Map<String, String>> globalRankings) throws IOException {
+        outputStream.writeObject(new RankingMessage(MessageType.SHOW_RANKINGS, playerRank, globalRankings));
+        outputStream.flush();
     }
 
     /**

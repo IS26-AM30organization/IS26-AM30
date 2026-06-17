@@ -56,7 +56,7 @@ public abstract class VirtualView implements IF_GameView {
         return nickname;
     }
 
-    String getLobbyCode() {
+    public String getLobbyCode() {
         return lobbyCode;
     }
 
@@ -356,6 +356,34 @@ public abstract class VirtualView implements IF_GameView {
             }
         }
         userInterface.refresh(model);
+    }
+
+    /**
+     * @see IF_GameView Implementation Client-Side of the askShowRankings method.
+     */
+    @Override
+    public synchronized void askShowRankings() throws IOException {
+        userInterface.askShowRankings();
+    }
+
+    /**
+     * Send the response about the rankings.
+     * <br>This method is called by the Client in order to tell the Controller if it wants to see the Global Rankings.
+     *
+     * @param response True if the Client wants to see the Global Rankings, false otherwise.
+     *
+     * @throws IOException The connection cannot be established correctly.
+     */
+    public synchronized void answerShowRankings(boolean response) throws IOException {
+        toController(Choice.RANKINGS, response);
+    }
+
+    /**
+     * @see IF_GameView Implementation Client-Side of the showRankings method.
+     */
+    @Override
+    public void showRankings(Map<String, String> playerRank, List<Map<String, String>> globalRankings) throws IOException {
+        userInterface.showRankings(playerRank, globalRankings);
     }
 
     /**

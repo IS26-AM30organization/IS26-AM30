@@ -2,24 +2,28 @@
     -fx-background-image: url("../images/background.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
-    -fx-background-size: auto 100%; 
+    -fx-background-size: auto 100%;
 }
 
 .texture{
     -fx-background-image: url("../images/tabletexture.png");
     -fx-background-position: center center;
     -fx-background-repeat: repeat;
-    -fx-background-size: auto 100%; 
+    -fx-background-size: auto 100%;
 }
 
-.text {
+.simple_text{
     -fx-font-family: "ChristmasChalk";
     -fx-text-fill: white;
 }
 
+.just-font{
+    -fx-font-family: "ChristmasChalk";
+}
+
 .title{
-    -fx-font-family: "VagabundoMedium";
-    -fx-font-size: 36px;
+    -fx-font-family: "Vagabundo Medium";
+    -fx-font-size: 72px;
     -fx-text-fill: white;
 }
 
@@ -30,7 +34,18 @@
 }
 
 .lobby_button{
+    -fx-font-family: "Vagabundo Medium";
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
     -fx-background-color:  #654321;
+    -fx-background-radius: 25;
+    -fx-text-fill: white;
+}
+
+.yellow_button{
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-background-color:  #FFCD28;
     -fx-background-radius: 25;
     -fx-text-fill: white;
 }
@@ -68,5 +83,5 @@
     -fx-background-image: url("../images/menu_cover.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
-    -fx-background-size: cover; 
+    -fx-background-size: cover;
 }

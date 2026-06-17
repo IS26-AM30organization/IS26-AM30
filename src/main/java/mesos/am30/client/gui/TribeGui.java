@@ -6,63 +6,94 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import mesos.am30.gameModel.Player;
-import mesos.am30.gameModel.card.Card;
+import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.CharacterCard;
 
 import java.util.List;
 
+/**
+ * Controller for the tribe detail scene.
+ * <br/>Displays a player's full tribe: character cards, buildings, and totem.
+ */
 public class TribeGui {
     @FXML    Label name;
     @FXML    ImageView totem;
     @FXML    VBox box;
     @FXML    AnchorPane gameTribe;
+    @FXML    HBox title;
+
     private static Scene table;
     private static AnchorPane gameTable;
 
+    /**
+     * Initializes the static references to the main scene and game table root.
+     * <br/><strong>Pre:</strong> setTable != null
+     * <br/><strong>Pre:</strong> setGameTable != null
+     *
+     * @param setTable The main scene.
+     * @param setGameTable The game table root node.
+     */
     public static void set(Scene setTable, Parent setGameTable){
         table = setTable;
         gameTable = (AnchorPane) setGameTable;
     }
 
+    /**
+     * Switches to the tribe scene and renders the given player's tribe.
+     * <br/><strong>Pre:</strong> player != null
+     *
+     * @param player The player whose tribe to display.
+     * @param i The player's index (0-based), used for totem image and name colour.
+     */
     public void show(Player player, int i){
         Platform.runLater(()->{
             table.setRoot(gameTribe);
-            totem.setImage(ImageLoader.loadArt(player, i));
+            totem.setImage(ImageLoader.loadArt(i));
             name.setText(player.getNickname().toUpperCase());
             name.setStyle("-fx-background-color: #" + TableGui.colors.get(player) + "; -fx-text-fill: " + ((i==0)||(i==1)||(i==3) ? "#FFFFFF" : "#000000") + "; -fx-font-size: 30; -fx-background-radius: 30;");
-        for (List<CharacterCard> cards : player.getTribe().values()) {
+            for (List<CharacterCard> cards : player.getTribe().values()) {
+                HBox tribe = new HBox();
+                tribe.setAlignment(Pos.CENTER);
+                box.getChildren().add(tribe);
+                for (CharacterCard card : cards) {
+                    StackPane pane = new StackPane();
+                    ImageView image = new ImageView(ImageLoader.loadArt(card));
+                    image.setFitHeight(120);
+                    image.setPreserveRatio(true);
+                    pane.getChildren().add(image);
+                    image = new ImageView(ImageLoader.loadFrame(card));
+                    image.setFitHeight(120);
+                    image.setPreserveRatio(true);
+                    pane.getChildren().add(image);
+                    tribe.getChildren().add(pane);
+                }
+            }
             HBox tribe = new HBox();
             tribe.setAlignment(Pos.CENTER);
             box.getChildren().add(tribe);
-            for (CharacterCard card : cards) {
+            for (BuildingCard card : player.getBuildings()) {
                 StackPane pane = new StackPane();
                 ImageView image = new ImageView(ImageLoader.loadArt(card));
                 image.setFitHeight(120);
                 image.setPreserveRatio(true);
                 pane.getChildren().add(image);
-                image = new ImageView(ImageLoader.loadFrame(card));
-                image.setFitHeight(120);
-                image.setPreserveRatio(true);
-                pane.getChildren().add(image);
                 tribe.getChildren().add(pane);
             }
-        }
         });
     }
 
+    /**
+     * Returns to the game table scene and clears tribe card children.
+     */
     @FXML
     public void back(){
         table.setRoot(gameTable);
-        for (int i = 1; i<box.getChildren().size(); i++){
-            box.getChildren().remove(i);
-        }
+        box.getChildren().retainAll(title);
     }
 }

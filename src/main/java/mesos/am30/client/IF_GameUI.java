@@ -4,6 +4,7 @@ import mesos.am30.common.ErrorType;
 import mesos.am30.common.Move;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public interface IF_GameUI {
@@ -28,6 +29,9 @@ public interface IF_GameUI {
     void printMove(String nickname, Move move);
     void printError(ErrorType errorType) throws IOException;
     void refresh(ViewModel viewModel);
+    void askShowRankings();
+    void showRankings(Map<String, String> playerRank, List<Map<String, String>> globalRankings);
+
     void printEnd();
 
     void setvView(VirtualView view);

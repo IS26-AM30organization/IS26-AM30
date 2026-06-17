@@ -143,7 +143,7 @@ public class Player implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(nickname, parameters, tribe, inventions, buildings, specialBuffs);
+        return Objects.hash(nickname);
     }
 
     public void decreaseRemainingUpMoves() {

@@ -6,6 +6,11 @@ dependency-reduced-pom.xml
 !**/src/test/**/target/
 .kotlin
 
+### DB ###
+db/*
+!db/init/
+!db/docker-compose.yml
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
