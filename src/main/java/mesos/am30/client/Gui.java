@@ -44,7 +44,7 @@ public class Gui extends Application implements IF_GameUI {
         Font.loadFont(getClass().getResourceAsStream("/fonts/Mesos.ttf"), 14);
 
         int port;
-        if (!ClientMain.getRMI()) {
+        if (!ClientMain.isRMI()) {
             vView = new SocketView(this);
             port = 12345;
         } else {
@@ -81,32 +81,23 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * Delegates nickname request to the menu controller.
-     *
-     * @see IF_GameUI#askNickname()
+     * @see IF_GameUI GUI implementation of the setVView method.
      */
     @Override
-    public void askNickname() {
-        menu.askNickname();
-    }
-
-
-    /**
-     * Shows the available lobbies the player can join.
-     * <br/><strong>Pre:</strong> availableLobbies != null
-     *
-     * @param availableLobbies Map of lobby codes to their current number of players.
-     * @see IF_GameUI#showLobbies(Map)
-     */
-    @Override
-    public void showLobbies(Map<String, Integer> availableLobbies) {
-        menu.showLobbies(availableLobbies);
+    public void setVView(VirtualView view) {
+        this.vView = view;
     }
 
     /**
-     * Notifies the player that the connection to the server has been established.
-     *
-     * @see IF_GameUI#confirmConnection()
+     * @see IF_GameUI GUI implementation of the setVModel method.
+     */
+    @Override
+    public void setVModel(ViewModel vBoard) {
+        this.vBoard = vBoard;
+    }
+
+    /**
+     * @see IF_GameUI GUI implementation of the confirmConnection method.
      */
     @Override
     public void confirmConnection() {
@@ -114,9 +105,23 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * Notifies the player that they have successfully joined the lobby.
-     *
-     * @see IF_GameUI#confirmLobbyJoined()
+     * @see IF_GameUI GUI implementation of the showLobbies method.
+     */
+    @Override
+    public void showLobbies(Map<String, Integer> availableLobbies) {
+        menu.showLobbies(availableLobbies);
+    }
+
+    /**
+     * @see IF_GameUI GUI implementation of the askNickname method.
+     */
+    @Override
+    public void askNickname() {
+        menu.askNickname();
+    }
+
+    /**
+     * @see IF_GameUI GUI implementation of the confirmLobbyJoined method.
      */
     @Override
     public void confirmLobbyJoined() {
@@ -124,13 +129,7 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * Delegates move display to the game table controller.
-     * <br/><strong>Pre:</strong> nickname != null
-     * <br/><strong>Pre:</strong> move != null
-     *
-     * @param nickname The acting player's nickname.
-     * @param move The move type required.
-     * @see IF_GameUI#printMove(String, Move)
+     * @see IF_GameUI GUI implementation of the printMove method.
      */
     @Override
     public void printMove(String nickname, Move move) {
@@ -138,11 +137,7 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * Routes the error to the active controller (menu or game table).
-     * <br/><strong>Pre:</strong> errorType != null
-     *
-     * @param errorType The type of error to display.
-     * @see IF_GameUI#printError(ErrorType)
+     * @see IF_GameUI GUI implementation of the printError method.
      */
     @Override
     public void printError(ErrorType errorType) {
@@ -151,11 +146,7 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * Initializes the game table on first call, then delegates refresh to the game controller.
-     * <br/><strong>Pre:</strong> viewModel != null
-     *
-     * @param viewModel The updated view model.
-     * @see IF_GameUI#refresh(ViewModel)
+     * @see IF_GameUI GUI implementation of the refresh method.
      */
     @Override
     public void refresh(ViewModel viewModel) {
@@ -166,7 +157,6 @@ public class Gui extends Application implements IF_GameUI {
         Platform.runLater(() -> {
             if (!started) {
                 started = true;
-                //big.setScene(table);
                 big.setFullScreen(true);
                 game.setBoard(viewModel);
                 game.setName(menu.getNickname());
@@ -177,9 +167,7 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * Delegates leaderboard button visibility to the game table controller.
-     *
-     * @see IF_GameUI#askShowRankings()
+     * @see IF_GameUI GUI implementation of the askShowRankings method.
      */
     @Override
     public void askShowRankings() {
@@ -187,13 +175,7 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * Delegates ranking display to the game table controller.
-     * <br/><strong>Pre:</strong> playerRank != null
-     * <br/><strong>Pre:</strong> globalRankings != null
-     *
-     * @param playerRank The current player's rank entry.
-     * @param globalRankings All players' rankings in order.
-     * @see IF_GameUI#showRankings(Map, List)
+     * @see IF_GameUI GUI implementation of the showRankings method.
      */
     @Override
     public void showRankings(Map<String, String> playerRank, List<Map<String, String>> globalRankings) {
@@ -201,28 +183,10 @@ public class Gui extends Application implements IF_GameUI {
     }
 
     /**
-     * Delegates end-game overlay display to the game table controller.
-     *
-     * @see IF_GameUI#printEnd()
+     * @see IF_GameUI GUI implementation of the printEnd method.
      */
     @Override
     public void printEnd() {
         game.printEnd();
-    }
-
-    /**
-     * @see IF_GameUI#setVView(VirtualView)
-     */
-    @Override
-    public void setVView(VirtualView view) {
-        this.vView = view;
-    }
-
-    /**
-     * @see IF_GameUI#setVModel(ViewModel)
-     */
-    @Override
-    public void setVModel(ViewModel vBoard) {
-        this.vBoard = vBoard;
     }
 }

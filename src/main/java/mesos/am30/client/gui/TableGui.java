@@ -199,7 +199,9 @@ public class TableGui {
     @FXML   StackPane infoPreview;
     @FXML   Label infoLabel;
 
-    /** Initializes UI component arrays and loads tribe and leaderboard sub-controllers. */
+    /**
+     * Initializes UI component arrays and loads tribe and leaderboard sub-controllers.
+     */
     @FXML
     public void initialize() throws IOException {
         uppers = new ArrayList<>(List.of(upper1,upper2,upper3,upper4,upper5,upper6,upper7,upper8,upper9));
@@ -529,75 +531,75 @@ public class TableGui {
         scene.setRoot(root);
     }
 
-    /** Handles click on upper character card slot 1. */
+    /// Handles click on upper Character Card slot 1.
     @FXML public void up1() {upcCard(1);}
-    /** Handles click on upper character card slot 2. */
+    /// Handles click on upper Character Card slot 2.
     @FXML public void up2() {upcCard(2);}
-    /** Handles click on upper character card slot 3. */
+    /// Handles click on upper Character Card slot 3.
     @FXML public void up3() {upcCard(3);}
-    /** Handles click on upper character card slot 4. */
+    /// Handles click on upper Character Card slot 4.
     @FXML public void up4() {upcCard(4);}
-    /** Handles click on upper character card slot 5. */
+    /// Handles click on upper Character Card slot 5.
     @FXML public void up5() {upcCard(5);}
-    /** Handles click on upper character card slot 6. */
+    /// Handles click on upper Character Card slot 6.
     @FXML public void up6() {upcCard(6);}
-    /** Handles click on upper character card slot 7. */
+    /// Handles click on upper Character Card slot 7.
     @FXML public void up7() {upcCard(7);}
-    /** Handles click on upper character card slot 8. */
+    /// Handles click on upper Character Card slot 8.
     @FXML public void up8() {upcCard(8);}
-    /** Handles click on upper character card slot 9. */
+    /// Handles click on upper Character Card slot 9.
     @FXML public void up9() {upcCard(9);}
-    /** Handles click on lower character card slot 1. */
+    /// Handles click on lower Character Card slot 1.
     @FXML public void down1() {downcCard(1);}
-    /** Handles click on lower character card slot 2. */
+    /// Handles click on lower Character Card slot 2.
     @FXML public void down2() {downcCard(2);}
-    /** Handles click on lower character card slot 3. */
+    /// Handles click on lower Character Card slot 3.
     @FXML public void down3() {downcCard(3);}
-    /** Handles click on lower character card slot 4. */
+    /// Handles click on lower Character Card slot 4.
     @FXML public void down4() {downcCard(4);}
-    /** Handles click on lower character card slot 5. */
+    /// Handles click on lower Character Card slot 5.
     @FXML public void down5() {downcCard(5);}
-    /** Handles click on lower character card slot 6. */
+    /// Handles click on lower Character Card slot 6.
     @FXML public void down6() {downcCard(6);}
-    /** Handles click on lower character card slot 7. */
+    /// Handles click on lower Character Card slot 7.
     @FXML public void down7() {downcCard(7);}
-    /** Handles click on lower character card slot 8. */
+    /// Handles click on lower Character Card slot 8.
     @FXML public void down8() {downcCard(8);}
-    /** Handles click on lower character card slot 9. */
+    /// Handles click on lower Character Card slot 9.
     @FXML public void down9() {downcCard(9);}
-    /** Handles click on upper building card slot 1. */
+    /// Handles click on upper Building Card slot 1.
     @FXML public void upb1() {upbCard(1);}
-    /** Handles click on upper building card slot 2. */
+    /// Handles click on upper Building Card slot 2.
     @FXML public void upb2() {upbCard(2);}
-    /** Handles click on upper building card slot 3. */
+    /// Handles click on upper Building Card slot 3.
     @FXML public void upb3() {upbCard(3);}
-    /** Handles click on upper building card slot 4. */
+    /// Handles click on upper Building Card slot 4.
     @FXML public void upb4() {upbCard(4);}
-    /** Handles click on upper building card slot 5. */
+    /// Handles click on upper Building Card slot 5.
     @FXML public void upb5() {upbCard(5);}
-    /** Handles click on lower building card slot 1. */
+    /// Handles click on lower Building Card slot 1.
     @FXML public void downb1() {downbCard(1);}
-    /** Handles click on lower building card slot 2. */
+    /// Handles click on lower Building Card slot 2.
     @FXML public void downb2() {downbCard(2);}
-    /** Handles click on lower building card slot 3. */
+    /// Handles click on lower Building Card slot 3.
     @FXML public void downb3() {downbCard(3);}
-    /** Handles click on lower building card slot 4. */
+    /// Handles click on lower Building Card slot 4.
     @FXML public void downb4() {downbCard(4);}
-    /** Handles click on lower building card slot 5. */
+    /// Handles click on lower Building Card slot 5.
     @FXML public void downb5() {downbCard(5);}
-    /** Handles click on tile slot 1. */
+    /// Handles click on Tile slot 1.
     @FXML public void til1() {tile(1);}
-    /** Handles click on tile slot 2. */
+    /// Handles click on Tile slot 2.
     @FXML public void til2() {tile(2);}
-    /** Handles click on tile slot 3. */
+    /// Handles click on Tile slot 3.
     @FXML public void til3() {tile(3);}
-    /** Handles click on tile slot 4. */
+    /// Handles click on Tile slot 4.
     @FXML public void til4() {tile(4);}
-    /** Handles click on tile slot 5. */
+    /// Handles click on Tile slot 5.
     @FXML public void til5() {tile(5);}
-    /** Handles click on tile slot 6. */
+    /// Handles click on Tile slot 6.
     @FXML public void til6() {tile(6);}
-    /** Handles click on tile slot 7. */
+    /// Handles click on Tile slot 7.
     @FXML public void til7() {tile(7);}
 
     private void upcCard(int i){
@@ -660,23 +662,23 @@ public class TableGui {
         });
     }
 
-    /** Shows the tribe detail for player 1. */
+    /// Shows the tribe detail for Player 1.
     @FXML
     public void showTribe1() { showTribe(0);}
 
-    /** Shows the tribe detail for player 2. */
+    /// Shows the tribe detail for Player 2.
     @FXML
     public void showTribe2() { showTribe(1);}
 
-    /** Shows the tribe detail for player 3. */
+    /// Shows the tribe detail for Player 3.
     @FXML
     public void showTribe3() { showTribe(2);}
 
-    /** Shows the tribe detail for player 4. */
+    /// Shows the tribe detail for Player 4.
     @FXML
     public void showTribe4() { showTribe(3);}
 
-    /** Shows the tribe detail for player 5. */
+    /// Shows the tribe detail for Player 5.
     @FXML
     public void showTribe5() { showTribe(4);}
 
@@ -705,7 +707,9 @@ public class TableGui {
         });
     }
 
-    /** Exits the application. */
+    /**
+     * Exits the application.
+     */
     @FXML
     public void exit(){
         Platform.exit();
@@ -731,61 +735,61 @@ public class TableGui {
         });
     }
     
-    /** Shows card preview for upper character card slot 1 on right-click. */
+    /// Shows card preview for upper Character Card slot 1 on right-click.
     @FXML   void rightUp1(){ rightClick(vBoard.getUpperRow().getFirst()); }
-    /** Shows card preview for upper character card slot 2 on right-click. */
+    /// Shows card preview for upper Character Card slot 2 on right-click.
     @FXML   void rightUp2(){ rightClick(vBoard.getUpperRow().get(1)); }
-    /** Shows card preview for upper character card slot 3 on right-click. */
+    /// Shows card preview for upper Character Card slot 3 on right-click.
     @FXML   void rightUp3(){ rightClick(vBoard.getUpperRow().get(2)); }
-    /** Shows card preview for upper character card slot 4 on right-click. */
+    /// Shows card preview for upper Character Card slot 4 on right-click.
     @FXML   void rightUp4(){ rightClick(vBoard.getUpperRow().get(3)); }
-    /** Shows card preview for upper character card slot 5 on right-click. */
+    /// Shows card preview for upper Character Card slot 5 on right-click.
     @FXML   void rightUp5(){ rightClick(vBoard.getUpperRow().get(4)); }
-    /** Shows card preview for upper character card slot 6 on right-click. */
+    /// Shows card preview for upper Character Card slot 6 on right-click.
     @FXML   void rightUp6(){ rightClick(vBoard.getUpperRow().get(5)); }
-    /** Shows card preview for upper character card slot 7 on right-click. */
+    /// Shows card preview for upper Character Card slot 7 on right-click.
     @FXML   void rightUp7(){ rightClick(vBoard.getUpperRow().get(6)); }
-    /** Shows card preview for upper character card slot 8 on right-click. */
+    /// Shows card preview for upper Character Card slot 8 on right-click.
     @FXML   void rightUp8(){ rightClick(vBoard.getUpperRow().get(7)); }
-    /** Shows card preview for upper character card slot 9 on right-click. */
+    /// Shows card preview for upper Character Card slot 9 on right-click.
     @FXML   void rightUp9(){ rightClick(vBoard.getUpperRow().get(8)); }
-    /** Shows card preview for upper building slot 1 on right-click. */
+    /// Shows card preview for upper Building slot 1 on right-click.
     @FXML   void rightUpB1(){ rightClickB(vBoard.getUpperBuildings().getFirst()); }
-    /** Shows card preview for upper building slot 2 on right-click. */
+    /// Shows card preview for upper Building slot 2 on right-click.
     @FXML   void rightUpB2(){ rightClickB(vBoard.getUpperBuildings().get(1)); }
-    /** Shows card preview for upper building slot 3 on right-click. */
+    /// Shows card preview for upper Building slot 3 on right-click.
     @FXML   void rightUpB3(){ rightClickB(vBoard.getUpperBuildings().get(2)); }
-    /** Shows card preview for upper building slot 4 on right-click. */
+    /// Shows card preview for upper Building slot 4 on right-click.
     @FXML   void rightUpB4(){ rightClickB(vBoard.getUpperBuildings().get(3)); }
-    /** Shows card preview for upper building slot 5 on right-click. */
+    /// Shows card preview for upper Building slot 5 on right-click.
     @FXML   void rightUpB5(){ rightClickB(vBoard.getUpperBuildings().get(4)); }
-    /** Shows card preview for lower character card slot 1 on right-click. */
+    /// Shows card preview for lower Character Card slot 1 on right-click.
     @FXML   void rightDown1() { rightClick(vBoard.getLowerRow().getFirst()); }
-    /** Shows card preview for lower character card slot 2 on right-click. */
+    /// Shows card preview for lower Character Card slot 2 on right-click.
     @FXML   void rightDown2() { rightClick(vBoard.getLowerRow().get(1)); }
-    /** Shows card preview for lower character card slot 3 on right-click. */
+    /// Shows card preview for lower Character Card slot 3 on right-click.
     @FXML   void rightDown3() { rightClick(vBoard.getLowerRow().get(2)); }
-    /** Shows card preview for lower character card slot 4 on right-click. */
+    /// Shows card preview for lower Character Card slot 4 on right-click.
     @FXML   void rightDown4() { rightClick(vBoard.getLowerRow().get(3)); }
-    /** Shows card preview for lower character card slot 5 on right-click. */
+    /// Shows card preview for lower Character Card slot 5 on right-click.
     @FXML   void rightDown5() { rightClick(vBoard.getLowerRow().get(4)); }
-    /** Shows card preview for lower character card slot 6 on right-click. */
+    /// Shows card preview for lower Character Card slot 6 on right-click.
     @FXML   void rightDown6() { rightClick(vBoard.getLowerRow().get(5)); }
-    /** Shows card preview for lower character card slot 7 on right-click. */
+    /// Shows card preview for lower Character Card slot 7 on right-click.
     @FXML   void rightDown7() { rightClick(vBoard.getLowerRow().get(6)); }
-    /** Shows card preview for lower character card slot 8 on right-click. */
+    /// Shows card preview for lower Character Card slot 8 on right-click.
     @FXML   void rightDown8() { rightClick(vBoard.getLowerRow().get(7)); }
-    /** Shows card preview for lower character card slot 9 on right-click. */
+    /// Shows card preview for lower Character Card slot 9 on right-click.
     @FXML   void rightDown9() { rightClick(vBoard.getLowerRow().get(8)); }
-    /** Shows card preview for lower building slot 1 on right-click. */
+    /// Shows card preview for lower Building slot 1 on right-click.
     @FXML   void rightDownB1() { rightClickB(vBoard.getLowerBuildings().getFirst()); }
-    /** Shows card preview for lower building slot 2 on right-click. */
+    /// Shows card preview for lower Building slot 2 on right-click.
     @FXML   void rightDownB2() { rightClickB(vBoard.getLowerBuildings().get(1)); }
-    /** Shows card preview for lower building slot 3 on right-click. */
+    /// Shows card preview for lower Building slot 3 on right-click.
     @FXML   void rightDownB3() { rightClickB(vBoard.getLowerBuildings().get(2)); }
-    /** Shows card preview for lower building slot 4 on right-click. */
+    /// Shows card preview for lower Building slot 4 on right-click.
     @FXML   void rightDownB4() { rightClickB(vBoard.getLowerBuildings().get(3)); }
-    /** Shows card preview for lower building slot 5 on right-click. */
+    /// Shows card preview for lower Building slot 5 on right-click.
     @FXML   void rightDownB5() { rightClickB(vBoard.getLowerBuildings().get(4)); }
 
     private void rightClick (Card card){
@@ -802,7 +806,9 @@ public class TableGui {
         infoBox.setVisible(true);
     }
 
-    /** Hides the card info preview panel. */
+    /**
+     * Hides the card info preview panel.
+     * */
     @FXML   void closeInfo(){
         infoBox.setVisible(false);
     }
@@ -817,7 +823,9 @@ public class TableGui {
         printEnd();
     }
 
-    /** Requests and displays the leaderboard; uses cached rankings if available. */
+    /**
+     * Requests and displays the leaderboard; uses cached rankings if available.
+     */
     @FXML
     public void leaderboard(){
         if (cachedPlayerRank != null && cachedGlobalRankings != null) {

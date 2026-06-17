@@ -49,7 +49,7 @@ public class TribeGui {
      * <br/><strong>Pre:</strong> player != null
      *
      * @param player The player whose tribe to display.
-     * @param i The player's index (0-based), used for totem image and name colour.
+     * @param i The player's index (0-based), used for totem image and name color.
      */
     public void show(Player player, int i){
         Platform.runLater(()->{

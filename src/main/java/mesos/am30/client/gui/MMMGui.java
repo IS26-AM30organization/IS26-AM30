@@ -55,7 +55,9 @@ public class MMMGui {
         this.port = port;
     }
 
-    /** Initializes the scene by hiding lobby panels and nickname input until connection is established. */
+    /**
+     * Initializes the scene by hiding lobby panels and nickname input until connection is established.
+     */
     @FXML
     public void initialize(){
         existingLobbies.setVisible(false);
@@ -69,7 +71,9 @@ public class MMMGui {
         connectedText.setManaged(false);
     }
 
-    /** Shows a connecting message and delegates the server connection to the virtual view. */
+    /**
+     * Shows a connecting message and delegates the server connection to the virtual view.
+     */
     @FXML
     public void play(){
         errorLabel.setText("CONNECTING...");
@@ -110,7 +114,9 @@ public class MMMGui {
         });
     }
 
-    /** Shows a loading message and requests the available lobby list from the server. */
+    /**
+     * Shows a loading message and requests the available lobby list from the server.
+     */
     @FXML
     public void refresh(){
         try {
@@ -161,7 +167,9 @@ public class MMMGui {
         }
     }
 
-    /** Validates the lobby code and player count fields, then delegates lobby creation to the virtual view. */
+    /**
+     * Validates the lobby code and player count fields, then delegates lobby creation to the virtual view.
+     */
     @FXML
     public void createLobby(){
         Platform.runLater(()->{
@@ -195,7 +203,9 @@ public class MMMGui {
         });
     }
 
-    /** Reads the nickname field and delegates the nickname submission to the virtual view. */
+    /**
+     * Reads the nickname field and delegates the nickname submission to the virtual view.
+     */
     @FXML
     public void answerNickname(){
         Platform.runLater(()->{
@@ -239,7 +249,7 @@ public class MMMGui {
                 case WRONG_IP -> errorLabel.setText("CANNOT FIND A SERVER FOR THIS IP!");
                 case ALREADY_EXISTING_LOBBY -> errorLabel.setText("THERE'S ALREADY A LOBBY WITH THIS CODE!");
                 case NOT_EXISTING_LOBBY ->  {
-                    errorLabel.setText("COULN'T FIND THAT LOBBY! RELOADING...");
+                    errorLabel.setText("COULDN'T FIND THAT LOBBY! RELOADING...");
                     refresh();
                 }
                 case WRONG_PLAYERS_NUMBER -> errorLabel.setText("CHOOSE BETWEEN 2 AND 5 PLAYERS!");
