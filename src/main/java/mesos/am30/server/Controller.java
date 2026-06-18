@@ -1,5 +1,6 @@
 package mesos.am30.server;
 
+import mesos.am30.common.interfaces.IF_GameController;
 import mesos.am30.db.GameResultsDAO;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.board.Board;
@@ -7,9 +8,9 @@ import mesos.am30.gameModel.IF_GameModel;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.Tile;
-import mesos.am30.common.ErrorType;
-import mesos.am30.client.IF_GameView;
-import mesos.am30.common.Move;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.interfaces.IF_GameView;
+import mesos.am30.common.enumerations.Move;
 
 import java.io.IOException;
 import java.rmi.server.UnicastRemoteObject;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.sql.SQLException;
-import java.util.*;
 
 /**
  * Controller for the Players' Moves.
@@ -31,7 +31,7 @@ public class Controller extends UnicastRemoteObject implements IF_GameController
 
     /**
      * Constructor for the Controller.
-     * <br/><strong>Pre:</strong> 2 <= numPlayers <= 5
+     * <br/><strong>Pre:</strong> 2 &lt;= numPlayers &lt;= 5
      * <br/><strong>Post:</strong> this.numPlayers = numPlayers
      *
      * @param numPlayers Number of Players for the given Game.

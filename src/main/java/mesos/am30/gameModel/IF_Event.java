@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Events' Interface.
- * <br/>This interface follows the "<strong>Strategy</strong>" Design Pattern, adn it used in order to define the polymorphic methods needed in order
+ * <br/>This interface follows the "<strong>Strategy</strong>" Design Pattern, and it used in order to define the polymorphic methods needed in order
  * to handle/display correctly all the Events.
  */
 public interface IF_Event extends Serializable {
@@ -20,7 +20,7 @@ public interface IF_Event extends Serializable {
     /**
      * Add Event's info to the StringBuilders for the Terminal.
      * <br/>This method works by adding the Event's info to the StringBuilders, in order to display it properly on the Terminal.
-     * <br/><strong>Pre:</strong> str1 != null && str2 != null && str3 != null
+     * <br/><strong>Pre:</strong> str1 != null &amp;&amp; str2 != null &amp;&amp; str3 != null
      *
      * @param str1 Line containing the identifier of the Event.
      * @param str2 Line containing the main attribute of the Event.

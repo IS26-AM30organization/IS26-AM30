@@ -1,8 +1,9 @@
 package mesos.am30.client;
 
-import mesos.am30.common.ErrorType;
-import mesos.am30.common.GamePhase;
-import mesos.am30.common.Move;
+import mesos.am30.client.view.ViewModel;
+import mesos.am30.client.view.VirtualView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.enumerations.Move;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;

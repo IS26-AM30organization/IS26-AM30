@@ -1,6 +1,9 @@
 package mesos.am30.client;
 
 import javafx.application.Application;
+import mesos.am30.client.view.RMIView;
+import mesos.am30.client.view.SocketView;
+import mesos.am30.client.view.VirtualView;
 
 import java.io.IOException;
 import java.net.Socket;

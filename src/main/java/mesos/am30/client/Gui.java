@@ -8,8 +8,12 @@ import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import mesos.am30.client.gui.*;
-import mesos.am30.common.ErrorType;
-import mesos.am30.common.Move;
+import mesos.am30.client.view.RMIView;
+import mesos.am30.client.view.SocketView;
+import mesos.am30.client.view.ViewModel;
+import mesos.am30.client.view.VirtualView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.enumerations.Move;
 
 import java.io.IOException;
 import java.util.List;

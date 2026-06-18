@@ -6,9 +6,9 @@ import mesos.am30.gameModel.IF_GameModel;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.Tile;
-import mesos.am30.common.ErrorType;
-import mesos.am30.common.Move;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.enumerations.Move;
+import mesos.am30.common.interfaces.IF_GameView;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

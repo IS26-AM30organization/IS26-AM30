@@ -15,8 +15,8 @@ public class CharacterCard extends Card {
 
     /**
      * Constructor of a Character Card.
-     * <br/><strong>Pre:</strong> 1 <= era <= 4 && id > 1 && role != null && value != null && prestigePoints != null
-     * <br/><strong>Post:</strong> this.era = era && this.id = id && this.role = role && this.value = value && this.prestigePoints = prestigePoints
+     * <br/><strong>Pre:</strong> 1 &lt;= era &lt;= 4 &amp;&amp; id > 1 &amp;&amp; role != null &amp;&amp; value != null &amp;&amp; prestigePoints != null
+     * <br/><strong>Post:</strong> this.era = era &amp;&amp; this.id = id &amp;&amp; this.role = role &amp;&amp; this.value = value &amp;&amp; this.prestigePoints = prestigePoints
      *
      * @param era            Era when the Card is draw.
      * @param id             Unique ID of the Card.
@@ -50,7 +50,7 @@ public class CharacterCard extends Card {
     }
 
     /**
-     * Getter for the attribute "role".
+     * Getter for the attribute "prestigePoints".
      *
      * @return Value of the Character in prestige points (if existing).
      */

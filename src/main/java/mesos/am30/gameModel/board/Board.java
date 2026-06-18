@@ -9,10 +9,10 @@ import com.google.gson.reflect.TypeToken;
 import mesos.am30.db.GameResultsDAO;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.card.*;
-import mesos.am30.gameModel.eventIF.Sustenance;
-import mesos.am30.common.Move;
-import mesos.am30.common.ViewParameter;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.gameModel.event.Sustenance;
+import mesos.am30.common.enumerations.Move;
+import mesos.am30.common.enumerations.ViewParameter;
+import mesos.am30.common.interfaces.IF_GameView;
 
 /**
  * Representation of the Game Board.
@@ -39,8 +39,8 @@ public class Board implements IF_GameModel {
 
     /**
      * Constructor of the Board.
-     * <br/><strong>Pre:</strong> players != null && !players.contains(null) && views != null && !views.contains(null)
-     * <br/><strong>Post:</strong> this.players = players && this.views = views && (* Other attributes are initialized *)
+     * <br/><strong>Pre:</strong> players != null &amp;&amp; !players.contains(null) &amp;&amp; views != null &amp;&amp; !views.contains(null)
+     * <br/><strong>Post:</strong> this.players = players &amp;&amp; this.views = views &amp;&amp; (* Other attributes are initialized *)
      *
      * @param players   List of Players for the Game.
      * @param views     List of Views associated to each Player.

@@ -1,11 +1,15 @@
 package mesos.am30.server;
 
+import mesos.am30.common.enumerations.MessageType;
+import mesos.am30.common.enumerations.Move;
+import mesos.am30.common.enumerations.ViewParameter;
+import mesos.am30.common.interfaces.IF_GameController;
+import mesos.am30.common.messages.*;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Tile;
-import mesos.am30.common.*;
-import mesos.am30.common.ErrorType;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.interfaces.IF_GameView;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

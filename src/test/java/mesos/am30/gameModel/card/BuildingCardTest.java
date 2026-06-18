@@ -5,7 +5,7 @@ import mesos.am30.gameModel.IF_Event;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.board.Board;
-import mesos.am30.gameModel.eventIF.FullSet;
+import mesos.am30.gameModel.event.FullSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

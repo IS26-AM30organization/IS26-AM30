@@ -27,7 +27,7 @@ public class Player implements Serializable {
     /**
      * Constructor of a Player.
      * <br/><strong>Pre:</strong> nickname != null
-     * <br/><strong>Post:</strong> this.nickname = nickname && (* Other attributes are initialized *)
+     * <br/><strong>Post:</strong> this.nickname = nickname &amp;&amp; (* Other attributes are initialized *)
      *
      * @param nickname Nickname of the Player.
      */
@@ -120,8 +120,8 @@ public class Player implements Serializable {
     /**
      * Set the Player's Moves.
      * <br/>This method sets the Moves the Player can do next, depending on the Tile it has chosen.
-     * <br/><strong>Pre:</strong> up >= 0 && down >= 0
-     * <br/><strong>Post:</strong> this.remainingUpMoves = up && this.remainingDownMoves = down
+     * <br/><strong>Pre:</strong> up >= 0 &amp;&amp; down >= 0
+     * <br/><strong>Post:</strong> this.remainingUpMoves = up &amp;&amp; this.remainingDownMoves = down
      *
      * @param up    Number of Cards the Player can pick from the upper row.
      * @param down  Number of Cards the Player can pick from the lower row.
@@ -155,7 +155,7 @@ public class Player implements Serializable {
 
     /**
      * Decrease the number of Moves (Pick From Up).
-     * <br/><strong>Post:</strong> this.remainingUpMoves = /old(thius.remainingUpMoves) - 1
+     * <br/><strong>Post:</strong> this.remainingUpMoves = /old(this.remainingUpMoves) - 1
      */
     public void decreaseRemainingUpMoves() {
         remainingUpMoves--;
@@ -163,7 +163,7 @@ public class Player implements Serializable {
 
     /**
      * Decrease the number of Moves (Pick From Down).
-     * <br/><strong>Post:</strong> this.remainingDownMoves = /old(thius.remainingDownMoves) - 1
+     * <br/><strong>Post:</strong> this.remainingDownMoves = /old(this.remainingDownMoves) - 1
      */
     public void decreaseRemainingDownMoves() {
         remainingDownMoves--;

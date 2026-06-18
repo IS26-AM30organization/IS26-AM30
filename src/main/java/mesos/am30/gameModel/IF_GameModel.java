@@ -4,7 +4,7 @@ import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.Tile;
-import mesos.am30.common.Move;
+import mesos.am30.common.enumerations.Move;
 
 import java.io.IOException;
 import java.util.List;
@@ -75,7 +75,7 @@ public interface IF_GameModel {
      * Move - Pick Tile.
      * <br/>This method updates the Model due to the move "Pick Tile" done from a Player.
      * <br/>If the Tile is already occupied, nothing happens.
-     * <br/><strong>Pre:</strong> player != null && tile != null
+     * <br/><strong>Pre:</strong> player != null &amp;&amp; tile != null
      *
      * @param player    Player who has made the move.
      * @param tile      Tile picked by the Player.
@@ -88,7 +88,7 @@ public interface IF_GameModel {
      * Move - Pick Card (Character Card).
      * <br/>This method updates the Model due to the move "Pick Card" done from a Player, in particular this method works with Character Cards.
      * <br/>If the Card is not displayed on the Board, nothing happens.
-     * <br/><strong>Pre:</strong> player != null && card != null
+     * <br/><strong>Pre:</strong> player != null &amp;&amp; card != null
      *
      * @param player    Player who has made the move.
      * @param card      Card picked by the Player.
@@ -102,7 +102,7 @@ public interface IF_GameModel {
      * Move - Pick Card (Building Card).
      * <br/>This method updates the Model due to the move "Pick Card" done from a Player, in particular this method works with Building Cards.
      * <br/>If the Card is not displayed on the Board, nothing happens.
-     * <br/><strong>Pre:</strong> player != null && card != null
+     * <br/><strong>Pre:</strong> player != null &amp;&amp; card != null
      *
      * @param player    Player who has made the move.
      * @param card      Card picked by the Player.
@@ -114,7 +114,7 @@ public interface IF_GameModel {
 
     /**
      * Load the Game.
-     * <br/>This method works as a pre-game loader, by loading the various components of the Game (Tiles & Cards) adn preparing the various decks and rows.
+     * <br/>This method works as a pre-game loader, by loading the various components of the Game (Tiles &amp; Cards) adn preparing the various decks and rows.
      *
      * @throws IOException The resources cannot be load correctly.
      */

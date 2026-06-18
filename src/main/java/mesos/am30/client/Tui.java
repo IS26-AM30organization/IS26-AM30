@@ -1,6 +1,10 @@
 package mesos.am30.client;
 
+import mesos.am30.client.view.ViewModel;
+import mesos.am30.client.view.VirtualView;
 import mesos.am30.common.*;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.enumerations.Move;
 import mesos.am30.gameModel.*;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
@@ -13,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static java.lang.Integer.parseInt;
-import static mesos.am30.common.GamePhase.*;
+import static mesos.am30.client.GamePhase.*;
 
 /**
  * Terminal Interface for the View.

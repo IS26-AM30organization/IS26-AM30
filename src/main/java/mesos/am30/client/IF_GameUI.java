@@ -1,7 +1,9 @@
 package mesos.am30.client;
 
-import mesos.am30.common.ErrorType;
-import mesos.am30.common.Move;
+import mesos.am30.client.view.ViewModel;
+import mesos.am30.client.view.VirtualView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.enumerations.Move;
 
 import java.util.List;
 import java.util.Map;
@@ -46,13 +48,13 @@ public interface IF_GameUI {
     void askNickname();
 
     /**
-     * Notify the Client about the successfully join to the Lobby.
+     * Notify the Client about the successful join of the Lobby.
      */
     void confirmLobbyJoined();
 
     /**
      * Print the next Move for a Player.
-     * <br/><strong>Pre:</strong> nickname != null && move != null
+     * <br/><strong>Pre:</strong> nickname != null &amp;&amp; move != null
      *
      * @param nickname  Nickname of the Player who has to move.
      * @param move      Next move to perform.
@@ -84,7 +86,7 @@ public interface IF_GameUI {
     /**
      * Show the Rankings.
      * <br/>This method is called in order to show the Rankings.
-     * <br/><strong>Pre:</strong> playerRank != null && globalRankings != null
+     * <br/><strong>Pre:</strong> playerRank != null &amp;&amp; globalRankings != null
      *
      * @param playerRank        Rank of the Player.
      * @param globalRankings    Ranking of all the Players.

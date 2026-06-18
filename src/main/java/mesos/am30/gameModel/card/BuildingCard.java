@@ -19,9 +19,9 @@ public class BuildingCard extends Card {
 
     /**
      * Constructor of a Building Card.
-     * <br/><strong>Pre:</strong> 1 <= era <= 4 && id > 1 && event != null && eventType != null && foodCost > 0 && ppGainEnd >= 0
-     * <br/><strong>Post:</strong> this.era = era && this.id = id && this.event = event && this.eventType = eventType
-     *                              && this.foodCost = foodCost && this.ppGainEnd = ppGainEnd
+     * <br/><strong>Pre:</strong> 1 &lt;= era &lt;= 4 &amp;&amp; id > 1 &amp;&amp; event != null &amp;&amp; eventType != null &amp;&amp; foodCost > 0 &amp;&amp; ppGainEnd >= 0
+     * <br/><strong>Post:</strong> this.era = era &amp;&amp; this.id = id &amp;&amp; this.event = event &amp;&amp; this.eventType = eventType
+     *                              &amp;&amp; this.foodCost = foodCost &amp;&amp; this.ppGainEnd = ppGainEnd
      *
      * @param era       Era when the Card is draw.
      * @param id        Unique ID of the Card.

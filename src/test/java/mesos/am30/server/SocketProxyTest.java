@@ -1,10 +1,11 @@
 package mesos.am30.server;
 
+import mesos.am30.common.enumerations.*;
+import mesos.am30.common.messages.*;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.Tile;
-import mesos.am30.common.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

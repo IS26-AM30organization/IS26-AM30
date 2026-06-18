@@ -7,8 +7,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import mesos.am30.client.ClientMain;
-import mesos.am30.client.VirtualView;
-import mesos.am30.common.ErrorType;
+import mesos.am30.client.view.VirtualView;
+import mesos.am30.common.enumerations.ErrorType;
 
 import java.io.IOException;
 import java.util.Map;

@@ -14,8 +14,8 @@ public class EventCard extends Card {
 
     /**
      * Constructor of an Event Card.
-     * <br/><strong>Pre:</strong> 1 <= era <= 4 && id > 1 && event != null
-     * <br/><strong>Post:</strong> this.era = era && this.id = id && this.event = event
+     * <br/><strong>Pre:</strong> 1 &lt;= era &lt;= 4 &amp;&amp; id > 1 &amp;&amp; event != null
+     * <br/><strong>Post:</strong> this.era = era &amp;&amp; this.id = id &amp;&amp; this.event = event
      *
      * @param era   Era when the Card is draw.
      * @param id    Unique ID of the Card.

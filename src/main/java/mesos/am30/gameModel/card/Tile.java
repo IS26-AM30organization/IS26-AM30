@@ -19,8 +19,8 @@ public class Tile implements Serializable {
 
     /**
      * Constructor of a Tile.
-     * <br/><strong>Pre:</strong> (upArrows > 0 || upArrows == null) && (downArrows > 0 || downArrows == null) && (food > 0 || food == null)
-     * <br/><strong>Post:</strong> this.upArrows = upArrows && this.downArrows = downArrows && this.food = food
+     * <br/><strong>Pre:</strong> (upArrows > 0 || upArrows == null) &amp;&amp; (downArrows > 0 || downArrows == null) &amp;&amp; (food > 0 || food == null)
+     * <br/><strong>Post:</strong> this.upArrows = upArrows &amp;&amp; this.downArrows = downArrows &amp;&amp; this.food = food
      *
      * @param upArrows      Number of Cards which can be picked from the upper row.
      * @param downArrows    Number of Cards which can be picked from the lower row.
@@ -87,7 +87,7 @@ public class Tile implements Serializable {
     /**
      * Add Tile's info to the StringBuilders for the Terminal.
      * <br/>This method works by adding the Tile's info to the StringBuilders, in order to display it properly on the Terminal.
-     * <br/><strong>Pre:</strong> ln1 != null && ln2 != null && ln3 != null
+     * <br/><strong>Pre:</strong> ln1 != null &amp;&amp; ln2 != null &amp;&amp; ln3 != null
      *
      * @param ln1 Line containing the number of Moves (Pick From Up) of the Tile.
      * @param ln2 Line containing the number of Moves (Pick From Down) of the Tile.

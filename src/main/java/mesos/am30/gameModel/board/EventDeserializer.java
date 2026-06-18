@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import mesos.am30.gameModel.IF_Event;
-import mesos.am30.gameModel.eventIF.*;
+import mesos.am30.gameModel.event.*;
 
 import java.lang.reflect.Type;
 

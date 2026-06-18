@@ -15,8 +15,8 @@ public abstract class Card implements Serializable {
 
     /**
      * Constructor of a generic Card.
-     * <br/><strong>Pre:</strong> 1 <= era <= 4 && id > 1
-     * <br/><strong>Post:</strong> this.era = era && this.id = id
+     * <br/><strong>Pre:</strong> 1 &lt;= era &lt;= 4 &amp;&amp; id > 1
+     * <br/><strong>Post:</strong> this.era = era &amp;&amp; this.id = id
      *
      * @param era   Era when the Card is draw.
      * @param id    Unique ID of the Card.
@@ -83,7 +83,7 @@ public abstract class Card implements Serializable {
     /**
      * Add Card's info to the StringBuilders for the Terminal.
      * <br/>This method works by adding the Card's info to the StringBuilders, in order to display it properly on the Terminal.
-     * <br/><strong>Pre:</strong> ln1 != null && ln2 != null && ln3 != null
+     * <br/><strong>Pre:</strong> ln1 != null &amp;&amp; ln2 != null &amp;&amp; ln3 != null
      *
      * @param ln1 Line containing the identifier of the Card.
      * @param ln2 Line containing the main attribute of the Card.

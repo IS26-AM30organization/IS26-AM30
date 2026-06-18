@@ -9,10 +9,10 @@ import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.Tile;
 import mesos.am30.gameModel.card.EventCard;
-import mesos.am30.gameModel.eventIF.FullSet;
-import mesos.am30.gameModel.eventIF.Hunt;
-import mesos.am30.gameModel.eventIF.Sustenance;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.gameModel.event.FullSet;
+import mesos.am30.gameModel.event.Hunt;
+import mesos.am30.gameModel.event.Sustenance;
+import mesos.am30.common.interfaces.IF_GameView;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

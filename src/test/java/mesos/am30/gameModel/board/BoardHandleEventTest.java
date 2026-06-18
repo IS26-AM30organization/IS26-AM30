@@ -1,6 +1,6 @@
 package mesos.am30.gameModel.board;
 
-import mesos.am30.client.IF_GameView;
+import mesos.am30.common.interfaces.IF_GameView;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;

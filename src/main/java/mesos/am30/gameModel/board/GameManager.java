@@ -3,9 +3,9 @@ package mesos.am30.gameModel.board;
 import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.SpecialBuff;
-import mesos.am30.common.Move;
-import mesos.am30.common.ViewParameter;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.common.enumerations.Move;
+import mesos.am30.common.enumerations.ViewParameter;
+import mesos.am30.common.interfaces.IF_GameView;
 
 import java.io.IOException;
 import java.util.ArrayList;

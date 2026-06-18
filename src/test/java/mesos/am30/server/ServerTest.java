@@ -1,8 +1,8 @@
 package mesos.am30.server;
 
 import mesos.am30.gameModel.Player;
-import mesos.am30.common.ErrorType;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.interfaces.IF_GameView;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
