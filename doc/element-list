@@ -1,0 +1,13 @@
+mesos.am30.client
+mesos.am30.client.gui
+mesos.am30.client.view
+mesos.am30.common
+mesos.am30.common.enumerations
+mesos.am30.common.interfaces
+mesos.am30.common.messages
+mesos.am30.db
+mesos.am30.gameModel
+mesos.am30.gameModel.board
+mesos.am30.gameModel.card
+mesos.am30.gameModel.event
+mesos.am30.server

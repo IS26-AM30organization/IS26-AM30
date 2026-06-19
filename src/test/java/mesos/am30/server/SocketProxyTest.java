@@ -1,10 +1,11 @@
 package mesos.am30.server;
 
+import mesos.am30.common.enumerations.*;
+import mesos.am30.common.messages.*;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.Tile;
-import mesos.am30.common.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,11 +23,9 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @ExtendWith(MockitoExtension.class)
 class SocketProxyTest {
@@ -84,7 +83,7 @@ class SocketProxyTest {
         proxy.end();
 
         // Assert Client-side
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.END, message.getType());
 
@@ -92,6 +91,7 @@ class SocketProxyTest {
         clientSocket.close();
 
         // Assert Proxy
+        Thread.sleep(500);
         verifyNoInteractions(mockServer);
         verifyNoInteractions(mockController);
         assertFalse(proxy.isConnectionOpen());
@@ -109,7 +109,7 @@ class SocketProxyTest {
         clientOut.flush();
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         verify(mockController).chooseTile(eq("nickname"), any(Tile.class));
         verify(mockServer, times(1)).handleDisconnection(proxy);
     }
@@ -121,7 +121,7 @@ class SocketProxyTest {
         clientOut.writeObject(new Message(MessageType.NOTIFY));
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         verifyNoInteractions(mockServer);
         verifyNoInteractions(mockController);
     }
@@ -132,7 +132,7 @@ class SocketProxyTest {
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_TILE, "nickname", mock(Tile.class)));
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         verifyNoInteractions(mockServer);
         verifyNoInteractions(mockController);
     }
@@ -144,96 +144,165 @@ class SocketProxyTest {
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.NICKNAME, "123456", "nickname"));
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         verifyNoInteractions(mockServer);
         verifyNoInteractions(mockController);
     }
 
     @Test
     void startListeningThread_CREATE_LOBBY() throws IOException, InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        doAnswer(ignored -> { latch.countDown(); return null; })
+                .when(mockServer).createLobby(any(), anyInt(), anyString());
+
         // Act
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CREATE_LOBBY, "123456", 3));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(2000);
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+    throw new IllegalStateException("Timeout: proxy not initialized");
+}
         verify(mockServer, times(1)).createLobby(proxy, 3, "123456");
         verifyNoInteractions(mockController);
     }
 
     @Test
     void startListeningThread_GET_AVAILABLE_LOBBIES() throws IOException, InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        doAnswer(ignored -> { latch.countDown(); return null; })
+                .when(mockServer).showAvailableLobbies(any());
+
         // Act
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.GET_AVAILABLE_LOBBIES, "", null));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(2000);
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+    throw new IllegalStateException("Timeout: proxy not initialized");
+}
         verify(mockServer, times(1)).showAvailableLobbies(proxy);
         verifyNoInteractions(mockController);
     }
 
     @Test
     void startListeningThread_JOIN_LOBBY() throws IOException, InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        doAnswer(ignored -> { latch.countDown(); return null; })
+                .when(mockServer).joinLobby(any(), anyString());
+
         // Act
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.JOIN_LOBBY, "123456", null));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(2000);
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+    throw new IllegalStateException("Timeout: proxy not initialized");
+}
         verify(mockServer, times(1)).joinLobby(proxy, "123456");
         verifyNoInteractions(mockController);
     }
 
     @Test
     void startListeningThread_NICKNAME() throws IOException, InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        doAnswer(ignored -> { latch.countDown(); return null; })
+                .when(mockServer).setNickname(any(), anyString(), anyString());
+
         // Act
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.NICKNAME, "123456", "nickname"));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(2000);
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+    throw new IllegalStateException("Timeout: proxy not initialized");
+}
         verify(mockServer, times(1)).setNickname(proxy, "nickname", "123456");
         verifyNoInteractions(mockController);
     }
 
     @Test
     void startListeningThread_CHOOSE_TILE() throws IOException, InterruptedException {
-        // Act
+        CountDownLatch latch = new CountDownLatch(1);
         proxy.setController(mockController);
+
+        doAnswer(ignored -> { latch.countDown(); return null; })
+                .when(mockController).chooseTile(anyString(), any(Tile.class));
+
+        // Act
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_TILE, "nickname", mock(Tile.class)));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(2000);
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+    throw new IllegalStateException("Timeout: proxy not initialized");
+}
         verifyNoInteractions(mockServer);
         verify(mockController).chooseTile(eq("nickname"), any(Tile.class));
     }
 
     @Test
     void startListeningThread_CHOOSE_CHARACTER() throws IOException, InterruptedException {
-        // Act
+        CountDownLatch latch = new CountDownLatch(1);
         proxy.setController(mockController);
+
+        doAnswer(ignored -> { latch.countDown(); return null; })
+                .when(mockController).chooseCharacter(anyString(), any(CharacterCard.class));
+
+        // Act
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_CHARACTER, "nickname", mock(CharacterCard.class)));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(2000);
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+    throw new IllegalStateException("Timeout: proxy not initialized");
+}
         verifyNoInteractions(mockServer);
         verify(mockController).chooseCharacter(eq("nickname"), any(CharacterCard.class));
     }
 
     @Test
     void startListeningThread_CHOOSE_BUILDING() throws IOException, InterruptedException {
-        // Act
+        CountDownLatch latch = new CountDownLatch(1);
         proxy.setController(mockController);
+
+        doAnswer(ignored -> { latch.countDown(); return null; })
+                .when(mockController).chooseBuilding(anyString(), any(BuildingCard.class));
+
+        // Act
         clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.CHOOSE_BUILDING, "nickname", mock(BuildingCard.class)));
         clientOut.flush();
 
         // Assert
-        Thread.sleep(2000);
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+    throw new IllegalStateException("Timeout: proxy not initialized");
+}
         verifyNoInteractions(mockServer);
         verify(mockController).chooseBuilding(eq("nickname"), any(BuildingCard.class));
+    }
+
+    @Test
+    void startListeningThread_RANKINGS() throws IOException, InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        proxy.setController(mockController);
+
+        doAnswer(ignored -> { latch.countDown(); return null; })
+                .when(mockController).showRankings(anyString(), anyBoolean());
+
+        // Act
+        clientOut.writeObject(new ClientChoiceMessage(MessageType.CHOOSE, Choice.RANKINGS, "nickname", true));
+        clientOut.flush();
+
+        // Assert
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+    throw new IllegalStateException("Timeout: proxy not initialized");
+}
+        verifyNoInteractions(mockServer);
+        verify(mockController).showRankings("nickname", true);
     }
 
     @Test
@@ -242,7 +311,7 @@ class SocketProxyTest {
         proxy.confirmConnection();
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.CONFIRM_CONNECTION, message.getType());
     }
@@ -258,7 +327,7 @@ class SocketProxyTest {
         proxy.showLobbies(lobbies);
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.SHOW_LOBBIES, message.getType());
         ShowLobbiesMessage showLobbiesMessage = (ShowLobbiesMessage) message;
@@ -271,7 +340,7 @@ class SocketProxyTest {
         proxy.askNickname("123456");
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.NICKNAME, message.getType());
         AskNicknameMessage askNicknameMessage = (AskNicknameMessage) message;
@@ -284,7 +353,7 @@ class SocketProxyTest {
         proxy.confirmLobbyJoined();
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.CONFIRM_LOBBY_JOINED, message.getType());
     }
@@ -295,7 +364,7 @@ class SocketProxyTest {
         proxy.notifyTurn("nickname", Move.PICK_TILE);
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.NOTIFY, message.getType());
         ClienTurnMessage clienTurnMessage = (ClienTurnMessage) message;
@@ -309,7 +378,7 @@ class SocketProxyTest {
         proxy.notifyError(ErrorType.WRONG_TILE);
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.ERROR, message.getType());
         ErrorMessage errorMessage = (ErrorMessage) message;
@@ -322,7 +391,7 @@ class SocketProxyTest {
         proxy.update(ViewParameter.PLAYERS, List.of(mock(Player.class)));
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.UPDATE, message.getType());
         ModelUpdateMessage modelUpdateMessage = (ModelUpdateMessage) message;
@@ -335,12 +404,47 @@ class SocketProxyTest {
     }
 
     @Test
+    void askShowRankings() throws IOException, InterruptedException, ClassNotFoundException {
+        // Act
+        proxy.askShowRankings();
+
+        // Assert
+        Thread.sleep(500);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.RANKINGS, message.getType());
+    }
+
+    @Test
+    void showRankings() throws IOException, InterruptedException, ClassNotFoundException {
+        // set up Mock Rankings
+        List<Map<String, String>> rankings = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Map<String, String> ranking = new LinkedHashMap<>();
+            ranking.put("NICKNAME", "nickname");
+            ranking.put("SCORE", String.valueOf(100 - (i + 5)));
+            ranking.put("RANK", String.valueOf(i));
+            rankings.add(ranking);
+        }
+
+        // Act
+        proxy.showRankings(rankings.getLast(), rankings);
+
+        // Assert
+        Thread.sleep(500);
+        Message message = (Message) clientIn.readObject();
+        assertEquals(MessageType.SHOW_RANKINGS, message.getType());
+        RankingMessage rankingMessage = (RankingMessage) message;
+        assertEquals(rankings.getLast(), rankingMessage.getPlayerRank());
+        assertEquals(rankings, rankingMessage.getGlobalRankings());
+    }
+
+    @Test
     void ping() throws IOException, InterruptedException, ClassNotFoundException {
         // Act
         proxy.ping();
 
         // Assert
-        Thread.sleep(2000);
+        Thread.sleep(500);
         Message message = (Message) clientIn.readObject();
         assertEquals(MessageType.PING, message.getType());
     }

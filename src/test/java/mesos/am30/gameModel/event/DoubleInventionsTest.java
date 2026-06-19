@@ -3,7 +3,6 @@ package mesos.am30.gameModel.event;
 import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.CharacterCard;
-import mesos.am30.gameModel.eventIF.DoubleInventions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,11 +21,22 @@ class DoubleInventionsTest {
 
     @Mock
     private Player player;
-    private List<CharacterCard> inventorsList;
 
     @BeforeEach
     void setUp() {
         testingInventions = new DoubleInventions(3);
+    }
+
+    @Test
+    void handleEvent_NoInventions() {
+        when(player.getCharacterType(Parameter.INVENTOR)).thenReturn(List.of());
+
+        // Act
+        testingInventions.handleEvent(player);
+
+        // Assert
+        verify(player, times(0)).updateStats(Parameter.FOOD, testingInventions.getFoodGain());
+        assertTrue(testingInventions.getUniqueInventions().contains(0));
     }
 
     @Test
@@ -44,7 +54,7 @@ class DoubleInventionsTest {
         cards.add(card2);
         testingInventions.handleEvent(player);
 
-        verify(player, times(1)).updateStats(Parameter.FOOD, 3);
+        verify(player, times(1)).updateStats(Parameter.FOOD, testingInventions.getFoodGain());
         assertFalse(testingInventions.getUniqueInventions().contains(10));
     }
 
@@ -63,7 +73,7 @@ class DoubleInventionsTest {
         cards.add(c2);
         testingInventions.handleEvent(player);
 
-        verify(player).updateStats(Parameter.FOOD, 3);
+        verify(player).updateStats(Parameter.FOOD, testingInventions.getFoodGain());
 
         org.mockito.Mockito.clearInvocations(player);
 
@@ -93,7 +103,7 @@ class DoubleInventionsTest {
         cards.add(c3);
         testingInventions.handleEvent(player);
 
-        verify(player, never()).updateStats(Parameter.FOOD, 3);
+        verify(player, never()).updateStats(Parameter.FOOD, testingInventions.getFoodGain());
     }
 
     @Test
@@ -108,7 +118,37 @@ class DoubleInventionsTest {
             testingInventions.handleEvent(player);
         }
 
-        verify(player, times(1)).updateStats(Parameter.FOOD, 3);
+        verify(player, times(1)).updateStats(Parameter.FOOD, testingInventions.getFoodGain());
         assertTrue(testingInventions.getUniqueInventions().contains(5));
+    }
+
+    @Test
+    void getAttributes() {
+        // set up the StingBuilders
+        StringBuilder ln1 = new StringBuilder();
+        StringBuilder ln2 = new StringBuilder();
+        StringBuilder ln3 = new StringBuilder();
+
+        // Act
+        testingInventions.getAttributes(ln1, ln2, ln3);
+
+        // assert
+        assertFalse(ln1.toString().isEmpty());
+        assertFalse(ln2.toString().isEmpty());
+        assertTrue(ln3.toString().isEmpty());
+    }
+
+    @Test
+    void getInfo() {
+        assertEquals(
+                "This Building gives " + testingInventions.getFoodGain() +
+                        " food to its owner when he acquires two inventions of the same type.",
+                testingInventions.getInfo(new StringBuilder())
+        );
+    }
+
+    @Test
+    void getArt() {
+        assertEquals("di", testingInventions.getArt());
     }
 }

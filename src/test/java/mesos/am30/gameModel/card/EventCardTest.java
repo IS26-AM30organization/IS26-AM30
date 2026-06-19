@@ -1,19 +1,16 @@
 package mesos.am30.gameModel.card;
 
 import mesos.am30.gameModel.IF_Event;
-import mesos.am30.gameModel.Parameter;
 import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.board.Board;
-import mesos.am30.gameModel.eventIF.Hunt;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,45 +21,43 @@ class EventCardTest {
     @Mock private Player p1;
     @Mock private Player p2;
 
-    private IF_Event event = new Hunt(3)  ;
-    EventCard card1 = new EventCard(1, event,100);
-    EventCard card2 = new EventCard(1, event, 101);
+    @Mock private IF_Event mockEvent;
+    EventCard card;
+
+    @BeforeEach
+    void setUp() {
+        card = new EventCard(1, 100, mockEvent);
+    }
+
+    @Test
+    void getEvent() {
+        assertEquals(mockEvent, card.getEvent());
+    }
 
     @Test
     void drawUp() {
-        card1.drawUp(board);
-        verify(board).drawUp(card1);
+        card.drawUp(board);
+        verify(board).drawUp(card);
     }
 
     @Test
     void drawDown() {
-        card1.drawDown(board);
-        verify(board).drawUp(card1);
+        card.drawDown(board);
+        verify(board).drawUp(card);
     }
 
     @Test
     void discard() {
-        List<Player> players = new ArrayList<>();
-        players.add(p1);
-        players.add(p2);
-        when(board.getPlayersOrder()).thenReturn(players);
+        // set up the Mock Players
+        when(board.getPlayersOrder()).thenReturn(List.of(p1, p2));
 
-        CharacterCard card = new CharacterCard(1,Parameter.HUNTER,3,3,100);
-        Map<Parameter, List<CharacterCard>> mockTribe = new HashMap<>();
-        mockTribe.put(Parameter.HUNTER, List.of(card));
-        when(p1.getTribe()).thenReturn(mockTribe);
+        // Act
+        card.discard(board);
 
-        Map<Parameter, List<CharacterCard>> tribeP2 = new HashMap<>();
-        tribeP2.put(Parameter.HUNTER, List.of(card));
-        when(p2.getTribe()).thenReturn(tribeP2);
-
-        card1.discard(board);
-
-        verify(board, times(1)).discard(card1);
-    }
-
-    @Test
-    void reorder() {
+        // Assert
+        verify(mockEvent).handleEvent(p1);
+        verify(mockEvent).handleEvent(p2);
+        verify(board, times(1)).discard(card);
     }
 
     @Test
@@ -70,10 +65,24 @@ class EventCardTest {
         StringBuilder ln1 = new StringBuilder();
         StringBuilder ln2 = new StringBuilder();
         StringBuilder ln3 = new StringBuilder();
+        doNothing().when(mockEvent).getAttributes(any(), any(), any());
 
-        card1.createRow(ln1,ln2,ln3);
+        card.createRow(ln1,ln2,ln3);
 
         assertFalse(ln1.toString().isEmpty());
         assertFalse(ln2.toString().isEmpty());
+        assertFalse(ln3.toString().isEmpty());
+    }
+
+    @Test
+    void getCardInfo() {
+        when(mockEvent.getInfo(any())).thenReturn("Event");
+        assertEquals(mockEvent.getInfo(new StringBuilder()), card.getCardInfo(new StringBuilder()));
+    }
+
+    @Test
+    void getArt() {
+        when(mockEvent.getArt()).thenReturn("Event");
+        assertEquals(mockEvent.getArt(), card.getArt());
     }
 }

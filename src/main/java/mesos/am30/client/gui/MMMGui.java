@@ -7,8 +7,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import mesos.am30.client.ClientMain;
-import mesos.am30.client.VirtualView;
-import mesos.am30.common.ErrorType;
+import mesos.am30.client.view.VirtualView;
+import mesos.am30.common.enumerations.ErrorType;
 
 import java.io.IOException;
 import java.util.Map;
@@ -55,7 +55,9 @@ public class MMMGui {
         this.port = port;
     }
 
-    /** Initializes the scene by hiding lobby panels and nickname input until connection is established. */
+    /**
+     * Initializes the scene by hiding lobby panels and nickname input until connection is established.
+     */
     @FXML
     public void initialize(){
         existingLobbies.setVisible(false);
@@ -69,7 +71,9 @@ public class MMMGui {
         connectedText.setManaged(false);
     }
 
-    /** Shows a connecting message and delegates the server connection to the virtual view. */
+    /**
+     * Shows a connecting message and delegates the server connection to the virtual view.
+     */
     @FXML
     public void play(){
         errorLabel.setText("CONNECTING...");
@@ -77,7 +81,7 @@ public class MMMGui {
         try {
             vView.findServer(ClientMain.getIP(), port);
         } catch (IOException exception) {
-            errorLabel.setText("CHECK YOUR CONNECTION!");
+            Platform.runLater(()-> errorLabel.setText("CHECK YOUR CONNECTION!"));
         }
     }
 
@@ -85,15 +89,17 @@ public class MMMGui {
      * Shows lobby options after a successful server connection.
      */
     public void confirmConnection() {
-        errorLabel.setVisible(false);
-        existingLobbies.setVisible(true);
-        newLobby.setVisible(true);
-        existingLobbies.setManaged(true);
-        newLobby.setManaged(true);
-        playButton.setDisable(true);
-        playButton.setVisible(false);
-        playButton.setManaged(false);
-        refresh();
+        Platform.runLater(()->{
+            errorLabel.setVisible(false);
+            existingLobbies.setVisible(true);
+            newLobby.setVisible(true);
+            existingLobbies.setManaged(true);
+            newLobby.setManaged(true);
+            playButton.setDisable(true);
+            playButton.setVisible(false);
+            playButton.setManaged(false);
+            refresh();
+        });
     }
 
     /**
@@ -110,7 +116,9 @@ public class MMMGui {
         });
     }
 
-    /** Shows a loading message and requests the available lobby list from the server. */
+    /**
+     * Shows a loading message and requests the available lobby list from the server.
+     */
     @FXML
     public void refresh(){
         try {
@@ -141,7 +149,7 @@ public class MMMGui {
             for(Map.Entry<String, Integer> entry : availableLobbies.entrySet()) {
                 Button button = new Button(entry.getKey() + " (" + entry.getValue() + " players)");
                 button.setPrefHeight(50.0);
-                button.setPrefWidth(300.0);
+                button.setPrefWidth(400.0);
                 button.getStyleClass().add("lobby_button");
                 button.getStylesheets().add(cssPath);
                 button.setOnAction(_ -> joinLobby(entry.getKey()));
@@ -161,7 +169,9 @@ public class MMMGui {
         }
     }
 
-    /** Validates the lobby code and player count fields, then delegates lobby creation to the virtual view. */
+    /**
+     * Validates the lobby code and player count fields, then delegates lobby creation to the virtual view.
+     */
     @FXML
     public void createLobby(){
         Platform.runLater(()->{
@@ -195,7 +205,9 @@ public class MMMGui {
         });
     }
 
-    /** Reads the nickname field and delegates the nickname submission to the virtual view. */
+    /**
+     * Reads the nickname field and delegates the nickname submission to the virtual view.
+     */
     @FXML
     public void answerNickname(){
         Platform.runLater(()->{
@@ -238,10 +250,7 @@ public class MMMGui {
             switch (errorType) {
                 case WRONG_IP -> errorLabel.setText("CANNOT FIND A SERVER FOR THIS IP!");
                 case ALREADY_EXISTING_LOBBY -> errorLabel.setText("THERE'S ALREADY A LOBBY WITH THIS CODE!");
-                case NOT_EXISTING_LOBBY ->  {
-                    errorLabel.setText("COULN'T FIND THAT LOBBY! RELOADING...");
-                    refresh();
-                }
+                case NOT_EXISTING_LOBBY -> errorLabel.setText("COULN'T FIND THAT LOBBY! TRY REALOADING");
                 case WRONG_PLAYERS_NUMBER -> errorLabel.setText("CHOOSE BETWEEN 2 AND 5 PLAYERS!");
                 case INVALID_LOBBY_CODE -> errorLabel.setText("INVALID LOBBY CODE!");
                 case WRONG_NICKNAME -> errorLabel.setText("CHOOSE ANOTHER NICKNAME FOR THIS MATCH!");

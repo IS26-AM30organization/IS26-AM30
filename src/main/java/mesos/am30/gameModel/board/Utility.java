@@ -13,11 +13,12 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class Utility {
+// Utility CardLoader for the Model.
+class Utility {
     private static int idCounter = 100; //global -> each card has a unique id
 
-
-    public static <T> List<T> cardLoader(String fileName, int playerNum, Type cardType) throws IOException {
+    // Load the Cards from a JSON file.
+    static <T> List<T> cardLoader(String fileName, int playerNum, Type cardType) throws IOException {
         List<T> extractedList = new ArrayList<>();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(IF_Event.class, new EventDeserializer())
@@ -27,10 +28,9 @@ public class Utility {
         if (fileStream == null) {
             throw new IllegalArgumentException("File not found: " + fileName);
         }
-        Reader reader = new InputStreamReader(fileStream, UTF_8); //might want a try-catch
+        Reader reader = new InputStreamReader(fileStream, UTF_8);
 
         JsonArray jsonArray = JsonParser.parseReader(reader).getAsJsonArray();
-        //JSON is now an array of generics objects
 
         for (JsonElement element : jsonArray) {
             JsonObject obj = element.getAsJsonObject();

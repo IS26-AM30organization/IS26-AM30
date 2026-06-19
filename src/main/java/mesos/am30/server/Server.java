@@ -1,8 +1,10 @@
 package mesos.am30.server;
 
+import mesos.am30.common.interfaces.IF_Server;
+import mesos.am30.common.interfaces.IORunnable;
 import mesos.am30.gameModel.Player;
-import mesos.am30.common.ErrorType;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.interfaces.IF_GameView;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,9 +26,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Static Server for the game "Mesos".
- * <br>This class works as a static implementation of the Server for the game "Mesos".
- * <br>It handles new Clients connecting both via Socket and RMI, binding them to the Controller for the specific lobby.
- * <br>This class extends the class UnicastRemoteObject and implements the interface Remote, in order to work both via RMI and Socket.
+ * <br/>This class works as a static implementation of the Server for the game "Mesos".
+ * <br/>It handles new Clients connecting both via Socket and RMI, binding them to the Controller for the specific lobby.
+ * <br/>This class extends the class UnicastRemoteObject and implements the interface Remote, in order to work both via RMI and Socket.
  */
 public class Server extends UnicastRemoteObject implements IF_Server {
     private static Server instance = null;
@@ -43,16 +45,16 @@ public class Server extends UnicastRemoteObject implements IF_Server {
     }
 
     // Package-private getters/setters used by test
-    static Map<String, Controller> getLobbies() { return lobbies; }
-    static Map<String, List<IF_GameView>> getLobbyViews() { return lobbyViews; }
-    static List<IF_GameView> getPendingViews() { return pendingViews; }
-    static void setRegistry(Registry r) { registry = r; }
-    static void setRandom(Random r) { random = r; }
+    Map<String, Controller> getLobbies() { return lobbies; }
+    Map<String, List<IF_GameView>> getLobbyViews() { return lobbyViews; }
+    List<IF_GameView> getPendingViews() { return pendingViews; }
+    void setRegistry(Registry r) { registry = r; }
+    void setRandom(Random r) { random = r; }
 
     /**
      * Static Getter for the Server.
-     * <br>This static method returns the static instance of the Server.
-     * <br>This allows everything to work in the intended way, even if more instances of the program run simultaneously.
+     * <br/>This static method returns the static instance of the Server.
+     * <br/>This allows everything to work in the intended way, even if more instances of the program run simultaneously.
      *
      * @return Static instance of the Server.
      * @throws RemoteException The Server cannot be instantiated correctly.
@@ -62,54 +64,24 @@ public class Server extends UnicastRemoteObject implements IF_Server {
         return instance;
     }
 
-    // It generates a 6 decimal digit code
-    private String generateLobbyCode() {
-        String code;
-        do {
-            code = String.format("%06d", random.nextInt(1_000_000));
-        } while (lobbies.containsKey(code));
-        return code;
-    }
-
-    // It finds the lobby code containing the view (null if pending)
-    private String findLobbyCodeOf(IF_GameView view) {
-        return lobbyViews.entrySet().stream()
-                .filter(e -> e.getValue().contains(view))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(null);
-    }
-
-    // handle an asynchronous view method call
-    private void asynchronousViewCall(IORunnable method) throws IOException {
-        executor.execute(() -> {
-            try {
-                method.run();
-            } catch (IOException ignored) { /* handled by heartbeat */ }
-        });
-    }
-
     /**
      * Main entry point for the "Mesos" Server.
-     * <br>This method is the main entry point for the "Mesos" Server; it creates (or connects to) the Server instance, then
+     * <br/>This method is the main entry point for the "Mesos" Server; it creates (or connects to) the Server instance, then
      * opens both the RMI and Socket channel of communications as Threads.
      *
      * @throws IOException The connection cannot be established correctly.
      */
     public static void main(String[] args) throws IOException {
         String ip = (args.length >= 1) ? args[0] : "localhost";
+
+        System.setProperty("java.rmi.server.hostname", ip);
+
         Server server = Server.getInstance();
         if (startRmiServer(server, 1099, ip)) startSocketServer(server, 12345);
     }
 
     // package-private for testing
-    static boolean startRmiServer(Server server, int port) throws IOException {
-        return startRmiServer(server, port, "localhost");
-    }
-
-    // package-private for testing
     static boolean startRmiServer(Server server, int port, String ip) throws IOException {
-        System.setProperty("java.rmi.server.hostname", ip);
         try {
             registry = LocateRegistry.createRegistry(port);
             registry.bind("server", server);
@@ -158,6 +130,15 @@ public class Server extends UnicastRemoteObject implements IF_Server {
         asynchronousViewCall(view::confirmConnection);
     }
 
+    // handle an asynchronous view method call
+    private void asynchronousViewCall(IORunnable method) throws IOException {
+        executor.execute(() -> {
+            try {
+                method.run();
+            } catch (IOException ignored) { /* handled by heartbeat */ }
+        });
+    }
+
     // start a Heartbeat thread
     private void startHeartbeat(IF_GameView view) {
         new Thread(() -> {
@@ -170,6 +151,15 @@ public class Server extends UnicastRemoteObject implements IF_Server {
                 handleDisconnection(view);
             }
         }).start();
+    }
+
+    // It finds the lobby code containing the view (null if pending)
+    private String findLobbyCodeOf(IF_GameView view) {
+        return lobbyViews.entrySet().stream()
+                .filter(e -> e.getValue().contains(view))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -201,6 +191,15 @@ public class Server extends UnicastRemoteObject implements IF_Server {
         // ask for the Nickname
         String finalLobbyCode = lobbyCode;
         asynchronousViewCall(() -> view.askNickname(finalLobbyCode));
+    }
+
+    // It generates a 6 decimal digit code
+    private String generateLobbyCode() {
+        String code;
+        do {
+            code = String.format("%06d", random.nextInt(1_000_000));
+        } while (lobbies.containsKey(code));
+        return code;
     }
 
     /**
@@ -273,8 +272,8 @@ public class Server extends UnicastRemoteObject implements IF_Server {
 
     /**
      * Disconnects a Player without crashes.
-     * <br>This method disconnects a Player without causing crashes for the other ones in the lobby; this is used at the end of the game.
-     * <br><strong>Pre:</strong> view != null
+     * <br/>This method disconnects a Player without causing crashes for the other ones in the lobby; this is used at the end of the game.
+     * <br/><strong>Pre:</strong> view != null
      *
      * @param view The Client instance of the IF_GameView to disconnect.
      */
@@ -291,8 +290,8 @@ public class Server extends UnicastRemoteObject implements IF_Server {
 
     /**
      * Handle a Client Disconnection.
-     * <br>This method notifies all the other clients when a disconnection happens that the Game has come to an end.
-     * <br><strong>Pre:</strong> disconnected != null
+     * <br/>This method notifies all the other clients when a disconnection happens that the Game has come to an end.
+     * <br/><strong>Pre:</strong> disconnected != null
      *
      * @param disconnected The Client instance of the IF_GameView who disconnected.
      */

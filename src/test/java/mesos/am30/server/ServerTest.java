@@ -1,8 +1,8 @@
 package mesos.am30.server;
 
 import mesos.am30.gameModel.Player;
-import mesos.am30.common.ErrorType;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.interfaces.IF_GameView;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -27,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 
 @ExtendWith(MockitoExtension.class)
 class ServerTest {
+    Server server;
 
     @Mock
     private IF_GameView mockView;
@@ -35,29 +37,30 @@ class ServerTest {
     private Registry mockRegistry;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws RemoteException {
         // reset the Server state and inject mock registry
-        Server.getLobbies().clear();
-        Server.getLobbyViews().clear();
-        Server.getPendingViews().clear();
-        Server.setRegistry(mockRegistry);
+        server = Server.getInstance();
+        server.getLobbies().clear();
+        server.getLobbyViews().clear();
+        server.getPendingViews().clear();
+        server.setRegistry(mockRegistry);
     }
 
     @Test
     void handleConnection() throws Exception {
         // Act
-        Server.getInstance().handleConnection(mockView);
+        server.handleConnection(mockView);
 
         // Assert
         Thread.sleep(200);
-        assertTrue(Server.getPendingViews().contains(mockView));
+        assertTrue(server.getPendingViews().contains(mockView));
         verify(mockView).confirmConnection();
     }
 
     @Test
     void startHeartbeat() throws IOException, InterruptedException {
         // Act
-        Server.getInstance().handleConnection(mockView);
+        server.handleConnection(mockView);
 
         // Assert
         Thread.sleep(1500);
@@ -68,29 +71,29 @@ class ServerTest {
     void startHeartbeat_DisconnectionPending() throws Exception {
         // Act
         doThrow(new IOException()).when(mockView).ping();
-        Server.getInstance().handleConnection(mockView);
+        server.handleConnection(mockView);
 
         // Assert
         Thread.sleep(1500);
-        assertFalse(Server.getPendingViews().contains(mockView));
+        assertFalse(server.getPendingViews().contains(mockView));
     }
 
     @Test
     void startHeartbeat_DisconnectionLobby() throws Exception {
         // set up the Mock Lobby
         doThrow(new IOException()).when(mockView).ping();
-        Server.getLobbyViews().put("ID", new ArrayList<>());
-        List<IF_GameView> clients = Server.getLobbyViews().get("ID");
+        server.getLobbyViews().put("ID", new ArrayList<>());
+        List<IF_GameView> clients = server.getLobbyViews().get("ID");
         for (int i = 0; i < 3; i++) clients.add(mock(IF_GameView.class));
 
         // Act
-        Server.getInstance().handleConnection(mockView);
+        server.handleConnection(mockView);
         clients.add(mockView);
-        Server.getPendingViews().remove(mockView);
+        server.getPendingViews().remove(mockView);
 
         // Assert
         Thread.sleep(1500);
-        assertFalse(Server.getLobbyViews().containsKey("ID"));
+        assertFalse(server.getLobbyViews().containsKey("ID"));
         for (IF_GameView view : clients) {
             verify(view).notifyError(ErrorType.END_FOR_DISCONNECTION);
             verify(view).end();
@@ -100,29 +103,29 @@ class ServerTest {
     @Test
     void createLobby_CustomCode() throws Exception {
         // Act
-        Server.getPendingViews().add(mockView);
-        Server.getInstance().createLobby(mockView, 3, "123456");
+        server.getPendingViews().add(mockView);
+        server.createLobby(mockView, 3, "123456");
 
         // Assert
         Thread.sleep(200);
-        assertTrue(Server.getLobbies().containsKey("123456"));
+        assertTrue(server.getLobbies().containsKey("123456"));
         verify(mockView).askNickname("123456");
     }
 
     @Test
     void createLobby_DuplicateCode() throws Exception {
         // set up Mock Lobby
-        Server.getLobbies().put("123456", mock(Controller.class));
-        Server.getLobbyViews().put("123456", new ArrayList<>());
+        server.getLobbies().put("123456", mock(Controller.class));
+        server.getLobbyViews().put("123456", new ArrayList<>());
 
         // Act
-        Server.getPendingViews().add(mockView);
-        Server.getInstance().createLobby(mockView, 3, "123456");
+        server.getPendingViews().add(mockView);
+        server.createLobby(mockView, 3, "123456");
 
         // Assert
         Thread.sleep(200);
         verify(mockView).notifyError(ErrorType.ALREADY_EXISTING_LOBBY);
-        assertEquals(1, Server.getLobbies().size());
+        assertEquals(1, server.getLobbies().size());
     }
 
     @Test
@@ -130,12 +133,12 @@ class ServerTest {
         // set up Mock Lobby
         Controller mockController = mock(Controller.class);
         when(mockController.isFull()).thenReturn(false);
-        Server.getLobbies().put("123456", mockController);
-        Server.getLobbyViews().put("123456", new ArrayList<>());
+        server.getLobbies().put("123456", mockController);
+        server.getLobbyViews().put("123456", new ArrayList<>());
 
         // Act
-        Server.getPendingViews().add(mockView);
-        Server.getInstance().joinLobby(mockView, "123456");
+        server.getPendingViews().add(mockView);
+        server.joinLobby(mockView, "123456");
 
         // Assert
         Thread.sleep(200);
@@ -145,7 +148,7 @@ class ServerTest {
     @Test
     void joinLobby_NotExisting() throws IOException, InterruptedException {
         // Act
-        Server.getInstance().joinLobby(mockView, "999999");
+        server.joinLobby(mockView, "999999");
 
         // Assert
         Thread.sleep(200);
@@ -157,11 +160,11 @@ class ServerTest {
         // set up mock Lobby
         Controller mockController = mock(Controller.class);
         when(mockController.isFull()).thenReturn(true);
-        Server.getLobbies().put("123456", mockController);
-        Server.getLobbyViews().put("123456", new ArrayList<>());
+        server.getLobbies().put("123456", mockController);
+        server.getLobbyViews().put("123456", new ArrayList<>());
 
         // Act
-        Server.getInstance().joinLobby(mockView, "123456");
+        server.joinLobby(mockView, "123456");
 
         // Assert
         Thread.sleep(200);
@@ -171,7 +174,7 @@ class ServerTest {
     @Test
     void setNickname_NoLobby() throws IOException, InterruptedException {
         // Act
-        Server.getInstance().setNickname(mockView, "Lorenzo", "123456");
+        server.setNickname(mockView, "Lorenzo", "123456");
 
         // Assert
         Thread.sleep(200);
@@ -185,11 +188,11 @@ class ServerTest {
         when(existing.getNickname()).thenReturn("Lorenzo");
         Controller controller = mock(Controller.class);
         when(controller.getClients()).thenReturn(Map.of(existing, mock(IF_GameView.class)));
-        Server.getLobbies().put("123456", controller);
-        Server.getLobbyViews().put("123456", new ArrayList<>(List.of(mockView)));
+        server.getLobbies().put("123456", controller);
+        server.getLobbyViews().put("123456", new ArrayList<>(List.of(mockView)));
 
         // Act
-        Server.getInstance().setNickname(mockView, "Lorenzo", "123456");
+        server.setNickname(mockView, "Lorenzo", "123456");
 
         // Assert
         Thread.sleep(200);
@@ -202,11 +205,11 @@ class ServerTest {
         Controller controller = mock(Controller.class);
         when(controller.getClients()).thenReturn(new HashMap<>());
         when(controller.connect(mockView, "Lorenzo")).thenReturn(false);
-        Server.getLobbies().put("123456", controller);
-        Server.getLobbyViews().put("123456", new ArrayList<>(List.of(mockView)));
+        server.getLobbies().put("123456", controller);
+        server.getLobbyViews().put("123456", new ArrayList<>(List.of(mockView)));
 
         // Act
-        Server.getInstance().setNickname(mockView, "Lorenzo", "123456");
+        server.setNickname(mockView, "Lorenzo", "123456");
 
         // Assert
         Thread.sleep(200);
@@ -221,11 +224,11 @@ class ServerTest {
         Controller controller = mock(Controller.class);
         when(controller.getClients()).thenReturn(new HashMap<>());
         when(controller.connect(mockView, "Lorenzo")).thenReturn(true);
-        Server.getLobbies().put("123456", controller);
-        Server.getLobbyViews().put("123456", new ArrayList<>(List.of(mockView)));
+        server.getLobbies().put("123456", controller);
+        server.getLobbyViews().put("123456", new ArrayList<>(List.of(mockView)));
 
         // Act
-        Server.getInstance().setNickname(mockView, "Lorenzo", "123456");
+        server.setNickname(mockView, "Lorenzo", "123456");
 
         // Assert
         Thread.sleep(500);
@@ -240,11 +243,11 @@ class ServerTest {
         Controller controller = mock(Controller.class);
         when(controller.getClients()).thenReturn(new HashMap<>());
         when(controller.isFull()).thenReturn(true);
-        Server.getLobbies().put("123456", controller);
-        Server.getLobbyViews().put("123456", new ArrayList<>(List.of(mockView)));
+        server.getLobbies().put("123456", controller);
+        server.getLobbyViews().put("123456", new ArrayList<>(List.of(mockView)));
 
         // Act
-        Server.getInstance().setNickname(mockView, "Lorenzo", "123456");
+        server.setNickname(mockView, "Lorenzo", "123456");
 
         // Assert
         Thread.sleep(200);
@@ -260,11 +263,11 @@ class ServerTest {
         when(openController.isFull()).thenReturn(false);
         when(openController.getOccupiedSlots()).thenReturn(2);
         when(fullController.isFull()).thenReturn(true);
-        Server.getLobbies().put("111111", openController);
-        Server.getLobbies().put("222222", fullController);
+        server.getLobbies().put("111111", openController);
+        server.getLobbies().put("222222", fullController);
 
         // Act
-        Server.getInstance().showAvailableLobbies(mockView);
+        server.showAvailableLobbies(mockView);
 
         // Assert
         Thread.sleep(200);
@@ -279,10 +282,10 @@ class ServerTest {
         Controller emptyController = mock(Controller.class);
         when(emptyController.isFull()).thenReturn(false);
         when(emptyController.getOccupiedSlots()).thenReturn(0);
-        Server.getLobbies().put("333333", emptyController);
+        server.getLobbies().put("333333", emptyController);
 
         // Act
-        Server.getInstance().showAvailableLobbies(mockView);
+        server.showAvailableLobbies(mockView);
 
         // Assert
         Thread.sleep(200);
@@ -290,18 +293,53 @@ class ServerTest {
     }
 
     @Test
+    void ping() throws IOException {
+        server.ping();
+        assertTrue(server.getLobbies().isEmpty());
+        assertTrue(server.getLobbyViews().isEmpty());
+        assertTrue(server.getPendingViews().isEmpty());
+        verifyNoInteractions(mockView);
+        verifyNoInteractions(mockRegistry);
+    }
+
+    @Test
+    void disconnectPlayerGracefully_NoLobby() {
+        server.disconnectPlayerGracefully(mockView);
+        assertTrue(server.getLobbyViews().isEmpty());
+    }
+
+    @Test
+    void disconnectPlayerGracefully_ExistingLobby() throws IOException {
+        // set up Mock Lobby
+        server.createLobby(mockView, 3,"123456");
+        server.setNickname(mockView, "view1", "123456");
+        server.setNickname(mockView, "view2", "123456");
+
+        // Act - disconnect first View
+        server.disconnectPlayerGracefully(mockView);
+        assertFalse(server.getLobbyViews().isEmpty());
+        assertFalse(server.getLobbies().isEmpty());
+        assertTrue(server.getLobbyViews().get("123456").contains(mockView));
+
+        // Act - disconnect second View
+        server.disconnectPlayerGracefully(mockView);
+        assertTrue(server.getLobbyViews().isEmpty());
+        assertTrue(server.getLobbies().isEmpty());
+    }
+
+    @Test
     void handleDisconnection_PendingView_RemovedWithoutNotification() throws Exception {
         // set up Mock Views
         IF_GameView otherPending = mock(IF_GameView.class);
-        Server.getPendingViews().add(mockView);
-        Server.getPendingViews().add(otherPending);
+        server.getPendingViews().add(mockView);
+        server.getPendingViews().add(otherPending);
 
         // Act
-        Server.getInstance().handleDisconnection(mockView);
+        server.handleDisconnection(mockView);
 
         // Assert
-        assertFalse(Server.getPendingViews().contains(mockView));
-        assertTrue(Server.getPendingViews().contains(otherPending));
+        assertFalse(server.getPendingViews().contains(mockView));
+        assertTrue(server.getPendingViews().contains(otherPending));
         verify(otherPending, never()).notifyError(any());
         verify(otherPending, never()).end();
     }
@@ -311,18 +349,18 @@ class ServerTest {
         // set up Mock Views
         IF_GameView otherView = mock(IF_GameView.class);
         List<IF_GameView> views = new ArrayList<>(List.of(mockView, otherView));
-        Server.getLobbies().put("123456", mock(Controller.class));
-        Server.getLobbyViews().put("123456", views);
+        server.getLobbies().put("123456", mock(Controller.class));
+        server.getLobbyViews().put("123456", views);
 
         // Act
-        Server.getInstance().handleDisconnection(mockView);
+        server.handleDisconnection(mockView);
 
         // Assert
         Thread.sleep(200);
         verify(otherView).notifyError(ErrorType.END_FOR_DISCONNECTION);
         verify(otherView).end();
-        assertFalse(Server.getLobbies().containsKey("123456"));
-        assertFalse(Server.getLobbyViews().containsKey("123456"));
+        assertFalse(server.getLobbies().containsKey("123456"));
+        assertFalse(server.getLobbyViews().containsKey("123456"));
     }
 
     @Test
@@ -334,14 +372,14 @@ class ServerTest {
         for (int i = 0; i < count; i++) {
             IF_GameView view = mock(IF_GameView.class);
             views.add(view);
-            Server.getPendingViews().add(view);
+            server.getPendingViews().add(view);
         }
 
         // Act
         for (IF_GameView view : views) {
             new Thread(() -> {
                 try {
-                    Server.getInstance().createLobby(view, 3, "");
+                    server.createLobby(view, 3, "");
                 } catch (IOException e) {
                     fail("IOException during concurrent lobby creation");
                 } finally {
@@ -353,7 +391,7 @@ class ServerTest {
 
         // Assert
         Thread.sleep(200);
-        assertEquals(count, Server.getLobbies().size());
+        assertEquals(count, server.getLobbies().size());
     }
 
     @Test
@@ -367,14 +405,14 @@ class ServerTest {
         when(controllerB.getClients()).thenReturn(new HashMap<>());
         when(controllerA.connect(viewA, "PlayerA")).thenReturn(false);
         when(controllerB.connect(viewB, "PlayerB")).thenReturn(false);
-        Server.getLobbies().put("111111", controllerA);
-        Server.getLobbies().put("222222", controllerB);
-        Server.getLobbyViews().put("111111", new ArrayList<>(List.of(viewA)));
-        Server.getLobbyViews().put("222222", new ArrayList<>(List.of(viewB)));
+        server.getLobbies().put("111111", controllerA);
+        server.getLobbies().put("222222", controllerB);
+        server.getLobbyViews().put("111111", new ArrayList<>(List.of(viewA)));
+        server.getLobbyViews().put("222222", new ArrayList<>(List.of(viewB)));
 
         // Act
-        Server.getInstance().setNickname(viewA, "PlayerA","111111");
-        Server.getInstance().setNickname(viewB, "PlayerB", "222222");
+        server.setNickname(viewA, "PlayerA","111111");
+        server.setNickname(viewB, "PlayerB", "222222");
 
         // Assert
         Thread.sleep(200);
@@ -390,13 +428,13 @@ class ServerTest {
         IF_GameView crashedView = mock(IF_GameView.class);
         IF_GameView sameLobbyView = mock(IF_GameView.class);
         IF_GameView otherLobbyView = mock(IF_GameView.class);
-        Server.getLobbies().put("111111", mock(Controller.class));
-        Server.getLobbies().put("222222", mock(Controller.class));
-        Server.getLobbyViews().put("111111", new ArrayList<>(List.of(crashedView, sameLobbyView)));
-        Server.getLobbyViews().put("222222", new ArrayList<>(List.of(otherLobbyView)));
+        server.getLobbies().put("111111", mock(Controller.class));
+        server.getLobbies().put("222222", mock(Controller.class));
+        server.getLobbyViews().put("111111", new ArrayList<>(List.of(crashedView, sameLobbyView)));
+        server.getLobbyViews().put("222222", new ArrayList<>(List.of(otherLobbyView)));
 
         // Act
-        Server.getInstance().handleDisconnection(crashedView);
+        server.handleDisconnection(crashedView);
 
         // Assert
         Thread.sleep(200);
@@ -404,62 +442,62 @@ class ServerTest {
         verify(sameLobbyView).end();
         verify(otherLobbyView, never()).notifyError(any());
         verify(otherLobbyView, never()).end();
-        assertFalse(Server.getLobbies().containsKey("111111"));
-        assertTrue(Server.getLobbies().containsKey("222222"));
+        assertFalse(server.getLobbies().containsKey("111111"));
+        assertTrue(server.getLobbies().containsKey("222222"));
     }
 
     @Test
     void createLobby_WrongPlayersNumber() throws Exception {
         // Act
-        Server.getPendingViews().add(mockView);
-        Server.getInstance().createLobby(mockView, 1, "123456");
+        server.getPendingViews().add(mockView);
+        server.createLobby(mockView, 1, "123456");
 
         // Assert
         Thread.sleep(200);
         verify(mockView).notifyError(ErrorType.WRONG_PLAYERS_NUMBER);
-        assertFalse(Server.getLobbies().containsKey("123456"));
+        assertFalse(server.getLobbies().containsKey("123456"));
     }
 
     @Test
     void createLobby_InvalidLobbyCode() throws Exception {
         // Act
-        Server.getPendingViews().add(mockView);
-        Server.getInstance().createLobby(mockView, 3, "abc");
+        server.getPendingViews().add(mockView);
+        server.createLobby(mockView, 3, "abc");
 
         // Assert
         Thread.sleep(200);
         verify(mockView).notifyError(ErrorType.INVALID_LOBBY_CODE);
-        assertFalse(Server.getLobbies().containsKey("abc"));
+        assertFalse(server.getLobbies().containsKey("abc"));
     }
 
     @Test
     void createLobby_AutoGeneratedCode() throws Exception {
         // Act
-        Server.getPendingViews().add(mockView);
-        Server.getInstance().createLobby(mockView, 3, "");
+        server.getPendingViews().add(mockView);
+        server.createLobby(mockView, 3, "");
 
         // Assert
         Thread.sleep(200);
-        assertEquals(1, Server.getLobbies().size());
+        assertEquals(1, server.getLobbies().size());
         verify(mockView).askNickname(any());
     }
 
     @Test
     void createLobby_WrongPlayersNumberTooMany() throws Exception {
         // Act: playersNumber=6 covers the right side of the || condition (> 5)
-        Server.getPendingViews().add(mockView);
-        Server.getInstance().createLobby(mockView, 6, "123456");
+        server.getPendingViews().add(mockView);
+        server.createLobby(mockView, 6, "123456");
 
         // Assert
         Thread.sleep(200);
         verify(mockView).notifyError(ErrorType.WRONG_PLAYERS_NUMBER);
-        assertFalse(Server.getLobbies().containsKey("123456"));
+        assertFalse(server.getLobbies().containsKey("123456"));
     }
 
     @Test
     void setNickname_NullCode() throws IOException, InterruptedException {
         // Act: code == null means target == null, so NOT_EXISTING_LOBBY is returned
-        Server.getInstance().setNickname(mockView, "Lorenzo", null);
+        server.setNickname(mockView, "Lorenzo", null);
 
         // Assert
         Thread.sleep(200);
@@ -471,36 +509,36 @@ class ServerTest {
         // Force the first random value to collide with an existing lobby
         Random controlled = mock(Random.class);
         when(controlled.nextInt(1_000_000)).thenReturn(123456, 654321);
-        Server.setRandom(controlled);
-        Server.getLobbies().put("123456", mock(Controller.class));
-        Server.getPendingViews().add(mockView);
+        server.setRandom(controlled);
+        server.getLobbies().put("123456", mock(Controller.class));
+        server.getPendingViews().add(mockView);
 
         // Act
-        Server.getInstance().createLobby(mockView, 3, "");
+        server.createLobby(mockView, 3, "");
 
         // Assert: second generated code was used after the collision
         Thread.sleep(200);
-        assertTrue(Server.getLobbies().containsKey("654321"));
+        assertTrue(server.getLobbies().containsKey("654321"));
         verify(mockView).askNickname("654321");
 
         // Restore default random
-        Server.setRandom(new Random());
+        server.setRandom(new Random());
     }
 
     @Test
     void startHeartbeat_ExitsNormallyWhenRemovedFromLobby() throws Exception {
         // Setup: view is in a lobby but not in pendingViews
-        Server.getLobbyViews().put("ID", new ArrayList<>(List.of(mockView)));
-        Server.getLobbies().put("ID", mock(Controller.class));
-        Server.getInstance().handleConnection(mockView);
-        Server.getPendingViews().remove(mockView);
+        server.getLobbyViews().put("ID", new ArrayList<>(List.of(mockView)));
+        server.getLobbies().put("ID", mock(Controller.class));
+        server.handleConnection(mockView);
+        server.getPendingViews().remove(mockView);
 
         // Let the heartbeat run at least once while the view is in the lobby
         Thread.sleep(1200);
 
         // Remove view from lobby so both while conditions become false and the loop exits normally
-        Server.getLobbyViews().remove("ID");
-        Server.getLobbies().remove("ID");
+        server.getLobbyViews().remove("ID");
+        server.getLobbies().remove("ID");
 
         Thread.sleep(1500);
         verify(mockView, never()).notifyError(any());
@@ -513,7 +551,7 @@ class ServerTest {
             port = probe.getLocalPort();
         }
 
-        Server.startSocketServer(Server.getInstance(), port);
+        Server.startSocketServer(server, port);
         Thread.sleep(200);
 
         // Connect without sending ObjectOutputStream header so the server's
@@ -530,7 +568,9 @@ class ServerTest {
             mockedLocate.when(() -> LocateRegistry.createRegistry(1099)).thenReturn(mockRegistry);
 
             // Act
-            Server.main(new String[0]);
+            String[] args = new String[1];
+            args[0] = "localhost";
+            Server.main(args);
 
             // Assert: registry bound and socket server thread started (no exception)
             verify(mockRegistry).bind(eq("server"), any());
@@ -554,10 +594,10 @@ class ServerTest {
     @Test
     void startRmiServer_Success() throws Exception {
         try (MockedStatic<LocateRegistry> mockedLocate = mockStatic(LocateRegistry.class)) {
-            mockedLocate.when(() -> LocateRegistry.createRegistry(1099)).thenReturn(mockRegistry);
+            mockedLocate.when(() -> LocateRegistry.createRegistry(1098)).thenReturn(mockRegistry);
 
             // Act
-            boolean result = Server.startRmiServer(Server.getInstance(), 1099);
+            boolean result = Server.startRmiServer(server, 1098, "localhost");
 
             // Assert
             assertTrue(result);
@@ -572,7 +612,7 @@ class ServerTest {
             doThrow(new AlreadyBoundException()).when(mockRegistry).bind(eq("server"), any());
 
             // Act: should return false without throwing
-            boolean result = Server.startRmiServer(Server.getInstance(), 1099);
+            boolean result = Server.startRmiServer(server, 1099, "localhost");
 
             // Assert: bind was attempted, returned false
             assertFalse(result);
@@ -602,7 +642,6 @@ class ServerTest {
             port = probe.getLocalPort();
         }
 
-        Server server = Server.getInstance();
         Server.startSocketServer(server, port);
         Thread.sleep(200); // let server thread start
 
@@ -614,6 +653,6 @@ class ServerTest {
         }
 
         // Assert: a SocketProxy was added to pendingViews via handleConnection
-        assertFalse(Server.getPendingViews().isEmpty());
+        assertFalse(server.getPendingViews().isEmpty());
     }
 }

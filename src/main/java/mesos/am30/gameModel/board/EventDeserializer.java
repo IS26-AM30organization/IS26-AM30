@@ -6,11 +6,13 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import mesos.am30.gameModel.IF_Event;
-import mesos.am30.gameModel.eventIF.*;
+import mesos.am30.gameModel.event.*;
 
 import java.lang.reflect.Type;
 
-public class EventDeserializer implements JsonDeserializer<IF_Event> {
+// Utility JSON Deserializer for the IF_Event events.
+class EventDeserializer implements JsonDeserializer<IF_Event> {
+
     @Override
     public IF_Event deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {

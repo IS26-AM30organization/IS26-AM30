@@ -7,24 +7,36 @@ import mesos.am30.gameModel.card.CharacterCard;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Representation of a Player.
+ * <br/>This class works as the representation for a Player, storing all its cards and parameters.
+ * <br/>each Player is identified by a unique nickname, and has a selection of moves it can make.
+ */
 public class Player implements Serializable {
     private final String nickname;
 
     private int remainingUpMoves;
     private int remainingDownMoves;
 
-    private final Map<Parameter, Integer> parameters; /**Contains each parameter amount*/
-    private final Map<Parameter, List<CharacterCard>> tribe; /**Contains character parameter + list of that type*/
-    private final Set<Integer> inventions; /**Contains set of player's inventions*/
-    private final Set<BuildingCard> buildings;
+    private final Map<Parameter, Integer> parameters;
+    private final Map<Parameter, List<CharacterCard>> tribe;
+    private Set<Integer> inventions;
+    private final List<BuildingCard> buildings;
     private final Set<SpecialBuff> specialBuffs;
 
+    /**
+     * Constructor of a Player.
+     * <br/><strong>Pre:</strong> nickname != null
+     * <br/><strong>Post:</strong> this.nickname = nickname &amp;&amp; (* Other attributes are initialized *)
+     *
+     * @param nickname Nickname of the Player.
+     */
     public Player(String nickname) {
         this.nickname = nickname;
         this.parameters = new HashMap<>();
         this.tribe = new HashMap<>();
         this.inventions = new HashSet<>(10);
-        this.buildings = new HashSet<>();
+        this.buildings = new ArrayList<>();
         this.specialBuffs = new HashSet<>();
 
         //Population both parameters and tribe Maps with default value (0) for each key
@@ -36,54 +48,200 @@ public class Player implements Serializable {
         }
     }
 
+    /**
+     * Getter for the attribute "nickname".
+     *
+     * @return Unique Nickname of the Player.
+     */
     public String getNickname() {
         return nickname;
     }
 
     /**
-     * Adds a building to the player's tribe
+     * Getter for the attribute "parameters".
+     *
+     * @return Map of Player's values for each parameter.
      */
-    public void addBuilding(BuildingCard card){
-        buildings.add(card);
-        updateStats(
-                Parameter.FOOD, card.getFoodCost()>parameters.get(Parameter.BUILDER) ?
-                        parameters.get(Parameter.BUILDER)-card.getFoodCost()
-                        : 0);
-    }
-
-    /**
-     * Adds a character to the player's tribe, based on the character role
-     */
-    public void addCharacter (CharacterCard card){
-        List<CharacterCard> currentTribe = tribe.computeIfAbsent(card.getRole(), k -> new ArrayList<>());
-        tribe.get(card.getRole()).add(card);
-        updateStats(card.getRole(),card.getValue());
-    }
-
     public Map<Parameter, Integer> getParameters() {
         return parameters;
     }
 
+    /**
+     * Getter for the attribute "tribe".
+     *
+     * @return Map of Player's Character Card for each role.
+     */
     public Map<Parameter, List<CharacterCard>> getTribe() {
         return tribe;
     }
 
+    /**
+     * Getter for the attribute "inventions".
+     *
+     * @return Set of inventions obtained by the Player.
+     */
     public Set<Integer> getInventions() {
         return inventions;
     }
 
-    public Set<BuildingCard> getBuildings() {
+    // Test setter as null for the attribute inventions
+    void setNullInventions() {
+        this.inventions = null;
+    }
+
+    /**
+     * Getter for the attribute "buildings".
+     *
+     * @return List of Player's Building Cards.
+     */
+    public List<BuildingCard> getBuildings() {
         return buildings;
     }
 
+    /**
+     * Getter for the attribute "specialBuffs".
+     *
+     * @return Set of specialBuffs gained by the Player.
+     */
     public Set<SpecialBuff> getSpecialBuffs() {
         return specialBuffs;
     }
 
+    // Test getter for the attribute remainingUpMoves
+    int getRemainingUpMoves() {
+        return remainingUpMoves;
+    }
+
+    // Test getter for the attribute remainingDownMoves
+    public int getRemainingDownMoves() {
+        return remainingDownMoves;
+    }
+
     /**
-     * Method used to update player's stats when needed; mostly used when events are triggered and stats updates are due
-     * @param stat type of stat to be updated
-     * @param sum update amount
+     * Set the Player's Moves.
+     * <br/>This method sets the Moves the Player can do next, depending on the Tile it has chosen.
+     * <br/><strong>Pre:</strong> up >= 0 &amp;&amp; down >= 0
+     * <br/><strong>Post:</strong> this.remainingUpMoves = up &amp;&amp; this.remainingDownMoves = down
+     *
+     * @param up    Number of Cards the Player can pick from the upper row.
+     * @param down  Number of Cards the Player can pick from the lower row.
+     */
+    public void setMoves(int up, int down) {
+        setUpMoves(up);
+        setDownMoves(down);
+    }
+
+    /**
+     * Set the Player's Move (Pick From Up).
+     * <br/><strong>Pre:</strong> up >= 0
+     * <br/><strong>Post:</strong> this.remainingUpMoves = up
+     *
+     * @param up Number of Cards the Player can pick from the upper row.
+     */
+    public void setUpMoves(int up) {
+        this.remainingUpMoves = up;
+    }
+
+    /**
+     * Set the Player's Move (Pick From Down).
+     * <br/><strong>Pre:</strong> down >= 0
+     * <br/><strong>Post:</strong> this.remainingDownMoves = down
+     *
+     * @param down Number of Cards the Player can pick from the lower row.
+     */
+    public void setDownMoves(int down) {
+        this.remainingDownMoves = down;
+    }
+
+    /**
+     * Decrease the number of Moves (Pick From Up).
+     * <br/><strong>Post:</strong> this.remainingUpMoves = /old(this.remainingUpMoves) - 1
+     */
+    public void decreaseRemainingUpMoves() {
+        remainingUpMoves--;
+    }
+
+    /**
+     * Decrease the number of Moves (Pick From Down).
+     * <br/><strong>Post:</strong> this.remainingDownMoves = /old(this.remainingDownMoves) - 1
+     */
+    public void decreaseRemainingDownMoves() {
+        remainingDownMoves--;
+    }
+
+    /**
+     * Check if the Player has valid Moves.
+     *
+     * @return True if the Player has some Moves left, false otherwise.
+     */
+    public boolean hasNoMoves() {
+        return this.remainingUpMoves == 0 && this.remainingDownMoves == 0;
+    }
+
+    /**
+     * Check if the Player has valid Moves (Pick From Up).
+     *
+     * @return True if the Player has some Moves left, false otherwise.
+     */
+    public boolean hasEnoughUpMoves() {
+        return this.remainingUpMoves > 0;
+    }
+
+    /**
+     * Check if the Player has valid Moves (Pick From Down).
+     *
+     * @return True if the Player has some Moves left, false otherwise.
+     */
+    public boolean hasEnoughDownMoves() {
+        return this.remainingDownMoves > 0;
+    }
+
+    /**
+     * Add a Character to the Players' tribe.
+     * <br/><strong>Pre:</strong> card != null
+     *
+     * @param card Character Card to add.
+     */
+    public void addCharacter (CharacterCard card){
+        tribe.get(card.getRole()).add(card);
+        updateStats(card.getRole(),card.getValue());
+        updateStats(Parameter.PRESTIGE_POINTS,card.getPrestigePoints());
+    }
+
+    /**
+     * Get all the Cards of a specific Character.
+     *
+     * @param characterType Character from which get the Cards.
+     *
+     * @return List of Cards of the given Character.
+     */
+    public List<CharacterCard> getCharacterType(Parameter characterType){
+        return tribe.getOrDefault(characterType, new ArrayList<>());
+    }
+
+    /**
+     * Add a Building to the Players' tribe.
+     * <br/><strong>Pre:</strong> card != null
+     *
+     * @param card Building Card to add.
+     */
+    public void addBuilding(BuildingCard card){
+        buildings.add(card);
+        updateStats(
+                Parameter.FOOD, card.getFoodCost()>-parameters.get(Parameter.BUILDER) ?
+                        -parameters.get(Parameter.BUILDER)-card.getFoodCost()
+                        : 0);
+    }
+
+    /**
+     * Update Player's stats.
+     * <br/>This method updates the Player's stats for a specific parameter.
+     * <br/>It handles correctly various edge cases, like not having enough food (avoiding getting a negative value).
+     * <br/><strong>Pre:</strong> stat != null
+     * <br/><strong>Post:</strong> this.getParameters().get(stat) = /old(this.getParameters().get(stat)) + sum
+     *
+     * @param stat  Parameter to update.
+     * @param sum   Value to sum to the old value.
      */
     public void updateStats(Parameter stat, int sum) {
         //using getOrDefault default method of HashMap -> if no value is present, returns defaultValue.
@@ -103,108 +261,56 @@ public class Player implements Serializable {
 
         int updatedValue = currentValue + sum;
         if(updatedValue < 0) {
-            if (stat == Parameter.FOOD) updateStats(Parameter.PRESTIGE_POINTS, -2*updatedValue);
-            if (stat != Parameter.PRESTIGE_POINTS) updatedValue = 0;
+            if (stat == Parameter.FOOD) updateStats(Parameter.PRESTIGE_POINTS, 2*updatedValue);
+            if (stat != Parameter.PRESTIGE_POINTS && stat != Parameter.BUILDER && stat != Parameter.GATHERER) updatedValue = 0;
         }
 
         this.parameters.put(stat, updatedValue);
     }
 
+    /**
+     * Update Player's stats (specialBuffs specific).
+     * <br/>This method updates the Player's stats for the specialBuffs, adding the right buff due to the right Event.
+     * <br/><strong>Pre:</strong> eventBuff != null
+     * <br/><strong>Post:</strong> this.getSpecialBuffs().get(eventBuff) != null
+     *
+     * @param eventBuff SpecialBuff to add due to an Event.
+     */
+    public void updateStats(SpecialBuff eventBuff){
+        specialBuffs.add(eventBuff);
+    }
+
+    /**
+     * Remove a SpecialBuff.
+     * <br/>This method removes a specialBuff from the Player's stats.
+     * <br/><strong>Pre:</strong> eventBuff != null
+     * <br/><strong>Post:</strong> this.getSpecialBuffs().get(eventBuff) == null
+     *
+     * @param specialBuff SpecialBuff to remove.
+     */
+    public void removeBuff(SpecialBuff specialBuff) {
+        specialBuffs.remove(specialBuff);
+    }
+
+    /**
+     * Update Player's stats with Characters end game prestige points.
+     */
     public void lastRoundPoints() {
         updateStats(Parameter.PRESTIGE_POINTS,(tribe.get(Parameter.ARTIST).size()/2)*10);
         for(CharacterCard card : tribe.get(Parameter.BUILDER))
             updateStats(Parameter.PRESTIGE_POINTS, card.getPrestigePoints());
         for(BuildingCard card : buildings)
-            updateStats(Parameter.PRESTIGE_POINTS, card.getPpGainEnd());
+            updateStats(Parameter.PRESTIGE_POINTS, card.getPpGain());
         updateStats(Parameter.PRESTIGE_POINTS,tribe.get(Parameter.INVENTOR).size()*parameters.get(Parameter.INVENTOR));
     }
 
-    public void updateStats(SpecialBuff eventBuff){
-        specialBuffs.add(eventBuff);
-    }
-
-    public void removeBuff(SpecialBuff specialBuff) {
-        specialBuffs.remove(specialBuff);
-    }
-
-    public List<CharacterCard> getCharacterType(Parameter characterType){
-        return tribe.getOrDefault(characterType, new ArrayList<>());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true; //same mem address
-        if (o == null || getClass() != o.getClass()) return false;
-        Player player = (Player) o;
-        //return Objects.equals(nickname, player.nickname) && Objects.equals(parameters, player.parameters) && Objects.equals(tribe, player.tribe) && Objects.equals(inventions, player.inventions) && Objects.equals(buildings, player.buildings) && Objects.equals(specialBuffs, player.specialBuffs);
-        return Objects.equals(nickname, player.nickname);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(nickname);
-    }
-
-    public void decreaseRemainingUpMoves() {
-        remainingUpMoves--;
-    }
-
-    public void decreaseRemainingDownMoves() {
-        remainingDownMoves--;
-    }
-
-    public void setMoves(int up, int down) {
-        setUpMoves(up);
-        setDownMoves(down);
-    }
-
-    public void setUpMoves(int up) {
-        this.remainingUpMoves = up;
-    }
-
-    public void setDownMoves(int down) {
-        this.remainingDownMoves = down;
-    }
-
-    public boolean hasNoMoves() {
-        return this.remainingUpMoves == 0 && this.remainingDownMoves == 0;
-    }
-
-    public boolean hasEnoughUpMoves() {
-        return this.remainingUpMoves > 0;
-    }
-
-    public boolean hasEnoughDownMoves() {
-        return this.remainingDownMoves > 0;
-    }
-
     /**
-     *Invoked buy TUI to display player's tribe
-     */
-    public void displayTribe() {
-        List<Card> allCharacters = new ArrayList<>();
-        for (List<CharacterCard> roles : tribe.values()) {
-            allCharacters.addAll(roles);
-        }
-
-        createRows(allCharacters);
-        createRows(buildings);
-    }
-
-    /**
-     * It prints the player's food, pPoints and Unique Inventions
-     */
-    public void displayStats() {
-        int food = parameters.get(Parameter.FOOD);
-        int prestigePoints = parameters.get(Parameter.PRESTIGE_POINTS);
-        System.out.printf("\033[31m" + "Food: %d, " + "\033[0m" + "\033[33m" + "pPoints: %d\n" + "\033[0m", food, prestigePoints);
-        if (inventions != null) System.out.printf("Inventions: %s", inventions.toString());
-    }
-
-    /**
-     * Takes a Collection of Cards an adds their info to the corresponding StringBuilder
-     * @param cards either player's tribe or player's building;
+     * Add multiple Card's info to the StringBuilders for the Terminal.
+     * <br/>This method works by adding the Card's info to the StringBuilders, in order to display it properly on the Terminal.
+     * <br/>It displays the information for each Card passed as an attribute.
+     * <br/><strong>Pre:</strong> cards != null
+     *
+     * @param cards Collection of Card related to the Player (Tribe or Buildings).
      */
     private void createRows(Collection<? extends Card> cards) {
         if (cards.isEmpty()) return;
@@ -239,5 +345,43 @@ public class Player implements Serializable {
             System.out.println(rowPP);
             System.out.println();
         }
+    }
+
+    /**
+     * Display correctly the Tribe on the Terminal.
+     */
+    public void displayTribe() {
+        List<Card> allCharacters = new ArrayList<>();
+        for (List<CharacterCard> roles : tribe.values()) {
+            allCharacters.addAll(roles);
+        }
+
+        createRows(allCharacters);
+        createRows(buildings);
+    }
+
+    /**
+     * Display correctly the Player's stats on the Terminal.
+     */
+    public void displayStats() {
+        int food = parameters.get(Parameter.FOOD);
+        int prestigePoints = parameters.get(Parameter.PRESTIGE_POINTS);
+        System.out.printf("\033[31m" + "Food: %d, " + "\033[0m" + "\033[33m" + "pPoints: %d\n" + "\033[0m", food, prestigePoints);
+        if (inventions != null) System.out.printf("Inventions: %s", inventions);
+    }
+
+    // Object Methods Override
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return Objects.equals(nickname, player.nickname);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nickname);
     }
 }

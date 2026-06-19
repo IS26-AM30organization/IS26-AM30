@@ -1,11 +1,15 @@
 package mesos.am30.server;
 
+import mesos.am30.common.enumerations.MessageType;
+import mesos.am30.common.enumerations.Move;
+import mesos.am30.common.enumerations.ViewParameter;
+import mesos.am30.common.interfaces.IF_GameController;
+import mesos.am30.common.messages.*;
 import mesos.am30.gameModel.card.CharacterCard;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Tile;
-import mesos.am30.common.*;
-import mesos.am30.common.ErrorType;
-import mesos.am30.client.IF_GameView;
+import mesos.am30.common.enumerations.ErrorType;
+import mesos.am30.common.interfaces.IF_GameView;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,13 +21,9 @@ import java.util.Map;
 
 /**
  * SocketView handler Server-side.
- * <br>This Class works as a Stub for the SocketView Class, allowing polymorphic methods call on the View via the Controller.
- * <br>When calling a method on the View, this Proxy gives the illusion of being able to call directly the SocketView one (such as view.notifyTurn(Move)) like in RMI,
+ * <br/>This Class works as a Stub for the SocketView Class, allowing polymorphic methods call on the View via the Controller.
+ * <br/>When calling a method on the View, this Proxy gives the illusion of being able to call directly the SocketView one (such as view.notifyTurn(Move)) like in RMI,
  * where in reality the low-level communication via Socket happens here.
- *
- * @author LoreDN - Lorenzo Di Napoli
- * @version 1.0
- * @since 1.0
  */
 class SocketProxy implements IF_GameView {
     private final Socket socket;
@@ -36,10 +36,10 @@ class SocketProxy implements IF_GameView {
 
     /**
      * Constructor for a SocketView Proxy.
-     * <br><strong>Pre:</strong> socket != null && outputStream != null && inputStream != null &&
+     * <br/><strong>Pre:</strong> socket != null && outputStream != null && inputStream != null &&
      *      socket.getOutputStream().equals(outputStream) &&
      *      socket.getInputStream().equals(inputStream)
-     * <br><strong>Post:</strong> this.socket = socket && this.outputStream = outputStream && this.inputStream = inputStream
+     * <br/><strong>Post:</strong> this.socket = socket && this.outputStream = outputStream && this.inputStream = inputStream
      *
      * @param socket The socket used for connection with the real SocketView.
      * @param outputStream The output stream of the socket.

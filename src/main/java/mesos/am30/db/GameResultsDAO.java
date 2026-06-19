@@ -12,12 +12,8 @@ import java.util.LinkedHashMap;
 
 /**
  * Game Results Data Access Object.
- * <br>This Class works as the DAO for the Game Results.
- * <br>It queries the DBConnection in order to get the results of the Ranking Query, then filters for the wanted request.
- *
- * @author LoreDN - Lorenzo Di Napoli
- * @version 1.0
- * @since 1.0
+ * <br/>This Class works as the DAO for the Game Results.
+ * <br/>It queries the DBConnection in order to get the results of the Ranking Query, then filters for the wanted request.
  */
 public class GameResultsDAO {
     private static final String RANKING_QUERY = "SELECT Nickname, max(Score) AS Score " +
@@ -35,16 +31,16 @@ public class GameResultsDAO {
             "VALUES (?, ?, ?)";
     /**
      * Query the Global Ranking for games with N Players.
-     * <br>This static method works by querying the DB, in order to get the Global Ranking of all Players (identified by the field "Nickname")
+     * <br/>This static method works by querying the DB, in order to get the Global Ranking of all Players (identified by the field "Nickname")
      * who have take part in at least one game with a given number of Players.
-     * <br>For the Players who have taken part in more than one Game, will be taken in account only the best Score.
-     * <br><strong>Pre:</strong> playersNumber >= 2 && playersNumber <= 5
+     * <br/>For the Players who have taken part in more than one Game, will be taken in account only the best Score.
+     * <br/><strong>Pre:</strong> playersNumber >= 2 &amp;&amp; playersNumber &lt;= 5
      *
      * @param playersNumber Number of Players of the Games to take in account.
      *
      * @return List of rows like (NICKNAME, SCORE, RANK).
-     * @throws IOException The DB cannot be instantiated correctly
-     * @throws SQLException The DB connection cannot be established correctly
+     * @throws IOException The DB cannot be instantiated correctly.
+     * @throws SQLException The DB connection cannot be established correctly.
      */
     public static synchronized List<Map<String, String>> queryGlobalRanking(int playersNumber) throws IOException, SQLException {
         Connection connection = DBConnection.getConnection();
@@ -70,15 +66,15 @@ public class GameResultsDAO {
      * Query the Rank of a Player for games with N Players.
      * <br>This static method works by querying the DB, in order to get the Rank of a given Player (identified by the field "Nickname")
      * who have take part in at least one game with a given number of Players.
-     * <br>If the Player has taken part in more than one Game, will be taken in account only the best Score.
-     * <br><strong>Pre:</strong> playersNumber >= 2 && playersNumber <= 5 && nickname != null
+     * <br/>If the Player has taken part in more than one Game, will be taken in account only the best Score.
+     * <br/><strong>Pre:</strong> playersNumber >= 2 &amp;&amp; playersNumber &lt;= 5 &amp;&amp; nickname != null
      *
-     * @param playersNumber Number of Players of the Games to take in account
-     * @param nickname Nickname of the Player
+     * @param playersNumber Number of Players of the Games to take in account.
+     * @param nickname      Nickname of the Player.
      *
      * @return Single Row like (NICKNAME, SCORE, RANK).
-     * @throws IOException The DB cannot be instantiated correctly
-     * @throws SQLException The DB connection cannot be established correctly
+     * @throws IOException The DB cannot be instantiated correctly.
+     * @throws SQLException The DB connection cannot be established correctly.
      */
     public static synchronized Map<String, String> queryPlayerRank(int playersNumber, String nickname) throws IOException, SQLException {
         Connection connection = DBConnection.getConnection();
@@ -108,11 +104,12 @@ public class GameResultsDAO {
     /**
      * Add the Results of a new Game to the DB.
      * <br>This static method works by first creating a new Game for the given number of players; then adding their Scores.
-     * <br><strong>Pre:</strong> ( /forall playerResult : results; ; playerResults.get("Nickname") != null && playerResults.get("Score") != null )
+     * <br><strong>Pre:</strong> ( /forall playerResult : results; ; playerResults.get("Nickname") != null &amp;&amp; playerResults.get("Score") != null )
      *
      * @param results Results of the Game as a List of Rows like (Nickname, Score)
-     * @throws IOException The DB cannot be instantiated correctly
-     * @throws SQLException The DB connection cannot be established correctly
+     *
+     * @throws IOException The DB cannot be instantiated correctly.
+     * @throws SQLException The DB connection cannot be established correctly.
      */
     public static synchronized void addNewResults(List<Map<String, String>> results) throws IOException, SQLException {
         Connection connection = DBConnection.getConnection();

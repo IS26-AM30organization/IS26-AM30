@@ -3,6 +3,7 @@ package mesos.am30.client.gui;
 import javafx.scene.image.Image;
 import mesos.am30.gameModel.card.Card;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -24,8 +25,16 @@ public class ImageLoader {
      */
     public static Image loadArt(Card card) {
         String art = card.getArt();
-        if (!arts.containsKey(art))
-            arts.put(art, new Image(Objects.requireNonNull(ImageLoader.class.getResourceAsStream("/images/" + art + ".png"))));
+        if (!arts.containsKey(art)) {
+            InputStream stream = ImageLoader.class.getResourceAsStream("/images/" + art + ".png");
+
+            if (stream != null) {
+                arts.put(art, new Image(stream));
+            } else {
+                InputStream defaultStream = Objects.requireNonNull(ImageLoader.class.getResourceAsStream("/images/default.png"));
+                arts.put(art, new Image(defaultStream));
+            }
+        }
 
         return arts.get(art);
     }
@@ -53,8 +62,16 @@ public class ImageLoader {
      */
     public static Image loadFrame(Card card) {
         String frame = card.getFrame();
-        if (!frames.containsKey(frame))
-            frames.put(frame, new Image(Objects.requireNonNull(ImageLoader.class.getResourceAsStream("/images/" + frame + ".png"))));
+        if (!frames.containsKey(frame)) {
+            InputStream stream = ImageLoader.class.getResourceAsStream("/images/" + frame + ".png");
+
+            if (stream != null) {
+                frames.put(frame, new Image(stream));
+            } else {
+                InputStream defaultStream = Objects.requireNonNull(ImageLoader.class.getResourceAsStream("/images/null.png"));
+                frames.put(frame, new Image(defaultStream));
+            }
+        }
 
         return frames.get(frame);
     }
