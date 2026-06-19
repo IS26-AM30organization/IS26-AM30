@@ -81,7 +81,7 @@ public class MMMGui {
         try {
             vView.findServer(ClientMain.getIP(), port);
         } catch (IOException exception) {
-            errorLabel.setText("CHECK YOUR CONNECTION!");
+            Platform.runLater(()-> errorLabel.setText("CHECK YOUR CONNECTION!"));
         }
     }
 
@@ -89,15 +89,17 @@ public class MMMGui {
      * Shows lobby options after a successful server connection.
      */
     public void confirmConnection() {
-        errorLabel.setVisible(false);
-        existingLobbies.setVisible(true);
-        newLobby.setVisible(true);
-        existingLobbies.setManaged(true);
-        newLobby.setManaged(true);
-        playButton.setDisable(true);
-        playButton.setVisible(false);
-        playButton.setManaged(false);
-        refresh();
+        Platform.runLater(()->{
+            errorLabel.setVisible(false);
+            existingLobbies.setVisible(true);
+            newLobby.setVisible(true);
+            existingLobbies.setManaged(true);
+            newLobby.setManaged(true);
+            playButton.setDisable(true);
+            playButton.setVisible(false);
+            playButton.setManaged(false);
+            refresh();
+        });
     }
 
     /**
@@ -147,7 +149,7 @@ public class MMMGui {
             for(Map.Entry<String, Integer> entry : availableLobbies.entrySet()) {
                 Button button = new Button(entry.getKey() + " (" + entry.getValue() + " players)");
                 button.setPrefHeight(50.0);
-                button.setPrefWidth(300.0);
+                button.setPrefWidth(400.0);
                 button.getStyleClass().add("lobby_button");
                 button.getStylesheets().add(cssPath);
                 button.setOnAction(_ -> joinLobby(entry.getKey()));
@@ -248,10 +250,7 @@ public class MMMGui {
             switch (errorType) {
                 case WRONG_IP -> errorLabel.setText("CANNOT FIND A SERVER FOR THIS IP!");
                 case ALREADY_EXISTING_LOBBY -> errorLabel.setText("THERE'S ALREADY A LOBBY WITH THIS CODE!");
-                case NOT_EXISTING_LOBBY ->  {
-                    errorLabel.setText("COULDN'T FIND THAT LOBBY! RELOADING...");
-                    refresh();
-                }
+                case NOT_EXISTING_LOBBY -> errorLabel.setText("COULN'T FIND THAT LOBBY! TRY REALOADING");
                 case WRONG_PLAYERS_NUMBER -> errorLabel.setText("CHOOSE BETWEEN 2 AND 5 PLAYERS!");
                 case INVALID_LOBBY_CODE -> errorLabel.setText("INVALID LOBBY CODE!");
                 case WRONG_NICKNAME -> errorLabel.setText("CHOOSE ANOTHER NICKNAME FOR THIS MATCH!");

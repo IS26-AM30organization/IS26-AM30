@@ -23,6 +23,114 @@
 
 .title{
     -fx-font-family: "Vagabundo Medium";
+    -fx-font-size: 100px;
+    -fx-text-fill: white;
+}
+
+.card:disabled {
+    -fx-opacity: 0.8;
+    -fx-scale-x: 0.9;
+    -fx-scale-y: 0.9;
+}
+
+.lobby_button{
+    -fx-font-family: "Vagabundo Medium";
+    -fx-text-fill: white;
+    -fx-font-size: 30px;
+    -fx-background-color:  #654321;
+    -fx-background-radius: 25;
+}
+
+.lobby_button:hover{
+    -fx-background-color:  #FFCD28;
+    -fx-text-fill: black;
+    -fx-cursor: hand;
+}
+
+.yellow_button{
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-background-color:  #FFCD28;
+    -fx-background-radius: 25;
+    -fx-font-family: "ChristmasChalk";
+}
+
+.yellow_button:hover{
+    -fx-scale-x: 1.3;
+    -fx-scale-y: 1.3;
+    -fx-cursor: hand;
+    -fx-rotate: 2deg;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.card:hover {
+    -fx-scale-x: 1.3;
+    -fx-scale-y: 1.3;
+    -fx-cursor: hand;
+    -fx-rotate: 8deg;
+}
+
+.tile {
+    -fx-background-color:  white;
+    -fx-background-radius: 30;
+}
+
+.tile:disabled {
+    -fx-opacity: 0.8;
+    -fx-scale-x: 0.9;
+    -fx-scale-y: 0.9;
+}
+
+.tile:hover {
+    -fx-cursor: hand;
+    -fx-translate-y: -3px;
+}
+
+.menu-background
+{
+    -fx-background-image: url("../images/menu_cover.png");
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+}
+
+.pbox:hover
+{
+    -fx-cursor: hand;
+}.background {
+    -fx-background-image: url("../images/background.png");
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: auto 100%;
+}
+
+.texture{
+    -fx-background-image: url("../images/tabletexture.png");
+    -fx-background-position: center center;
+    -fx-background-repeat: repeat;
+    -fx-background-size: auto 100%;
+}
+
+.simple_text{
+    -fx-font-family: "ChristmasChalk";
+    -fx-text-fill: white;
+}
+
+.just-font{
+    -fx-font-family: "ChristmasChalk";
+}
+
+.title{
+    -fx-font-family: "Vagabundo Medium";
     -fx-font-size: 72px;
     -fx-text-fill: white;
 }
@@ -39,7 +147,6 @@
     -fx-font-size: 20px;
     -fx-background-color:  #654321;
     -fx-background-radius: 25;
-    -fx-text-fill: white;
 }
 
 .yellow_button{
@@ -47,7 +154,6 @@
     -fx-font-size: 20px;
     -fx-background-color:  #FFCD28;
     -fx-background-radius: 25;
-    -fx-text-fill: white;
 }
 
 .scroll-pane {

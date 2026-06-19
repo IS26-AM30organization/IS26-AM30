@@ -20,6 +20,7 @@ import mesos.am30.gameModel.Player;
 import mesos.am30.gameModel.card.BuildingCard;
 import mesos.am30.gameModel.card.Card;
 import mesos.am30.gameModel.card.CharacterCard;
+import mesos.am30.gameModel.card.Tile;
 
 import java.io.IOException;
 import java.util.*;
@@ -164,6 +165,12 @@ public class TableGui {
     @FXML    private HBox invlist5;
     @FXML    private Button exitButton;
     @FXML    private Button leaderboardButton;
+    @FXML    private HBox orderTile1;
+    @FXML    private HBox orderTile2;
+    @FXML    private HBox orderTile3;
+    @FXML    private HBox orderTile4;
+    @FXML    private HBox orderTile5;
+    @FXML    private HBox orderTile6;
 
     private List<Button> uppers;
     private List<Button> lowers;
@@ -188,6 +195,9 @@ public class TableGui {
     private Label[] pHuntnums;
     private Label[] pHunts;
     private HBox[] pInvlists;
+    private Boolean tile=false;
+    private HBox[] orderTiles;
+    private List<Player> playersOrder;
 
     private TribeGui tribeController;
     private LeaderboardGui leaderboardController;
@@ -200,8 +210,8 @@ public class TableGui {
     @FXML   Label infoLabel;
 
     /**
-     * Initializes UI component arrays and loads tribe and leaderboard sub-controllers.
-     */
+    * Initializes UI component arrays and loads tribe and leaderboard sub-controllers.
+    */
     @FXML
     public void initialize() throws IOException {
         uppers = new ArrayList<>(List.of(upper1,upper2,upper3,upper4,upper5,upper6,upper7,upper8,upper9));
@@ -226,6 +236,7 @@ public class TableGui {
         pHuntnums = new Label[]{huntnum1,huntnum2,huntnum3,huntnum4,huntnum5};
         pHunts = new Label[]{hunt1,hunt2,hunt3,hunt4,hunt5};
         pInvlists = new HBox[]{invlist1,invlist2,invlist3,invlist4, invlist5};
+        playersOrder = new ArrayList<>();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/tribe.fxml"));
         loader.load();
@@ -238,8 +249,6 @@ public class TableGui {
         errorLabel.setVisible(false);
 
         exitButton.setManaged(false);
-
-        infoPreview.setVisible(false);
     }
 
     /**
@@ -250,6 +259,24 @@ public class TableGui {
      */
     public void setBoard(ViewModel vBoard) {
         this.vBoard = vBoard;
+        Platform.runLater(() -> {
+            HBox[] allOrderTiles = new HBox[]{orderTile1, orderTile2, orderTile3, orderTile4, orderTile5, orderTile6};
+            switch (vBoard.getPlayers().size()) {
+                case 2 -> orderTiles = new HBox[]{orderTile3, orderTile6};
+                case 3 -> orderTiles = new HBox[]{orderTile2, orderTile4, orderTile6};
+                case 4 -> orderTiles = new HBox[]{orderTile2, orderTile3, orderTile4, orderTile6};
+                case 5 -> orderTiles = new HBox[]{orderTile1, orderTile3, orderTile4, orderTile5, orderTile6};
+            }
+            for (HBox tile : allOrderTiles) {
+                if (Arrays.stream(orderTiles).toList().contains(tile)) {
+                    tile.setVisible(true);
+                    tile.setManaged(true);
+                } else {
+                    tile.setVisible(false);
+                    tile.setManaged(false);
+                }
+            }
+        });
     }
 
     /**
@@ -339,17 +366,8 @@ public class TableGui {
             }
         }
 
-        //setting tiles
-        for (int i = 0; i<vBoard.getTiles().size(); i++){
-            Optional<Player> p = vBoard.getTiles().get(i).getCurrentPlayer();
-            if (p.isPresent() && colors.get(p.get())!=null){
-                tiles.getChildren().get(i).setStyle("-fx-background-color: #" +colors.get(p.get()));
-            } else
-                tiles.getChildren().get(i).setStyle("");
-        }
-
         //setting era
-        if (!vBoard.getUpperRow().isEmpty())
+        if (vBoard.getUpperRow().size() >= 2)
             eraLabel.setText("ERA " +
                     (switch (Math.max(vBoard.getUpperRow().getLast().getEra(), vBoard.getUpperRow().get(vBoard.getUpperRow().size() - 2).getEra())) {
                         case 1 -> "I";
@@ -408,6 +426,19 @@ public class TableGui {
     }
 
     /**
+     * Updates the tiles to reflect the current game state.
+     */
+    private void setTiles(){
+        for (int i = 0; i<vBoard.getTiles().size(); i++){
+            Optional<Player> p = vBoard.getTiles().get(i).getCurrentPlayer();
+            if (p.isPresent() && colors.get(p.get())!=null){
+                tiles.getChildren().get(i).setStyle("-fx-background-color: #" +colors.get(p.get()));
+            } else
+                tiles.getChildren().get(i).setStyle("");
+        }
+    }
+
+    /**
      * Sets the local player's nickname.
      * <br/><strong>Pre:</strong> nickname != null
      *
@@ -427,6 +458,23 @@ public class TableGui {
      */
     public void printMove(String nickname, Move move){
         Platform.runLater(() -> {
+            if (tile || move==Move.PICK_TILE) {
+                playersOrder.clear();
+                for (Tile t : vBoard.getTiles()) {
+                    if (t.getCurrentPlayer().isPresent()) playersOrder.add(t.getCurrentPlayer().orElse(null));
+                }
+            }
+            if (move!=Move.PICK_TILE) {
+                int i;
+                for (Player p : playersOrder) {
+                    i = playersOrder.indexOf(p);
+                    orderTiles[i].getChildren().getFirst().setVisible(true);
+                    ((ImageView) orderTiles[i].getChildren().getFirst()).setImage(ImageLoader.loadArt(vBoard.getPlayers().indexOf(p)));
+                }
+                for (int j = playersOrder.size(); j < Arrays.stream(orderTiles).toList().size(); j++) {
+                    orderTiles[j].getChildren().getFirst().setVisible(false);
+                }
+            }
             if (nickname.equals(this.nickname)) {
                 turnLabel.setText("YOUR TURN TO " + getMove(move, true) + "!");
             } else
@@ -441,31 +489,36 @@ public class TableGui {
             for (Button card : upBs){ card.setDisable(true); card.setOpacity(0.8);}
             for (Button card : downBs){ card.setDisable(true); card.setOpacity(0.8);}
             tiles.setDisable(true); tiles.setOpacity(0.9);
+            if (tile || move==Move.PICK_TILE) setTiles();
             switch (move){
                 case Move.PICK_FROM_DOWN -> {
                     for (Button card : lowers){
                         if(lowers.indexOf(card)>=vBoard.getLowerRow().size() || vBoard.getLowerRow().get(lowers.indexOf(card)).isPickable())
-                        card.setDisable(!me); else card.setDisable(false);
+                            card.setDisable(!me); else card.setDisable(false);
                         if(me) card.setOpacity(1);}
                     for (Button card : downBs){ card.setDisable(!me); if(me) card.setOpacity(1);}
+                    tile = false;
                 }
                 case Move.PICK_FROM_UP -> {
                     for (Button card : uppers){
                         if(uppers.indexOf(card)>=vBoard.getUpperRow().size() ||vBoard.getUpperRow().get(uppers.indexOf(card)).isPickable())
-                        card.setDisable(!me); else card.setDisable(false); if(me) card.setOpacity(1);}
+                            card.setDisable(!me); else card.setDisable(false); if(me) card.setOpacity(1);}
                     for (Button card : upBs){ card.setDisable(!me); if(me) card.setOpacity(1);}
+                    tile = false;
                 }
                 case Move.PICK_ANY_CARD ->  {
                     for (Button card : uppers){
                         if(uppers.indexOf(card)>=vBoard.getUpperRow().size() || vBoard.getUpperRow().get(uppers.indexOf(card)).isPickable())
-                        card.setDisable(!me); else card.setDisable(false); if(me) card.setOpacity(1);}
+                            card.setDisable(!me); else card.setDisable(false); if(me) card.setOpacity(1);}
                     for (Button card : lowers){
                         if(lowers.indexOf(card)>=vBoard.getLowerRow().size() || vBoard.getLowerRow().get(lowers.indexOf(card)).isPickable())
-                        card.setDisable(!me); else card.setDisable(false); if(me) card.setOpacity(1);}
+                            card.setDisable(!me); else card.setDisable(false); if(me) card.setOpacity(1);}
                     for (Button card : upBs){ card.setDisable(!me); if(me) card.setOpacity(1);}
                     for (Button card : downBs){ card.setDisable(!me); if(me) card.setOpacity(1);}
+                    tile = false;
                 }
                 case Move.PICK_TILE ->  {
+                    tile=true;
                     tiles.setDisable(!me); tiles.setOpacity(1);
                 }
             }
@@ -602,65 +655,73 @@ public class TableGui {
     /// Handles click on Tile slot 7.
     @FXML public void til7() {tile(7);}
 
-    private void upcCard(int i){
-        Platform.runLater(() -> {
-            errorLabel.setVisible(false);
-            try {
-                vView.checkCharacterCard((CharacterCard) vBoard.getUpperRow().get(i - 1));
-            } catch (IOException ex) {
-                String old = eraLabel.getText();
-                eraLabel.setText(old + " (RETRY)");
-            }
-        });
-    }
+        private void upcCard(int i){
+            Platform.runLater(() -> {
+                if (!vBoard.getUpperRow().get(i - 1).isPickable())
+                    errorLabel.setText("CAN'T DRAW THIS!");
+                else
+                { errorLabel.setVisible(false);
+                    try {
+                        vView.checkCharacterCard((CharacterCard) vBoard.getUpperRow().get(i - 1));
+                    } catch (IOException ex) {
+                        String old = eraLabel.getText();
+                        eraLabel.setText(old + " (RETRY)");
+                    }
+                }
+            });
+        }
 
-    private void downcCard(int i){
-        Platform.runLater(() -> {
-            errorLabel.setVisible(false);
-            try {
-                vView.checkCharacterCard((CharacterCard) vBoard.getLowerRow().get(i-1));
-            } catch (IOException ex) {
-                String old = eraLabel.getText();
-                eraLabel.setText(old+ " (RETRY)");
-            }
-        });
-    }
+        private void downcCard(int i){
+            Platform.runLater(() -> {
+                if (!vBoard.getLowerRow().get(i - 1).isPickable())
+                    errorLabel.setText("CAN'T DRAW THIS!");
+                else {
+                    errorLabel.setVisible(false);
+                    try {
+                        vView.checkCharacterCard((CharacterCard) vBoard.getLowerRow().get(i - 1));
+                    } catch (IOException ex) {
+                        String old = eraLabel.getText();
+                        eraLabel.setText(old + " (RETRY)");
+                    }
+                }
+            });
+        }
 
-    private void upbCard(int i){
-        Platform.runLater(() -> {
-            errorLabel.setVisible(false);
-            try {
-                vView.checkBuildingCard(vBoard.getUpperBuildings().get(i - 1));
-            } catch (IOException ex) {
-                String old = eraLabel.getText();
-                eraLabel.setText(old + " (RETRY)");
-            }
-        });
-    }
+        private void upbCard(int i){
+            Platform.runLater(() -> {
+                errorLabel.setVisible(false);
+                try {
+                    vView.checkBuildingCard(vBoard.getUpperBuildings().get(i - 1));
+                } catch (IOException ex) {
+                    String old = eraLabel.getText();
+                    eraLabel.setText(old + " (RETRY)");
+                }
+            });
+        }
 
-    private void downbCard(int i){
-        Platform.runLater(() -> {
-            errorLabel.setVisible(false);
-            try {
-                vView.checkBuildingCard(vBoard.getLowerBuildings().get(i-1));
-            } catch (IOException ex) {
-                String old = eraLabel.getText();
-                eraLabel.setText(old+ " (RETRY)");
-            }
-        });
-    }
+        private void downbCard(int i){
+            Platform.runLater(() -> {
+                errorLabel.setVisible(false);
+                try {
+                    vView.checkBuildingCard(vBoard.getLowerBuildings().get(i-1));
+                } catch (IOException ex) {
+                    String old = eraLabel.getText();
+                    eraLabel.setText(old+ " (RETRY)");
+                }
+            });
+        }
 
-    private void tile(int i){
-        Platform.runLater(() -> {
-            errorLabel.setVisible(false);
-            try {
-                vView.checkTile(vBoard.getTiles().get(i-1));
-            } catch (IOException ex) {
-                String old = eraLabel.getText();
-                eraLabel.setText(old+ " (RETRY)");
-            }
-        });
-    }
+        private void tile(int i){
+            Platform.runLater(() -> {
+                errorLabel.setVisible(false);
+                try {
+                    vView.checkTile(vBoard.getTiles().get(i-1));
+                } catch (IOException ex) {
+                    String old = eraLabel.getText();
+                    eraLabel.setText(old+ " (RETRY)");
+                }
+            });
+        }
 
     /// Shows the tribe detail for Player 1.
     @FXML
@@ -693,9 +754,15 @@ public class TableGui {
             List<Player> finalPlayerList = vBoard.getPlayers().stream().
                     sorted(Comparator.comparing(p -> p.getParameters().get(Parameter.PRESTIGE_POINTS))).toList();
             for(int i = 0; i < vBoard.getPlayers().size(); i++){
-                playersRow.getChildren().get(i).setStyle("-fx-translate-y: " + (-100-50*finalPlayerList.indexOf(vBoard.getPlayers().get(i))) + "; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #F15C3E; -fx-border-radius: 18; -fx-border-width: 2;");
+                int pos = 0;
+                for (Player p : finalPlayerList) {
+                    if (Objects.equals(vBoard.getPlayers().get(i).getParameters().get(Parameter.PRESTIGE_POINTS), p.getParameters().get(Parameter.PRESTIGE_POINTS))) {
+                        pos = finalPlayerList.indexOf(p);
+                    }
+                }
+                playersRow.getChildren().get(i).setStyle("-fx-translate-y: " + (-100-50*pos) + "; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-border-color: #F15C3E; -fx-border-radius: 18; -fx-border-width: 2;");
             }
-            eraLabel.setText("GAME ENDED");
+            eraLabel.setText("END!");
             if (finalPlayerList.getLast().getParameters().get(Parameter.PRESTIGE_POINTS).equals(
                     finalPlayerList.get(finalPlayerList.size()-2).getParameters().get(Parameter.PRESTIGE_POINTS))){
                 turnLabel.setText("IT'S A TIE!");
@@ -734,7 +801,7 @@ public class TableGui {
             }
         });
     }
-    
+
     /// Shows card preview for upper Character Card slot 1 on right-click.
     @FXML   void rightUp1(){ rightClick(vBoard.getUpperRow().getFirst()); }
     /// Shows card preview for upper Character Card slot 2 on right-click.
@@ -795,7 +862,7 @@ public class TableGui {
     private void rightClick (Card card){
         ((ImageView) infoPreview.getChildren().get(0)).setImage(ImageLoader.loadArt(card));
         if (card.isPickable()) ((ImageView) infoPreview.getChildren().get(1)).setImage(ImageLoader.loadFrame(card));
-                else infoPreview.getChildren().get(1).setVisible(false);
+        else infoPreview.getChildren().get(1).setVisible(false);
         infoLabel.setText(card.getCardInfo(new StringBuilder()));
         infoBox.setVisible(true);
     }
@@ -808,7 +875,7 @@ public class TableGui {
 
     /**
      * Hides the card info preview panel.
-     * */
+     */
     @FXML   void closeInfo(){
         infoBox.setVisible(false);
     }
@@ -853,3 +920,5 @@ public class TableGui {
         leaderboardController.showRankings(playerRank, globalRankings);
     }
 }
+
+
